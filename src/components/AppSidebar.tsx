@@ -7,14 +7,16 @@ const menuItems = [
   {
     title: "Mente",
     icon: Brain,
+    mainUrl: "/mente",
     children: [
       { title: "Movimentações", url: "/mente/movimentacoes", icon: DollarSign },
       { title: "DRE", url: "/mente/dre", icon: FileText },
     ],
   },
   {
-    title: "Corpo",
+    title: "Corpo", 
     icon: Activity,
+    mainUrl: "/corpo",
     children: [
       { title: "Planilha de Indicadores", url: "/corpo/indicadores", icon: BarChart3 },
       { title: "Projetos | Operação", url: "/corpo/projetos", icon: Kanban },
@@ -23,6 +25,7 @@ const menuItems = [
   {
     title: "Alma",
     icon: Heart,
+    mainUrl: "/alma",
     children: [
       { title: "App", url: "/alma/app", icon: StickyNote },
     ],
@@ -69,20 +72,30 @@ export function AppSidebar() {
       <div className="flex-1 p-4">
         {menuItems.map((item) => (
           <div key={item.title} className="mb-2">
-            <button
-              onClick={() => toggleSection(item.title)}
-              className="flex w-full items-center justify-between p-3 text-left hover:bg-accent rounded-lg"
-            >
-              <div className="flex items-center gap-3">
+            <div className="flex">
+              <NavLink
+                to={item.mainUrl}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 p-3 text-left hover:bg-accent rounded-lg flex-1",
+                    isActive ? "bg-primary/10 text-primary" : ""
+                  )
+                }
+              >
                 <item.icon className="h-5 w-5 text-primary" />
                 {!collapsed && <span className="font-medium">{item.title}</span>}
-              </div>
+              </NavLink>
               {!collapsed && (
-                <ChevronDown 
-                  className={cn("h-4 w-4 transition-transform", openSections[item.title] ? "rotate-180" : "")} 
-                />
+                <button
+                  onClick={() => toggleSection(item.title)}
+                  className="p-3 hover:bg-accent rounded-lg ml-1"
+                >
+                  <ChevronDown 
+                    className={cn("h-4 w-4 transition-transform", openSections[item.title] ? "rotate-180" : "")} 
+                  />
+                </button>
               )}
-            </button>
+            </div>
             {!collapsed && openSections[item.title] && (
               <div className="ml-8 mt-1 space-y-1">
                 {item.children.map((child) => (
