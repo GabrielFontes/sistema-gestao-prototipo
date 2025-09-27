@@ -3,8 +3,8 @@ import { ChevronDown, Brain, Activity, Heart, FileText, Medal, DollarSign, Gauge
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-// Importando imagem corretamente
-import logoClaro from "@/images/Logo_Claro.png";
+// IMPORTAR O LOGO
+import LogoClaro from "@/images/Logo_Claro.png";
 
 const menuItems = [
   {
@@ -37,40 +37,57 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    Mente: true,
-    Corpo: true,
-    Alma: true,
-  });
   const location = useLocation();
+
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem("sidebar-collapsed");
+    return saved === "true";
+  });
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem("sidebar-openSections");
+    return saved ? JSON.parse(saved) : { Mente: true, Corpo: false, Alma: false };
+  });
+
   const currentPath = location.pathname;
 
+  const isActive = (path: string) => currentPath === path;
+
   const toggleSection = (title: string) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [title]: !prev[title]
-    }));
+    setOpenSections(prev => {
+      const updated = { ...prev, [title]: !prev[title] };
+      localStorage.setItem("sidebar-openSections", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const toggleCollapsed = () => {
+    setCollapsed(prev => {
+      localStorage.setItem("sidebar-collapsed", String(!prev));
+      return !prev;
+    });
   };
 
   return (
     <div className={cn("transition-all duration-300 bg-card border-r border-border h-screen flex flex-col", collapsed ? "w-16" : "w-80")}>
-      
-      {/* Header - sempre visível */}
-      <div className="p-6 border-b border-border flex items-center gap-3">
-        <div className="w-10 h-10 flex items-center justify-center">
-          <img 
-            src={logoClaro} 
-            alt="Logo da Empresa" 
-            className="w-10 h-10 object-contain" 
-          />
-        </div>
-        {!collapsed && (
-          <div>
-            <h1 className="font-semibold text-lg text-foreground">Empresa de corpo</h1>
-            <p className="text-muted-foreground text-sm">mente e alma</p>
+      {/* Header */}
+      <div className="p-6 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 flex items-center justify-center">
+            {/* USAR IMAGEM IMPORTADA */}
+            <img 
+              src={LogoClaro}
+              alt="Logo da Empresa" 
+              className="w-10 h-10 object-contain" 
+            />
           </div>
-        )}
+          {!collapsed && (
+            <div>
+              <h1 className="font-semibold text-lg text-foreground">Empresa de corpo</h1>
+              <p className="text-muted-foreground text-sm">mente e alma</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}
@@ -129,7 +146,7 @@ export function AppSidebar() {
       {/* Toggle Button */}
       <div className="p-4 border-t border-border">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapsed}
           className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg"
         >
           <Menu className="h-5 w-5 text-muted-foreground" />
