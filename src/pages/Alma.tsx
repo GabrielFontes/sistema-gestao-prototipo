@@ -1,16 +1,16 @@
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CircularProgress } from "@/components/CircularProgress";
 
 const colaboradores = [
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 89, horas: "5h 35min", color: "success" },
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 78, horas: "5h 35min", color: "warning" },
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 46, horas: "5h 35min", color: "info" },
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 45, horas: "5h 35min", color: "info" },
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 46, horas: "5h 35min", color: "info" },
-  { nome: "Qualquer nome teste", avatar: "/placeholder.svg", produtividade: 46, horas: "5h 35min", color: "info" },
+  { nome: "João Silva", produtividade: 89, horas: "5h 35min", color: "success" },
+  { nome: "Maria Santos", produtividade: 78, horas: "5h 35min", color: "warning" },
+  { nome: "Pedro Costa", produtividade: 46, horas: "5h 35min", color: "info" },
+  { nome: "Ana Lima", produtividade: 45, horas: "5h 35min", color: "info" },
+  { nome: "Carlos Rocha", produtividade: 46, horas: "5h 35min", color: "info" },
+  { nome: "Lucas Alves", produtividade: 46, horas: "5h 35min", color: "info" },
 ];
 
 export default function Alma() {
@@ -19,35 +19,29 @@ export default function Alma() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Alma</h1>
+          </div>
           <div className="flex items-center gap-4">
-            <Select defaultValue="dezembro">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="janeiro">Janeiro</SelectItem>
-                <SelectItem value="fevereiro">Fevereiro</SelectItem>
-                <SelectItem value="março">Março</SelectItem>
-                <SelectItem value="abril">Abril</SelectItem>
-                <SelectItem value="maio">Maio</SelectItem>
-                <SelectItem value="junho">Junho</SelectItem>
-                <SelectItem value="julho">Julho</SelectItem>
-                <SelectItem value="agosto">Agosto</SelectItem>
-                <SelectItem value="setembro">Setembro</SelectItem>
-                <SelectItem value="outubro">Outubro</SelectItem>
-                <SelectItem value="novembro">Novembro</SelectItem>
-                <SelectItem value="dezembro">Dezembro</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="2025">
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2024">2024</SelectItem>
-                <SelectItem value="2025">2025</SelectItem>
-              </SelectContent>
-            </Select>
+          <Select defaultValue="2025">
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2025">2025</SelectItem>
+              <SelectItem value="2024">2024</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select defaultValue="dezembro">
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="dezembro">Dezembro</SelectItem>
+              <SelectItem value="novembro">Novembro</SelectItem>
+              <SelectItem value="outubro">Outubro</SelectItem>
+            </SelectContent>
+          </Select>
           </div>
         </div>
 
@@ -58,7 +52,7 @@ export default function Alma() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Produtividade</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
-              <CircularProgress value={89} size="lg" className="text-success" />
+              <CircularProgress value={89} size="lg" color="success" />
             </CardContent>
           </Card>
 
@@ -68,8 +62,9 @@ export default function Alma() {
             </CardHeader>
             <CardContent className="flex justify-center items-center">
               <Avatar className="w-16 h-16">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>QT</AvatarFallback>
+                <AvatarFallback>
+                  {"JS"}
+                </AvatarFallback>
               </Avatar>
             </CardContent>
           </Card>
@@ -91,14 +86,23 @@ export default function Alma() {
               {colaboradores.map((colaborador, index) => (
                 <div key={index} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <CircularProgress 
-                      value={colaborador.produtividade} 
-                      size="md" 
-                      className={`text-${colaborador.color}`}
-                    />
+                  <CircularProgress 
+                    value={colaborador.produtividade} 
+                    size="md" 
+                    className={
+                      colaborador.color === "success" ? "text-success" :
+                      colaborador.color === "warning" ? "text-warning" :
+                      "text-info"
+                    }
+                  />
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={colaborador.avatar} />
-                      <AvatarFallback>QT</AvatarFallback>
+                      <AvatarFallback>
+                        {colaborador.nome
+                          .split(" ")
+                          .map(n => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <span className="font-medium">{colaborador.nome}</span>
                   </div>

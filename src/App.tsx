@@ -9,6 +9,7 @@ import DREPage from "./pages/mente/DRE";
 import ProjetosPage from "./pages/corpo/Projetos";
 import IndicadoresPage from "./pages/corpo/Indicadores";
 import AlmaAppPage from "./pages/alma/App";
+import TarefasPage from "./pages/alma/Tarefas";
 import Mente from "./pages/Mente";
 import Corpo from "./pages/Corpo";
 import Alma from "./pages/Alma";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/corpo/indicadores" element={<IndicadoresPage />} />
           <Route path="/alma" element={<Alma />} />
           <Route path="/alma/app" element={<AlmaAppPage />} />
+          <Route path="/alma/tarefas" element={<TarefasPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

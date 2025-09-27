@@ -6,26 +6,34 @@ import { Plus, BarChart3, TrendingUp, Target } from "lucide-react";
 
 const indicadores = [
   {
-    title: "Produtividade Média",
+    title: "Pré-venda",
     value: "87%",
     trend: "+12%",
-    description: "Comparado ao mês anterior",
+    description: "Visitas no Site",
     icon: TrendingUp,
     color: "success"
   },
   {
-    title: "Projetos Entregues",
+    title: "Venda",
     value: "24",
     trend: "+3",
-    description: "Projetos finalizados no período",
+    description: "Novos Pedidos",
     icon: Target,
     color: "primary"
   },
   {
-    title: "Eficiência Operacional",
+    title: "Entrega",
     value: "92%",
     trend: "+8%",
-    description: "Índice de eficiência geral",
+    description: "Entregues no prazo",
+    icon: BarChart3,
+    color: "info"
+  },
+    {
+    title: "Suporte",
+    value: "92%",
+    trend: "+8%",
+    description: "Clima emocional",
     icon: BarChart3,
     color: "info"
   }
@@ -38,8 +46,7 @@ export default function Indicadores() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Planilha de Indicadores</h1>
-            <p className="text-muted-foreground">Acompanhe os principais indicadores de performance</p>
+            <h1 className="text-2xl font-bold">Indicadores</h1>
           </div>
           <div className="flex items-center gap-4">
             <Select defaultValue="2025">
@@ -61,15 +68,11 @@ export default function Indicadores() {
                 <SelectItem value="outubro">Outubro</SelectItem>
               </SelectContent>
             </Select>
-            <Button className="bg-primary hover:bg-primary-dark">
-              <Plus className="w-4 h-4 mr-2" />
-              Novo Indicador
-            </Button>
-          </div>
+            </div>
         </div>
 
         {/* Indicadores Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {indicadores.map((indicador, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

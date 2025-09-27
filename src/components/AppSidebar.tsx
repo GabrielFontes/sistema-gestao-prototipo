@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { ChevronDown, Brain, Activity, Heart, FileText, DollarSign, Users, BarChart3, Kanban, StickyNote, Menu } from "lucide-react";
+import { ChevronDown, Brain, Activity, Heart, FileText, Medal, DollarSign, Gauge, CheckCircle, StickyNote, Menu } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
+// Importando imagem corretamente
+import logoClaro from "@/images/Logo_Claro.png";
 
 const menuItems = [
   {
@@ -18,8 +21,8 @@ const menuItems = [
     icon: Activity,
     mainUrl: "/corpo",
     children: [
-      { title: "Planilha de Indicadores", url: "/corpo/indicadores", icon: BarChart3 },
-      { title: "Projetos | Operação", url: "/corpo/projetos", icon: Kanban },
+      { title: "Indicadores", url: "/corpo/indicadores", icon: Gauge },
+      { title: "Realizações", url: "/corpo/projetos", icon: Medal },
     ],
   },
   {
@@ -27,7 +30,8 @@ const menuItems = [
     icon: Heart,
     mainUrl: "/alma",
     children: [
-      { title: "App", url: "/alma/app", icon: StickyNote },
+      { title: "Notas", url: "/alma/app", icon: StickyNote },
+      { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
     ],
   },
 ];
@@ -42,8 +46,6 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const isActive = (path: string) => currentPath === path;
-
   const toggleSection = (title: string) => {
     setOpenSections(prev => ({
       ...prev,
@@ -53,19 +55,22 @@ export function AppSidebar() {
 
   return (
     <div className={cn("transition-all duration-300 bg-card border-r border-border h-screen flex flex-col", collapsed ? "w-16" : "w-80")}>
-      {/* Header */}
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">C</span>
-          </div>
-          {!collapsed && (
-            <div>
-              <h1 className="font-semibold text-lg text-foreground">Empresa de corpo</h1>
-              <p className="text-muted-foreground text-sm">mente e alma</p>
-            </div>
-          )}
+      
+      {/* Header - sempre visível */}
+      <div className="p-6 border-b border-border flex items-center gap-3">
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img 
+            src={logoClaro} 
+            alt="Logo da Empresa" 
+            className="w-10 h-10 object-contain" 
+          />
         </div>
+        {!collapsed && (
+          <div>
+            <h1 className="font-semibold text-lg text-foreground">Empresa de corpo</h1>
+            <p className="text-muted-foreground text-sm">mente e alma</p>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}

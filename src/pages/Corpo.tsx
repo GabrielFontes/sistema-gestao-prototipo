@@ -21,11 +21,13 @@ export default function Corpo() {
     <Layout>
       <div className="space-y-6">
         {/* Tabs para Organograma e Fluxos */}
-        <Tabs defaultValue="fluxos" className="w-full">
+        <Tabs defaultValue="organograma" className="w-full">
           <div className="flex justify-center">
             <TabsList className="grid w-96 grid-cols-2">
-              <TabsTrigger value="organograma">Organograma</TabsTrigger>
-              <TabsTrigger value="fluxos" className="bg-primary text-primary-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger value="organograma" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                Organograma
+              </TabsTrigger>
+              <TabsTrigger value="fluxos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 Fluxos
               </TabsTrigger>
             </TabsList>
@@ -34,10 +36,14 @@ export default function Corpo() {
           <TabsContent value="organograma" className="mt-6">
             <Card>
               <CardContent className="p-8">
-                <div className="flex items-center justify-center h-96 bg-muted/30 rounded-lg border-2 border-dashed border-muted-foreground/25">
-                  <div className="text-center text-muted-foreground">
-                    <ImageIcon className="w-12 h-12 mx-auto mb-4" />
-                    <p>Organograma será exibido aqui</p>
+                <div className="flex items-center justify-center h-96">
+                  <div style={{ width: "100%", height: "100%", margin: "10px", position: "relative" }}>
+                    <iframe
+                      allowFullScreen
+                      style={{ width: "100%", height: "100%" }}
+                      src="https://lucid.app/documents/embedded/07ee9e3f-c79f-449a-b47f-06b88c8993e8"
+                      id="kpwUBsskZLGB"
+                    ></iframe>
                   </div>
                 </div>
               </CardContent>
@@ -48,15 +54,21 @@ export default function Corpo() {
             {/* Área principal do fluxo */}
             <Card className="mb-6">
               <CardContent className="p-8">
-                <div className="flex items-center justify-center h-96 bg-muted/30 rounded-lg border-2 border-dashed border-muted-foreground/25">
-                  <div className="text-center text-muted-foreground">
-                    <ImageIcon className="w-12 h-12 mx-auto mb-4" />
-                    <p>Área para criar e visualizar fluxos de trabalho</p>
+                <div className="flex items-center justify-center h-96">
+                <div style={{ width: "100%", height: "100%", margin: "10px", position: "relative" }}>
+                    <iframe
+                      allowFullScreen
+                      style={{ width: "100%", height: "100%" }}
+                      src="https://lucid.app/documents/embedded/50322aeb-a5b2-4d2c-b318-16716b12ca2f"
+                      id="YhwU3_AD3jK1"
+                    ></iframe>
                   </div>
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
+        </Tabs>
             {/* Grid de supervisores */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {supervisores.map((supervisor, index) => (
@@ -71,8 +83,6 @@ export default function Corpo() {
                 </Card>
               ))}
             </div>
-          </TabsContent>
-        </Tabs>
       </div>
     </Layout>
   );

@@ -9,7 +9,9 @@ export default function DRE() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">DRE - Demonstração do Resultado do Exercício</h1>
+          <div>
+            <h1 className="text-2xl font-bold">DRE</h1>
+          </div>
           <div className="flex items-center gap-4">
             <Select defaultValue="trimestre">
               <SelectTrigger className="w-32">
@@ -55,9 +57,6 @@ export default function DRE() {
 
         {/* Tabela DRE */}
         <Card>
-          <CardHeader>
-            <CardTitle>Demonstração do Resultado - Trimestre 2025</CardTitle>
-          </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
@@ -69,10 +68,6 @@ export default function DRE() {
                   <TableHead className="text-center">Março</TableHead>
                   <TableHead></TableHead>
                   <TableHead></TableHead>
-                  <TableHead className="text-center">Realizado</TableHead>
-                  <TableHead className="text-center">Previsto</TableHead>
-                  <TableHead className="text-center">Realizado</TableHead>
-                  <TableHead className="text-center">Previsto</TableHead>
                   <TableHead className="text-center">Realizado</TableHead>
                   <TableHead className="text-center">Previsto</TableHead>
                 </TableRow>
@@ -88,10 +83,6 @@ export default function DRE() {
                   <TableCell></TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="pl-8">Vendas de Produtos</TableCell>
@@ -101,10 +92,6 @@ export default function DRE() {
                   <TableCell className="text-center">-</TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                 </TableRow>
@@ -118,10 +105,6 @@ export default function DRE() {
                   <TableCell></TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                 </TableRow>
                 <TableRow className="bg-muted/50">
                   <TableCell className="font-semibold">(-) DEDUÇÕES</TableCell>
@@ -131,10 +114,6 @@ export default function DRE() {
                   <TableCell className="text-center">-</TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                 </TableRow>
@@ -148,10 +127,6 @@ export default function DRE() {
                   <TableCell></TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="pl-8">Devoluções</TableCell>
@@ -163,10 +138,6 @@ export default function DRE() {
                   <TableCell></TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                 </TableRow>
                 <TableRow className="bg-success/10 font-semibold">
                   <TableCell>RECEITA LÍQUIDA</TableCell>
@@ -176,10 +147,6 @@ export default function DRE() {
                   <TableCell className="text-center">-</TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
-                  <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                   <TableCell className="text-center">-</TableCell>
                 </TableRow>

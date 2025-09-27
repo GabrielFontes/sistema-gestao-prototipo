@@ -39,7 +39,9 @@ export default function Movimentacoes() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Movimentações</h1>
+          <div>
+            <h1 className="text-2xl font-bold">Movimentações</h1>
+          </div>
           <div className="flex items-center gap-4">
             <Select defaultValue="2025">
               <SelectTrigger className="w-32">
@@ -119,9 +121,6 @@ export default function Movimentacoes() {
 
         {/* Tabela de Movimentações */}
         <Card>
-          <CardHeader>
-            <CardTitle>Histórico de Movimentações</CardTitle>
-          </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
