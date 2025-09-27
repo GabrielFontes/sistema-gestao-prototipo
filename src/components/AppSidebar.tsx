@@ -51,7 +51,11 @@ export function AppSidebar() {
 
   const currentPath = location.pathname;
 
-  const isActive = (path: string) => currentPath === path;
+  const isActive = (path: string) => {
+    // Se estiver em "/", marcar "Mente" como ativo
+    if (currentPath === "/" && path === "/mente") return true;
+    return currentPath === path;
+  };
 
   const toggleSection = (title: string) => {
     setOpenSections(prev => {
