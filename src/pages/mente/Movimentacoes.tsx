@@ -64,61 +64,6 @@ export default function Movimentacoes() {
           </div>
         </div>
 
-        {/* Resumo Financeiro */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-2 border-primary/20 bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <Wallet className="h-8 w-8 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Balanço do período</p>
-                  <p className="text-2xl font-bold text-primary">R$ 14.481,77</p>
-                  <div className="text-sm text-muted-foreground space-y-1 mt-2">
-                    <div>Investido: <span className="text-foreground">R$ 5.150,77</span></div>
-                    <div>Caixa: <span className="text-info font-medium">R$ 9.331,77</span></div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-success/20 bg-success/5">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-success/10 rounded-lg">
-                  <TrendingUp className="h-8 w-8 text-success" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Receitas</p>
-                  <p className="text-2xl font-bold text-success">R$ 14.481,77</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Receitas Previstas: <span className="text-success">R$ 9.331,77</span>
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-destructive/20 bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-destructive/10 rounded-lg">
-                  <TrendingDown className="h-8 w-8 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Despesas</p>
-                  <p className="text-2xl font-bold text-destructive">R$ 14.481,77</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Despesas Previstas: <span className="text-destructive">R$ 9.331,77</span>
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Tabela de Movimentações */}
         <Card>
           <CardContent>

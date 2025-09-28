@@ -4,41 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Plus, BarChart3, TrendingUp, Target } from "lucide-react";
 
-const indicadores = [
-  {
-    title: "Pré-venda",
-    value: "87%",
-    trend: "+12%",
-    description: "Visitas no Site",
-    icon: TrendingUp,
-    color: "success"
-  },
-  {
-    title: "Venda",
-    value: "24",
-    trend: "+3",
-    description: "Novos Pedidos",
-    icon: Target,
-    color: "primary"
-  },
-  {
-    title: "Entrega",
-    value: "92%",
-    trend: "+8%",
-    description: "Entregues no prazo",
-    icon: BarChart3,
-    color: "info"
-  },
-    {
-    title: "Suporte",
-    value: "92%",
-    trend: "+8%",
-    description: "Clima emocional",
-    icon: BarChart3,
-    color: "info"
-  }
-];
-
 export default function Indicadores() {
   return (
     <Layout>
@@ -69,39 +34,6 @@ export default function Indicadores() {
               </SelectContent>
             </Select>
             </div>
-        </div>
-
-        {/* Indicadores Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {indicadores.map((indicador, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {indicador.title}
-                </CardTitle>
-                <indicador.icon className={`h-4 w-4 ${
-                  indicador.color === 'success' ? 'text-success' :
-                  indicador.color === 'primary' ? 'text-primary' :
-                  'text-info'
-                }`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{indicador.value}</div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <span className={`font-medium ${
-                    indicador.color === 'success' ? 'text-success' :
-                    indicador.color === 'primary' ? 'text-primary' :
-                    'text-info'
-                  }`}>
-                    {indicador.trend}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {indicador.description}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
         </div>
 
         {/* Área vazia para futuras implementações */}

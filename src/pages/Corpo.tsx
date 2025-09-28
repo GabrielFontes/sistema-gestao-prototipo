@@ -1,8 +1,43 @@
 import { Layout } from "@/components/Layout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Edit2, RefreshCw } from "lucide-react";
+import { Edit2, RefreshCw, TrendingUp, Target, BarChart3 } from "lucide-react";
+
+const indicadores = [
+  {
+    title: "Pré-venda",
+    value: "87%",
+    trend: "+12%",
+    description: "Visitas no Site",
+    icon: TrendingUp,
+    color: "success"
+  },
+  {
+    title: "Venda",
+    value: "24",
+    trend: "+3",
+    description: "Novos Pedidos",
+    icon: Target,
+    color: "primary"
+  },
+  {
+    title: "Entrega",
+    value: "92%",
+    trend: "+8%",
+    description: "Entregues no prazo",
+    icon: BarChart3,
+    color: "info"
+  },
+    {
+    title: "Suporte",
+    value: "92%",
+    trend: "+8%",
+    description: "Clima emocional",
+    icon: BarChart3,
+    color: "info"
+  }
+];
 
 const supervisores = [
   "Supervisor de Vendas",
@@ -33,11 +68,44 @@ export default function Corpo() {
             </TabsList>
           </div>
 
+        {/* Indicadores Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+          {indicadores.map((indicador, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {indicador.title}
+                </CardTitle>
+                <indicador.icon className={`h-4 w-4 ${
+                  indicador.color === 'success' ? 'text-success' :
+                  indicador.color === 'primary' ? 'text-primary' :
+                  'text-info'
+                }`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{indicador.value}</div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className={`font-medium ${
+                    indicador.color === 'success' ? 'text-success' :
+                    indicador.color === 'primary' ? 'text-primary' :
+                    'text-info'
+                  }`}>
+                    {indicador.trend}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {indicador.description}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
           {/* Aba Organograma */}
-          <TabsContent value="organograma" className="mt-6">
+          <TabsContent value="organograma" className="mt-2">
             <Card>
               <CardContent className="p-8">
-                <div className="flex items-center justify-center h-[70vh]">
+                <div className="flex items-center justify-center h-[100vh]">
                   {/* Botões */}
                   <div className="flex flex-col gap-4 mr-4">
                     <button
@@ -77,10 +145,10 @@ export default function Corpo() {
           </TabsContent>
 
           {/* Aba Fluxos */}
-          <TabsContent value="fluxos" className="mt-6">
+          <TabsContent value="fluxos" className="mt-2">
             <Card className="mb-6">
               <CardContent className="p-8">
-                <div className="flex items-center justify-center h-[70vh]">
+                <div className="flex items-center justify-center h-[100vh]">
                   {/* Botões */}
                   <div className="flex flex-col gap-4 mr-4">
                     <button
