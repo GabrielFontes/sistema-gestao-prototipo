@@ -148,75 +148,75 @@ export default function Corpo() {
             </CardHeader>
 
             <CardContent className="p-8">
-              <TabsContent value="organograma" className="mt-2">
-                <div className="flex items-center justify-center h-[80vh]">
-                  {/* Botões */}
-                  <div className="flex flex-col gap-4 mr-4">
-                    <button
-                      className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() =>
-                        window.open(
-                          "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
-                          "Editar Fluxo",
-                          "width=1200,height=800"
-                        )
-                      }
-                    >
-                      <Edit2 size={20} />
-                    </button>
-                    <button
-                      className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() => console.log("Sincronizar clicado")}
-                    >
-                      <RefreshCw size={20} />
-                    </button>
-                  </div>
+            <TabsContent value="organograma" className="mt-2">
+  <div className="flex items-center justify-center h-[80vh]">
+    {/* Botões */}
+    <div className="flex flex-col gap-4 mr-4">
+      <button
+        className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
+        onClick={() =>
+          window.open(
+            "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
+            "Editar Fluxo",
+            "width=1200,height=800"
+          )
+        }
+      >
+        <Edit2 size={20} />
+      </button>
+      <button
+        className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
+        onClick={() => console.log("Sincronizar clicado")}
+      >
+        <RefreshCw size={20} />
+      </button>
+    </div>
 
-                  {/* Iframe */}
-                  <div style={{ flex: 1, height: "100%" }}>
-                    <iframe
-                      allowFullScreen
-                      style={{ width: "100%", height: "100%" }}
-                      src="https://lucid.app/documents/embedded/07ee9e3f-c79f-449a-b47f-06b88c8993e8"
-                    ></iframe>
-                  </div>
-                </div>
-              </TabsContent>
+    {/* Container com borda */}
+    <div className="flex-1 h-full border border-gray-300 rounded overflow-hidden">
+      <iframe
+        allowFullScreen
+        className="w-full h-full"
+        src="https://lucid.app/documents/embedded/07ee9e3f-c79f-449a-b47f-06b88c8993e8"
+      ></iframe>
+    </div>
+  </div>
+</TabsContent>
 
-              <TabsContent value="fluxos" className="mt-2">
-                <div className="flex items-center justify-center h-[80vh]">
-                  {/* Botões */}
-                  <div className="flex flex-col gap-4 mr-4">
-                    <button
-                      className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() =>
-                        window.open(
-                          "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
-                          "Editar Fluxo",
-                          "width=1200,height=800"
-                        )
-                      }
-                    >
-                      <Edit2 size={20} />
-                    </button>
-                    <button
-                      className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() => console.log("Sincronizar clicado")}
-                    >
-                      <RefreshCw size={20} />
-                    </button>
-                  </div>
+<TabsContent value="fluxos" className="mt-2">
+  <div className="flex items-center justify-center h-[80vh]">
+    {/* Botões */}
+    <div className="flex flex-col gap-4 mr-4">
+      <button
+        className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
+        onClick={() =>
+          window.open(
+            "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
+            "Editar Fluxo",
+            "width=1200,height=800"
+          )
+        }
+      >
+        <Edit2 size={20} />
+      </button>
+      <button
+        className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
+        onClick={() => console.log("Sincronizar clicado")}
+      >
+        <RefreshCw size={20} />
+      </button>
+    </div>
 
-                  {/* Iframe */}
-                  <div style={{ flex: 1, height: "100%" }}>
-                    <iframe
-                      allowFullScreen
-                      style={{ width: "100%", height: "100%" }}
-                      src="https://lucid.app/documents/embedded/50322aeb-a5b2-4d2c-b318-16716b12ca2f"
-                    ></iframe>
-                  </div>
-                </div>
-              </TabsContent>
+    {/* Container com borda */}
+    <div className="flex-1 h-full border border-gray-300 rounded overflow-hidden">
+      <iframe
+        allowFullScreen
+        className="w-full h-full"
+        src="https://lucid.app/documents/embedded/50322aeb-a5b2-4d2c-b318-16716b12ca2f"
+      ></iframe>
+    </div>
+  </div>
+</TabsContent>
             </CardContent>
           </Tabs>
         </Card>
