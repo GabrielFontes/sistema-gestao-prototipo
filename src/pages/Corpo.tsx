@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit2, RefreshCw, TrendingUp, Target, BarChart3 } from "lucide-react";
 
 const indicadores = [
@@ -11,7 +11,7 @@ const indicadores = [
     trend: "+12%",
     description: "Visitas no Site",
     icon: TrendingUp,
-    color: "success"
+    color: "success",
   },
   {
     title: "Venda",
@@ -19,7 +19,7 @@ const indicadores = [
     trend: "+3",
     description: "Novos Pedidos",
     icon: Target,
-    color: "primary"
+    color: "primary",
   },
   {
     title: "Entrega",
@@ -27,46 +27,64 @@ const indicadores = [
     trend: "+8%",
     description: "Entregues no prazo",
     icon: BarChart3,
-    color: "info"
+    color: "info",
   },
-    {
+  {
     title: "Suporte",
     value: "92%",
     trend: "+8%",
     description: "Clima emocional",
     icon: BarChart3,
-    color: "info"
-  }
-];
-
-const supervisores = [
-  "Supervisor de Vendas",
-  "Supervisor de Vendas", 
-  "Supervisor de Vendas",
-  "Supervisor de Vendas",
-  "Supervisor de Vendas",
-  "Supervisor de Vendas",
-  "Supervisor de Vendas",
-  "Supervisor de Vendas",
-  "Supervisor de Vendas"
+    color: "info",
+  },
 ];
 
 export default function Corpo() {
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Tabs */}
-        <Tabs defaultValue="organograma" className="w-full">
-          <div className="flex justify-center">
-            <TabsList className="grid w-96 grid-cols-2">
-              <TabsTrigger value="organograma" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                Organograma
-              </TabsTrigger>
-              <TabsTrigger value="fluxos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                Fluxos
-              </TabsTrigger>
-            </TabsList>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Corpo</h1>
           </div>
+          <div className="flex items-center gap-4">
+            <Select defaultValue="2025">
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select defaultValue="dezembro">
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[
+                  "janeiro",
+                  "fevereiro",
+                  "março",
+                  "abril",
+                  "maio",
+                  "junho",
+                  "julho",
+                  "agosto",
+                  "setembro",
+                  "outubro",
+                  "novembro",
+                  "dezembro",
+                ].map((mes) => (
+                  <SelectItem key={mes} value={mes}>
+                    {mes.charAt(0).toUpperCase() + mes.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         {/* Indicadores Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
@@ -76,20 +94,28 @@ export default function Corpo() {
                 <CardTitle className="text-sm font-medium">
                   {indicador.title}
                 </CardTitle>
-                <indicador.icon className={`h-4 w-4 ${
-                  indicador.color === 'success' ? 'text-success' :
-                  indicador.color === 'primary' ? 'text-primary' :
-                  'text-info'
-                }`} />
+                <indicador.icon
+                  className={`h-4 w-4 ${
+                    indicador.color === "success"
+                      ? "text-success"
+                      : indicador.color === "primary"
+                      ? "text-primary"
+                      : "text-info"
+                  }`}
+                />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{indicador.value}</div>
                 <div className="flex items-center space-x-2 text-sm">
-                  <span className={`font-medium ${
-                    indicador.color === 'success' ? 'text-success' :
-                    indicador.color === 'primary' ? 'text-primary' :
-                    'text-info'
-                  }`}>
+                  <span
+                    className={`font-medium ${
+                      indicador.color === "success"
+                        ? "text-success"
+                        : indicador.color === "primary"
+                        ? "text-primary"
+                        : "text-info"
+                    }`}
+                  >
                     {indicador.trend}
                   </span>
                   <span className="text-muted-foreground">
@@ -101,11 +127,29 @@ export default function Corpo() {
           ))}
         </div>
 
-          {/* Aba Organograma */}
-          <TabsContent value="organograma" className="mt-2">
-            <Card>
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center h-[100vh]">
+        {/* Card com Tabs e Iframes */}
+        <Card>
+          <Tabs defaultValue="organograma" className="w-full">
+            <CardHeader>
+              <TabsList className="grid w-96 grid-cols-2 mx-auto">
+                <TabsTrigger
+                  value="organograma"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Organograma
+                </TabsTrigger>
+                <TabsTrigger
+                  value="fluxos"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Fluxos
+                </TabsTrigger>
+              </TabsList>
+            </CardHeader>
+
+            <CardContent className="p-8">
+              <TabsContent value="organograma" className="mt-2">
+                <div className="flex items-center justify-center h-[80vh]">
                   {/* Botões */}
                   <div className="flex flex-col gap-4 mr-4">
                     <button
@@ -120,18 +164,15 @@ export default function Corpo() {
                     >
                       <Edit2 size={20} />
                     </button>
-
                     <button
                       className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() => {
-                        console.log("Sincronizar clicado");
-                      }}
+                      onClick={() => console.log("Sincronizar clicado")}
                     >
                       <RefreshCw size={20} />
                     </button>
                   </div>
 
-                  {/* Iframe Lucidchart */}
+                  {/* Iframe */}
                   <div style={{ flex: 1, height: "100%" }}>
                     <iframe
                       allowFullScreen
@@ -140,15 +181,10 @@ export default function Corpo() {
                     ></iframe>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </TabsContent>
 
-          {/* Aba Fluxos */}
-          <TabsContent value="fluxos" className="mt-2">
-            <Card className="mb-6">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center h-[100vh]">
+              <TabsContent value="fluxos" className="mt-2">
+                <div className="flex items-center justify-center h-[80vh]">
                   {/* Botões */}
                   <div className="flex flex-col gap-4 mr-4">
                     <button
@@ -163,18 +199,15 @@ export default function Corpo() {
                     >
                       <Edit2 size={20} />
                     </button>
-
                     <button
                       className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() => {
-                        console.log("Sincronizar clicado");
-                      }}
+                      onClick={() => console.log("Sincronizar clicado")}
                     >
                       <RefreshCw size={20} />
                     </button>
                   </div>
 
-                  {/* Iframe Lucidchart */}
+                  {/* Iframe */}
                   <div style={{ flex: 1, height: "100%" }}>
                     <iframe
                       allowFullScreen
@@ -183,12 +216,12 @@ export default function Corpo() {
                     ></iframe>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </TabsContent>
+            </CardContent>
+          </Tabs>
+        </Card>
 
-        {/* Novo Card com Google Drive */}
+        {/* Card com Google Drive */}
         <Card>
           <CardContent className="p-6">
             <div className="w-full h-[600px]">
