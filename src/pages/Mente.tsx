@@ -10,7 +10,7 @@ export default function Mente() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Balanço do mês</h1>
+            <h1 className="text-2xl font-bold">Mente</h1>
           </div>
           <div className="flex items-center gap-4">
             <Select defaultValue="2025">

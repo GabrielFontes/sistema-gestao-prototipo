@@ -1,10 +1,25 @@
 import { useState } from "react";
-import { ChevronDown, Brain, Activity, Heart, FileText, Medal, DollarSign, Gauge, CheckCircle, StickyNote, Menu } from "lucide-react";
+import {
+  ChevronDown,
+  Brain,
+  Activity,
+  Heart,
+  FileText,
+  Medal,
+  DollarSign,
+  Gauge,
+  CheckCircle,
+  StickyNote,
+  Menu
+} from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-// IMPORTAR O LOGO
 import LogoClaro from "@/images/Logo_Claro.png";
+
+interface AppSidebarProps {
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const menuItems = [
   {
@@ -36,13 +51,8 @@ const menuItems = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
-
-  const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem("sidebar-collapsed");
-    return saved === "true";
-  });
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
@@ -72,16 +82,20 @@ export function AppSidebar() {
   };
 
   return (
-    <div className={cn("transition-all duration-300 bg-card border-r border-border h-screen flex flex-col", collapsed ? "w-16" : "w-80")}>
+    <div
+      className={cn(
+        "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
+        collapsed ? "w-16" : "w-80"
+      )}
+    >
       {/* Header */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 flex items-center justify-center">
-            {/* USAR IMAGEM IMPORTADA */}
-            <img 
+            <img
               src={LogoClaro}
-              alt="Logo da Empresa" 
-              className="w-10 h-10 object-contain" 
+              alt="Logo da Empresa"
+              className="w-10 h-10 object-contain"
             />
           </div>
           {!collapsed && (
@@ -94,7 +108,7 @@ export function AppSidebar() {
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 overflow-y-auto">
         {menuItems.map((item) => (
           <div key={item.title} className="mb-2">
             <div className="flex">
@@ -115,8 +129,11 @@ export function AppSidebar() {
                   onClick={() => toggleSection(item.title)}
                   className="p-3 hover:bg-accent rounded-lg ml-1"
                 >
-                  <ChevronDown 
-                    className={cn("h-4 w-4 transition-transform", openSections[item.title] ? "rotate-180" : "")} 
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform",
+                      openSections[item.title] ? "rotate-180" : ""
+                    )}
                   />
                 </button>
               )}
