@@ -46,38 +46,40 @@ export default function Alma() {
         </div>
 
         {/* Métricas principais */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Produtividade</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <CircularProgress value={89} size="lg" color="success" />
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+  <Card className="flex flex-col h-full border border-gray-300 rounded-lg hover:shadow-lg transition-shadow">
+    <CardHeader className="text-center pb-2">
+      <CardTitle className="text-sm font-medium text-muted-foreground">Produtividade</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center items-center">
+      <CircularProgress value={89} size="lg" color="success" />
+    </CardContent>
+  </Card>
 
-          <Card>
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Colaborador</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center">
-              <Avatar className="w-16 h-16">
-                <AvatarFallback>
-                  {"JS"}
-                </AvatarFallback>
-              </Avatar>
-            </CardContent>
-          </Card>
+  <Card className="flex flex-col h-full border border-gray-300 rounded-lg hover:shadow-lg transition-shadow">
+    <CardHeader className="text-center pb-2">
+      <CardTitle className="text-sm font-medium text-muted-foreground">Colaborador</CardTitle>
+    </CardHeader>
+    <CardContent className="flex justify-center items-center p-4">
+      <Avatar className="w-16 h-16">
+        <AvatarFallback>{"JS"}</AvatarFallback>
+      </Avatar>
+    </CardContent>
+  </Card>
 
-          <Card>
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Horas Trabalhadas</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <div className="text-2xl font-bold text-success">5h 35min</div>
-            </CardContent>
-          </Card>
-        </div>
+  <Card className="flex flex-col h-full border border-gray-300 rounded-lg hover:shadow-lg transition-shadow">
+    <CardHeader className="text-center pb-2">
+      <CardTitle className="text-sm font-medium text-muted-foreground">Horas Trabalhadas</CardTitle>
+    </CardHeader>
+    <CardContent className="flex flex-col justify-center items-center">
+      <div className="text-2xl font-bold text-success">5h 35min</div>
+    </CardContent>
+  </Card>
+</div>
+
+
+
+
 
         {/* Lista de colaboradores */}
         <Card>
