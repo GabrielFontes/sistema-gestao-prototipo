@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { QuickActionButton } from "./QuickActionButton";
+import { TasksOverviewButton } from "./TasksOverviewButton";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ export function Layout({ children }: LayoutProps) {
         <main className="flex-1 p-6">{children}</main>
       </div>
 
+      <TasksOverviewButton />
       <QuickActionButton />
     </div>
   );
