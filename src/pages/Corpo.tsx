@@ -129,18 +129,6 @@ export default function Corpo() {
                   >
                     <RefreshCw size={20} />
                   </button>
-                  <button
-                    className="p-2 rounded-full bg-secondary text-white hover:bg-secondary/90"
-                    onClick={() =>
-                      window.open(
-                        "https://lucid.app/lucidchart/9d169a22-6311-4957-a966-157242da30f9/edit?viewport_loc=-11%2C-11%2C1479%2C591%2C0_0&invitationId=inv_9d655e5e-7c20-4db5-8aae-43f791f76a8c",
-                        "Editar Ferramentas",
-                        "width=1200,height=800"
-                      )
-                    }
-                  >
-                    <Edit2 size={20} />
-                  </button>
                 </div>
 
                 {/* Container Iframe */}

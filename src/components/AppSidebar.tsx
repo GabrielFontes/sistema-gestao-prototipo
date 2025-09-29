@@ -30,8 +30,8 @@ const menuItems = [
     icon: Brain,
     mainUrl: "/mente",
     children: [
-      { title: "DRE", url: "/mente/dre", icon: HelpCircle },
-      { title: "Movimentações", url: "/mente/movimentacoes", icon: AlertCircle },
+      { title: "DRE", url: "/mente/dre", icon: AlertCircle },
+      { title: "Movimentações", url: "/mente/movimentacoes", icon: CheckCircle },
     ],
   },
   {
@@ -39,8 +39,8 @@ const menuItems = [
     icon: Activity,
     mainUrl: "/corpo",
     children: [
-      { title: "Iniciativas", url: "/corpo/projetos", icon: HelpCircle },
-      { title: "Indicadores", url: "/corpo/indicadores", icon: AlertCircle },
+      { title: "Iniciativas", url: "/corpo/projetos", icon: AlertCircle },
+      { title: "Indicadores", url: "/corpo/indicadores", icon: CheckCircle },
     ],
   },
   {
@@ -48,8 +48,8 @@ const menuItems = [
     icon: Heart,
     mainUrl: "/alma",
     children: [
-      { title: "Notas", url: "/alma/app", icon: HelpCircle },
-      { title: "Tarefas", url: "/alma/tarefas", icon: AlertCircle },
+      { title: "Notas", url: "/alma/app", icon: AlertCircle },
+      { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
     ],
   },
 ];
