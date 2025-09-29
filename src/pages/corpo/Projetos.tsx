@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus } from "lucide-react";
+import { Edit2, Plus, RefreshCw, TrendingUp, Target, BarChart3 } from "lucide-react";
+
 
 const kanbanColumns = [
   {
@@ -49,14 +50,17 @@ export default function Projetos() {
     <Layout>
       <div className="space-y-6">
         {/* Tabs */}
-        <Tabs defaultValue="projetos" className="w-full">
+        <Tabs defaultValue="fluxos" className="w-full">
           <div className="flex justify-center">
-            <TabsList className="grid w-96 grid-cols-2">
+            <TabsList className="grid w-96 grid-cols-3">
+              <TabsTrigger value="fluxos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                Fluxos
+              </TabsTrigger>
               <TabsTrigger value="projetos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 Projetos
               </TabsTrigger>
-              <TabsTrigger value="fluxos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                Operação
+              <TabsTrigger value="operacoes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                Operações
               </TabsTrigger>
             </TabsList>
           </div>
@@ -97,6 +101,61 @@ export default function Projetos() {
               ))}
             </div>
           </TabsContent>
+
+          <CardContent className="p-8">
+  <TabsContent value="fluxos" className="mt-2">
+    <div className="flex flex-col gap-6">
+
+      {/* Card com Lucid */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center h-[80vh]">
+            {/* Botões */}
+            <div className="flex flex-col gap-4 mr-4">
+              <button
+                className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
+                onClick={() =>
+                  window.open(
+                    "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
+                    "Editar Fluxo",
+                    "width=1200,height=800"
+                  )
+                }
+              >
+                <Edit2 size={20} />
+              </button>
+            </div>
+
+            {/* Container do Lucid */}
+            <div className="flex-1 h-full border border-gray-300 rounded overflow-hidden">
+              <iframe
+                allowFullScreen
+                className="w-full h-full"
+                src="https://lucid.app/documents/embedded/50322aeb-a5b2-4d2c-b318-16716b12ca2f"
+              ></iframe>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Card com Google Drive */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="w-full h-[600px]">
+            <iframe
+              src="https://drive.google.com/embeddedfolderview?id=1G4InfgMuQLN4Gv-P3Cp0SQpAb-tD6f7W#grid"
+              style={{ width: "100%", height: "100%", border: "0" }}
+              allowFullScreen
+            ></iframe>
+          </div>
+        </CardContent>
+      </Card>
+
+    </div>
+  </TabsContent>
+</CardContent>
+
+
         </Tabs> {/* <-- FECHAMENTO correto do Tabs */}
       </div> {/* <-- FECHAMENTO do space-y-6 */}
     </Layout>

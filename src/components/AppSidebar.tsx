@@ -4,12 +4,16 @@ import {
   Activity,
   Heart,
   FileText,
+  Layers,
+  HelpCircle,
+  AlertCircle,
   Medal,
   DollarSign,
+  Clipboard,
   Gauge,
   CheckCircle,
   StickyNote,
-  Menu
+  Menu,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -26,8 +30,8 @@ const menuItems = [
     icon: Brain,
     mainUrl: "/mente",
     children: [
-      { title: "Movimentações", url: "/mente/movimentacoes", icon: DollarSign },
-      { title: "DRE", url: "/mente/dre", icon: FileText },
+      { title: "DRE", url: "/mente/dre", icon: HelpCircle },
+      { title: "Movimentações", url: "/mente/movimentacoes", icon: AlertCircle },
     ],
   },
   {
@@ -35,8 +39,8 @@ const menuItems = [
     icon: Activity,
     mainUrl: "/corpo",
     children: [
-      { title: "Indicadores", url: "/corpo/indicadores", icon: Gauge },
-      { title: "Realizações", url: "/corpo/projetos", icon: Medal },
+      { title: "Iniciativas", url: "/corpo/projetos", icon: HelpCircle },
+      { title: "Indicadores", url: "/corpo/indicadores", icon: AlertCircle },
     ],
   },
   {
@@ -44,8 +48,8 @@ const menuItems = [
     icon: Heart,
     mainUrl: "/alma",
     children: [
-      { title: "Notas", url: "/alma/app", icon: StickyNote },
-      { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
+      { title: "Notas", url: "/alma/app", icon: HelpCircle },
+      { title: "Tarefas", url: "/alma/tarefas", icon: AlertCircle },
     ],
   },
 ];

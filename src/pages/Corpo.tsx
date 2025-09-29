@@ -142,7 +142,7 @@ export default function Corpo() {
                   value="fluxos"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  Fluxos
+                  Ferramentas
                 </TabsTrigger>
               </TabsList>
             </CardHeader>
@@ -157,7 +157,7 @@ export default function Corpo() {
         onClick={() =>
           window.open(
             "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true",
-            "Editar Fluxo",
+            "Editar Ferramentas",
             "width=1200,height=800"
           )
         }
@@ -219,19 +219,6 @@ export default function Corpo() {
 </TabsContent>
             </CardContent>
           </Tabs>
-        </Card>
-
-        {/* Card com Google Drive */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="w-full h-[600px]">
-              <iframe
-                src="https://drive.google.com/embeddedfolderview?id=1G4InfgMuQLN4Gv-P3Cp0SQpAb-tD6f7W#grid"
-                style={{ width: "100%", height: "100%", border: "0" }}
-                allowFullScreen
-              ></iframe>
-            </div>
-          </CardContent>
         </Card>
       </div>
     </Layout>
