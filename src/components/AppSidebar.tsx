@@ -19,6 +19,8 @@ import {
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import LogoClaro from "@/images/Logo_Claro.png";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { WorkspaceSelector } from "./WorkspaceSelector";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -64,6 +66,7 @@ const menuItems = [
 
 export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
+  const { currentWorkspace } = useWorkspace();
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
@@ -100,17 +103,22 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           )}
         >
           <img
-            src={LogoClaro}
+            src={currentWorkspace.logo}
             alt="Logo da Empresa"
             className="object-contain w-full h-full"
           />
         </div>
         {!collapsed && (
-          <div>
-            <h1 className="font-semibold text-base text-foreground">Empresa de corpo</h1>
-            <p className="text-muted-foreground text-xs">mente e alma</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="font-semibold text-base text-foreground truncate">
+              {currentWorkspace.name}
+            </h1>
+            <p className="text-muted-foreground text-xs truncate">
+              {currentWorkspace.subtitle}
+            </p>
           </div>
         )}
+        {!collapsed && <WorkspaceSelector />}
       </div>
 
       {/* Navigation */}
