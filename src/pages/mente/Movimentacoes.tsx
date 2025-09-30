@@ -37,79 +37,27 @@ export default function Movimentacoes() {
   return (
     <Layout>
       <div className="space-y-6">
+        
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Movimentações</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Select defaultValue="2025">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2025">2025</SelectItem>
-                <SelectItem value="2024">2024</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="dezembro">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dezembro">Dezembro</SelectItem>
-                <SelectItem value="novembro">Novembro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <h1 className="text-2xl font-bold">Movimentações</h1>
         </div>
 
-        {/* Tabela de Movimentações */}
-        <Card>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Referente a</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Categoria</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {movimentacoes.map((mov, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{mov.data}</TableCell>
-                    <TableCell>
-                      <Select defaultValue={mov.referente.toLowerCase()}>
-                        <SelectTrigger className="w-28">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="agosto">Agosto</SelectItem>
-                          <SelectItem value="setembro">Setembro</SelectItem>
-                          <SelectItem value="outubro">Outubro</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell className="font-medium">{mov.valor}</TableCell>
-                    <TableCell>{mov.nome}</TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={mov.tipo === 'receita' ? 'default' : 'secondary'}
-                        className={mov.tipo === 'receita' ? 
-                          'bg-success text-success-foreground' : 
-                          'bg-warning text-warning-foreground'
-                        }
-                      >
-                        {mov.categoria}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        {/* Card com o iframe da planilha */}
+        <Card className="h-[80vh] flex flex-col"> {/* altura relativa à tela */}
+          <CardContent className="flex-1 p-0">
+            <iframe
+              src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit#gid=398711427"
+              className="w-full h-full border-none"
+              style={{
+                display: "block",
+                transform: "scale(0.8)",
+                transformOrigin: "0 0", // garante que o zoom saia do canto superior esquerdo
+                width: "125%", // compensa o zoom
+                height: "125%" // compensa o zoom
+              }}
+              title="Planilha DRE"
+            />
           </CardContent>
         </Card>
       </div>

@@ -15,7 +15,7 @@ export default function Indicadores() {
         <Card className="h-[80vh] flex flex-col"> {/* Altura relativa à tela */}
           <CardContent className="flex-1 p-0">
           <iframe
-            src="https://docs.google.com/spreadsheets/d/11F0H-_uxfCaUxz_BHhTyacp_bFS2YXijOupEAbUWEKE/edit?usp=sharing"
+            src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit#gid=268125083"
             className="w-full h-full border-none"
             style={{
               display: "block",
