@@ -70,65 +70,29 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
-export default function Projetos() {
+export default function Inciativas() {
   return (
     <Layout>
       <div className="space-y-6">
 {/* Tabs principais */}
-<Tabs defaultValue="fluxos" className="w-full">
+<Tabs defaultValue="projetos" className="w-full">
   <div className="flex justify-center">
-    <TabsList className="flex w-full max-w-4xl justify-between">
-      <TabsTrigger
-        value="fluxos"
-        className="flex-1 text-center px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-      >
-        Fluxos
-      </TabsTrigger>
+    <TabsList className="flex max-w-4xl justify-between">
       <TabsTrigger
         value="projetos"
-        className="flex-1 text-center px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-      >
+        className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+        >
         Projetos
       </TabsTrigger>
       <TabsTrigger
         value="operacoes"
-        className="flex-1 text-center px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-      >
+        className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+        >
         Operações
-      </TabsTrigger>
-      <TabsTrigger
-        value="ferramentas"
-        className="flex-1 text-center px-6 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-      >
-        Ferramentas
       </TabsTrigger>
     </TabsList>
   </div>
 
-
-          {/* Conteúdo Fluxos */}
-          <TabsContent value="fluxos" className="mt-6 space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-center h-[80vh]">
-                <div className="flex flex-col gap-4 mr-4">
-                  <button
-                    className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                    onClick={() => window.open( "https://lucid.app/lucidchart/50322aeb-a5b2-4d2c-b318-16716b12ca2f/edit?from_internal=true", "Editar Fluxo", "width=1200,height=800" ) } >
-                      <Edit2 size={20} />
-                  </button>
-                </div>
-                  <div className="flex-1 h-full border border-gray-300 rounded overflow-hidden">
-                    <iframe
-                      allowFullScreen
-                      className="w-full h-full"
-                      src="https://lucid.app/documents/embedded/50322aeb-a5b2-4d2c-b318-16716b12ca2f"
-                    ></iframe>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           {/* Conteúdo Projetos */}
           <TabsContent value="projetos" className="mt-6">
@@ -211,36 +175,6 @@ export default function Projetos() {
 </TabsContent>
 
 
-          {/* Conteúdo Ferramentas */}
-          <TabsContent value="ferramentas" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-center h-[80vh]">
-                <div className="flex flex-col gap-4 mr-4">
-                  <button
-                    className="p-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                    onClick={() =>
-                      window.open(
-                        "https://lucid.app/lucidchart/9d169a22-6311-4957-a966-157242da30f9/edit?viewport_loc=-11%2C-11%2C1479%2C591%2C0_0&invitationId=inv_9d655e5e-7c20-4db5-8aae-43f791f76a8c",
-                        "Editar Ferramentas",
-                        "width=1200,height=800"
-                      )
-                    }
-                  >
-                    <Edit2 size={20} />
-                  </button>
-                </div>
-                  <div className="flex-1 h-full border border-gray-300 rounded overflow-hidden">
-                    <iframe
-                      allowFullScreen
-                      className="w-full h-full"
-                      src="https://lucid.app/documents/embedded/9d169a22-6311-4957-a966-157242da30f9"
-                    ></iframe>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </Layout>

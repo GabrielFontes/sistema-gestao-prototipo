@@ -39,7 +39,7 @@ const menuItems = [
     icon: Activity,
     mainUrl: "/corpo",
     children: [
-      { title: "Iniciativas", url: "/corpo/projetos", icon: AlertCircle },
+      { title: "Fluxos", url: "/corpo/fluxos", icon: AlertCircle },
       { title: "Indicadores", url: "/corpo/indicadores", icon: CheckCircle },
     ],
   },
@@ -49,6 +49,7 @@ const menuItems = [
     mainUrl: "/alma",
     children: [
       { title: "Notas", url: "/alma/app", icon: AlertCircle },
+      { title: "Iniciativas", url: "/alma/Iniciativas", icon: AlertCircle },
       { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
     ],
   },
