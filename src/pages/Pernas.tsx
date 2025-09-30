@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus } from "lucide-react";
+import { ProjectKanbanDialog } from "@/components/ProjectKanbanDialog";
+import { ProcessChecklistDialog } from "@/components/ProcessChecklistDialog";
 
 const operacoesColumns = [
   {
@@ -86,6 +89,9 @@ const getPriorityFromEmoji = (title: string) => {
 };
 
 export default function Pernas() {
+  const [selectedProject, setSelectedProject] = useState<{ title: string } | null>(null);
+  const [selectedProcess, setSelectedProcess] = useState<{ title: string } | null>(null);
+  
   const tasksByPriority = {
     ouro: sprintTasks.filter(t => getPriorityFromEmoji(t.title) === "ouro"),
     prata: sprintTasks.filter(t => getPriorityFromEmoji(t.title) === "prata"),
@@ -218,6 +224,7 @@ export default function Pernas() {
                       <Card
                         key={item.id}
                         className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setSelectedProject({ title: item.title })}
                       >
                         <div className="space-y-2">
                           <h4 className="font-medium text-sm">{item.title}</h4>
@@ -258,6 +265,7 @@ export default function Pernas() {
                       <Card
                         key={item.id}
                         className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setSelectedProcess({ title: item.title })}
                       >
                         <div className="space-y-2">
                           <h4 className="font-medium text-sm">{item.title}</h4>
@@ -281,6 +289,18 @@ export default function Pernas() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Dialogs */}
+      <ProjectKanbanDialog
+        open={selectedProject !== null}
+        onOpenChange={(open) => !open && setSelectedProject(null)}
+        projectTitle={selectedProject?.title || ""}
+      />
+      <ProcessChecklistDialog
+        open={selectedProcess !== null}
+        onOpenChange={(open) => !open && setSelectedProcess(null)}
+        processTitle={selectedProcess?.title || ""}
+      />
     </Layout>
   );
 }

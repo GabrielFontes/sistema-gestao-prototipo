@@ -50,7 +50,6 @@ const menuItems = [
     mainUrl: "/alma",
     children: [
       { title: "Notas", url: "/alma/app", icon: AlertCircle },
-      { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
     ],
   },
   {
