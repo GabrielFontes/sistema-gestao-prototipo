@@ -14,6 +14,7 @@ import {
   CheckCircle,
   StickyNote,
   Menu,
+  Footprints,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -49,8 +50,15 @@ const menuItems = [
     mainUrl: "/alma",
     children: [
       { title: "Notas", url: "/alma/app", icon: AlertCircle },
-      { title: "Iniciativas", url: "/alma/Iniciativas", icon: AlertCircle },
       { title: "Tarefas", url: "/alma/tarefas", icon: CheckCircle },
+    ],
+  },
+  {
+    title: "Pernas",
+    icon: Footprints,
+    mainUrl: "/pernas",
+    children: [
+      { title: "Tarefas", url: "/pernas/tarefas", icon: CheckCircle },
     ],
   },
 ];

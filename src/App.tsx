@@ -9,10 +9,10 @@ import FluxosPage from "./pages/corpo/Fluxos";
 import IndicadoresPage from "./pages/corpo/Indicadores";
 import AlmaAppPage from "./pages/alma/App";
 import TarefasPage from "./pages/alma/Tarefas";
-import IniciativasPage from "./pages/alma/Iniciativas";
 import Mente from "./pages/Mente";
 import Corpo from "./pages/Corpo";
 import Alma from "./pages/Alma";
+import Pernas from "./pages/Pernas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,8 +33,9 @@ const App = () => (
           <Route path="/corpo/indicadores" element={<IndicadoresPage />} />
           <Route path="/alma" element={<Alma />} />
           <Route path="/alma/app" element={<AlmaAppPage />} />
-          <Route path="/alma/iniciativas" element={<IniciativasPage />} />
           <Route path="/alma/tarefas" element={<TarefasPage />} />
+          <Route path="/pernas" element={<Pernas />} />
+          <Route path="/pernas/tarefas" element={<TarefasPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
