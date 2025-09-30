@@ -208,7 +208,7 @@ export default function Pernas() {
 
           {/* Conteúdo Projetos */}
           <TabsContent value="projetos" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+{/*            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {kanbanColumns.map((column, columnIndex) => (
                 <Card key={columnIndex} className="h-fit">
                   <CardHeader className="pb-4">
@@ -245,6 +245,29 @@ export default function Pernas() {
                 </Card>
               ))}
             </div>
+*/}
+
+<div className="space-y-6">
+        
+        {/* Header */}
+        <Card className="h-[80vh] flex flex-col"> {/* Altura relativa à tela */}
+          <CardContent className="flex-1 p-0">
+          <iframe
+            src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+            className="w-full h-full border-none"
+            style={{
+              display: "block",
+              transform: "scale(0.8)",
+              transformOrigin: "0 0", // garante que o zoom saia do canto superior esquerdo
+              width: "125%", // compensar o zoom
+              height: "125%" // compensar o zoom
+            }}
+            title="Planilha Indicadores"
+          />
+
+          </CardContent>
+        </Card>
+      </div>
           </TabsContent>
 
           {/* Conteúdo Operações */}
