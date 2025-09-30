@@ -95,15 +95,9 @@ export default function Pernas() {
   return (
     <Layout>
       <div className="space-y-6">
-        <Tabs defaultValue="sprint" className="w-full">
+        <Tabs defaultValue="projetos" className="w-full">
           <div className="flex justify-center">
             <TabsList className="flex max-w-4xl justify-between">
-              <TabsTrigger
-                value="sprint"
-                className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                Sprint atual
-              </TabsTrigger>
               <TabsTrigger
                 value="projetos"
                 className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -115,6 +109,12 @@ export default function Pernas() {
                 className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Operações
+              </TabsTrigger>
+              <TabsTrigger
+                value="sprint"
+                className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Sprint
               </TabsTrigger>
             </TabsList>
           </div>
