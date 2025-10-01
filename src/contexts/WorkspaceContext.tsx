@@ -7,7 +7,7 @@ export interface WorkspaceConfig {
   name: string;
   subtitle: string;
   logo: string;
-  primaryColor: string; // HSL format: "hue saturation lightness"
+  primaryColor: string;
 }
 
 interface WorkspaceContextType {
@@ -15,6 +15,7 @@ interface WorkspaceContextType {
   workspaces: WorkspaceConfig[];
   setWorkspace: (workspaceId: string) => void;
   isLoading: boolean;
+  refreshWorkspaces: () => void; // Added to refresh workspaces
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -30,7 +31,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (currentWorkspace) {
-      // Atualizar CSS variables quando o workspace mudar
+      console.log('Atualizando CSS e localStorage para workspace:', currentWorkspace);
       document.documentElement.style.setProperty('--primary', currentWorkspace.primaryColor);
       localStorage.setItem('current-workspace', currentWorkspace.id);
     }
@@ -38,32 +39,42 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
   const loadWorkspaces = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      console.log('Iniciando loadWorkspaces...');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('Usuário retornado:', user, 'Erro:', userError);
+
+      if (userError) throw userError;
       if (!user) {
+        console.log('Nenhum usuário logado');
         setIsLoading(false);
         return;
       }
 
-      // Buscar workspaces do usuário
+      console.log('Buscando workspace_members para user_id:', user.id);
       const { data: memberData, error: memberError } = await supabase
         .from('workspace_members')
         .select('workspace_id')
         .eq('user_id', user.id);
+      console.log('Resultado de workspace_members:', memberData, 'Erro:', memberError);
 
       if (memberError) throw memberError;
 
       if (!memberData || memberData.length === 0) {
+        console.log('Nenhum workspace associado ao usuário');
+        setWorkspaces([]);
         setIsLoading(false);
         return;
       }
 
       const workspaceIds = memberData.map(m => m.workspace_id);
+      console.log('Workspace IDs encontrados:', workspaceIds);
 
+      console.log('Buscando workspaces com IDs:', workspaceIds);
       const { data: workspaceData, error: workspaceError } = await supabase
         .from('workspaces')
-        .select('*')
+        .select('id, name, subtitle, logo, primary_color')
         .in('id', workspaceIds);
+      console.log('Resultado de workspaces:', workspaceData, 'Erro:', workspaceError);
 
       if (workspaceError) throw workspaceError;
 
@@ -74,31 +85,42 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         logo: w.logo || '/src/images/Logo_Claro.png',
         primaryColor: w.primary_color,
       }));
+      console.log('Workspaces formatados:', formattedWorkspaces);
 
       setWorkspaces(formattedWorkspaces);
 
-      // Restaurar workspace salvo ou usar o primeiro
       const savedId = localStorage.getItem('current-workspace');
+      console.log('ID salvo no localStorage:', savedId);
       const workspace = formattedWorkspaces.find(w => w.id === savedId) || formattedWorkspaces[0];
+      console.log('Workspace selecionado:', workspace);
       setCurrentWorkspace(workspace);
 
     } catch (error: any) {
       console.error('Erro ao carregar workspaces:', error);
-      toast.error('Erro ao carregar workspaces');
+      toast.error('Erro ao carregar workspaces: ' + error.message);
     } finally {
       setIsLoading(false);
+      console.log('loadWorkspaces finalizado');
     }
   };
 
   const setWorkspace = (workspaceId: string) => {
+    console.log('Setando workspace com ID:', workspaceId);
     const workspace = workspaces.find(w => w.id === workspaceId);
     if (workspace) {
       setCurrentWorkspace(workspace);
+    } else {
+      console.log('Workspace não encontrado para ID:', workspaceId);
     }
   };
 
+  const refreshWorkspaces = () => {
+    console.log('Recarregando workspaces...');
+    loadWorkspaces();
+  };
+
   return (
-    <WorkspaceContext.Provider value={{ currentWorkspace, workspaces, setWorkspace, isLoading }}>
+    <WorkspaceContext.Provider value={{ currentWorkspace, workspaces, setWorkspace, isLoading, refreshWorkspaces }}>
       {children}
     </WorkspaceContext.Provider>
   );
