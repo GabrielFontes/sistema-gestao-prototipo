@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 function NewWorkspace() {
   const { user } = useAuth();
-  const { setWorkspace, refreshWorkspaces } = useWorkspace();
+  const { setWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -60,7 +60,6 @@ function NewWorkspace() {
 
       console.log('Associação criada para user_id:', user.id);
       setWorkspace(workspace.id);
-      refreshWorkspaces(); // Refresh workspaces after creation
       toast({
         title: 'Sucesso',
         description: 'Workspace criado com sucesso!',

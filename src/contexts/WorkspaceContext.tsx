@@ -15,7 +15,6 @@ interface WorkspaceContextType {
   workspaces: WorkspaceConfig[];
   setWorkspace: (workspaceId: string) => void;
   isLoading: boolean;
-  refreshWorkspaces: () => void; // Added to refresh workspaces
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -114,13 +113,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const refreshWorkspaces = () => {
-    console.log('Recarregando workspaces...');
-    loadWorkspaces();
-  };
-
   return (
-    <WorkspaceContext.Provider value={{ currentWorkspace, workspaces, setWorkspace, isLoading, refreshWorkspaces }}>
+    <WorkspaceContext.Provider value={{ currentWorkspace, workspaces, setWorkspace, isLoading }}>
       {children}
     </WorkspaceContext.Provider>
   );
