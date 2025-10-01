@@ -6,12 +6,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useWorkspace, workspaces } from "@/contexts/WorkspaceContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useState } from "react";
 
 export function WorkspaceSelector() {
-  const { currentWorkspace, setWorkspace } = useWorkspace();
+  const { currentWorkspace, workspaces, setWorkspace } = useWorkspace();
   const [open, setOpen] = useState(false);
+
+  if (!currentWorkspace) return null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
