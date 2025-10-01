@@ -4,7 +4,6 @@ import { Edit2, Plus } from "lucide-react";
 
 export default function Fluxos() {
   return (
-    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -36,6 +35,5 @@ export default function Fluxos() {
             </Card>
  
       </div>
-    </Layout>
   );
 }

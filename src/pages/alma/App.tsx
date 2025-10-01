@@ -69,7 +69,6 @@ export default function App() {
   };
 
   return (
-    <Layout>
       <div className="space-y-6">
 
         {/* Header */}
@@ -124,6 +123,5 @@ export default function App() {
             </div>
 
       </div>
-    </Layout>
   );
 }

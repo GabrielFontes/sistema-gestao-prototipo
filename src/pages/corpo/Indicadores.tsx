@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Indicadores() {
   return (
-    <Layout>
       <div className="space-y-6">
         
         {/* Header */}
@@ -30,6 +29,5 @@ export default function Indicadores() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
   );
 }

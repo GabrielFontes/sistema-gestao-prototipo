@@ -26,7 +26,6 @@ export default function Tarefas() {
   };
 
   return (
-    <Layout>
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold mb-6">Tarefas</h2>
@@ -120,6 +119,5 @@ export default function Tarefas() {
           )}
         </div>
       </div>
-    </Layout>
   );
 }
