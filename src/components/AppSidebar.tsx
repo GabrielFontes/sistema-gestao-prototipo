@@ -31,35 +31,35 @@ const menuItems = [
   {
     title: "Mente",
     icon: Brain,
-    mainUrl: "/mente",
+    mainUrl: "mente",
     children: [
-      { title: "DRE", url: "/mente/dre", icon: AlertCircle },
-      { title: "Movimentações", url: "/mente/movimentacoes", icon: CheckCircle },
+      { title: "DRE", url: "dre", icon: AlertCircle },
+      { title: "Movimentações", url: "movimentacoes", icon: CheckCircle },
     ],
   },
   {
     title: "Corpo", 
     icon: Activity,
-    mainUrl: "/corpo",
+    mainUrl: "corpo",
     children: [
-      { title: "Fluxos", url: "/corpo/fluxos", icon: AlertCircle },
-      { title: "Indicadores", url: "/corpo/indicadores", icon: CheckCircle },
+      { title: "Fluxos", url: "fluxos", icon: AlertCircle },
+      { title: "Indicadores", url: "indicadores", icon: CheckCircle },
     ],
   },
   {
     title: "Alma",
     icon: Heart,
-    mainUrl: "/alma",
+    mainUrl: "alma",
     children: [
-      { title: "Notas", url: "/alma/app", icon: AlertCircle },
+      { title: "Notas", url: "app", icon: AlertCircle },
     ],
   },
   {
     title: "Pernas",
     icon: Footprints,
-    mainUrl: "/pernas",
+    mainUrl: "pernas",
     children: [
-      { title: "Tarefas", url: "/pernas/tarefas", icon: CheckCircle },
+      { title: "Tarefas", url: "tarefas", icon: CheckCircle },
     ],
   },
 ];
@@ -74,11 +74,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   });
 
   const currentPath = location.pathname;
-
-  const isActive = (path: string) => {
-    if (currentPath === "/" && path === "/mente") return true;
-    return currentPath === path;
-  };
 
   const toggleCollapsed = () => {
     setCollapsed(prev => {

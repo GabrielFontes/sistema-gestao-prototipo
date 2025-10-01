@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -99,8 +98,7 @@ export default function Pernas() {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <Tabs defaultValue="projetos" className="w-full">
           <div className="flex justify-center">
             <TabsList className="flex max-w-4xl justify-between">
@@ -311,19 +309,18 @@ export default function Pernas() {
             </div>
           </TabsContent>
         </Tabs>
-      </div>
 
-      {/* Dialogs */}
-      <ProjectKanbanDialog
-        open={selectedProject !== null}
-        onOpenChange={(open) => !open && setSelectedProject(null)}
-        projectTitle={selectedProject?.title || ""}
-      />
-      <ProcessChecklistDialog
-        open={selectedProcess !== null}
-        onOpenChange={(open) => !open && setSelectedProcess(null)}
-        processTitle={selectedProcess?.title || ""}
-      />
-    </Layout>
+        {/* Dialogs */}
+        <ProjectKanbanDialog
+          open={selectedProject !== null}
+          onOpenChange={(open) => !open && setSelectedProject(null)}
+          projectTitle={selectedProject?.title || ""}
+        />
+        <ProcessChecklistDialog
+          open={selectedProcess !== null}
+          onOpenChange={(open) => !open && setSelectedProcess(null)}
+          processTitle={selectedProcess?.title || ""}
+        />
+      </div>
   );
 }

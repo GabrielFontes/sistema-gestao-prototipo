@@ -1,4 +1,3 @@
-import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -43,8 +42,7 @@ const indicadores = [
 
 export default function Corpo() {
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         
          {/* Header */}
          <div className="flex items-center justify-between">
@@ -165,6 +163,5 @@ export default function Corpo() {
 </Card>
 
       </div>
-    </Layout>
   );
 }
