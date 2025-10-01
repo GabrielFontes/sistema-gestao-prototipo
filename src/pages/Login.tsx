@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -169,6 +169,10 @@ const Login = () => {
             Entrar com Google
           </Button>
 
+          {/* Informação sobre acesso */}
+          <div className="text-center text-sm text-muted-foreground">
+            Entre com suas credenciais fornecidas pelo administrador
+          </div>
         </div>
       </div>
     </div>
