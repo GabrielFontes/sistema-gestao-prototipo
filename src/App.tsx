@@ -14,6 +14,8 @@ import Mente from "./pages/Mente";
 import Corpo from "./pages/Corpo";
 import Alma from "./pages/Alma";
 import Pernas from "./pages/Pernas";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Mente />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/mente" element={<Mente />} />
             <Route path="/mente/movimentacoes" element={<MovimentacoesPage />} />
             <Route path="/mente/dre" element={<DREPage />} />
