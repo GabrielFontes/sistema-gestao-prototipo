@@ -63,7 +63,7 @@ export type Database = {
           name: string
           status: string
           updated_at: string
-          workspace_id: string
+          empresa_id: string
         }
         Insert: {
           created_at?: string
@@ -72,7 +72,7 @@ export type Database = {
           name: string
           status?: string
           updated_at?: string
-          workspace_id: string
+          empresa_id: string
         }
         Update: {
           created_at?: string
@@ -81,14 +81,14 @@ export type Database = {
           name?: string
           status?: string
           updated_at?: string
-          workspace_id?: string
+          empresa_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "projects_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: "projects_empresa_id_fkey"
+            columns: ["empresa_id"]
             isOneToOne: false
-            referencedRelation: "workspaces"
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
@@ -137,39 +137,39 @@ export type Database = {
           },
         ]
       }
-      workspace_members: {
+      empresa_members: {
         Row: {
           created_at: string
           id: string
           role: string
           user_id: string
-          workspace_id: string
+          empresa_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           role?: string
           user_id: string
-          workspace_id: string
+          empresa_id: string
         }
         Update: {
           created_at?: string
           id?: string
           role?: string
           user_id?: string
-          workspace_id?: string
+          empresa_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "workspace_members_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: "empresa_members_empresa_id_fkey"
+            columns: ["empresa_id"]
             isOneToOne: false
-            referencedRelation: "workspaces"
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
       }
-      workspaces: {
+      empresas: {
         Row: {
           created_at: string
           id: string
@@ -204,8 +204,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_workspace_member: {
-        Args: { user_id: string; workspace_id: string }
+      is_empresa_member: {
+        Args: { user_id: string; empresa_id: string }
         Returns: boolean
       }
     }

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export interface Project {
   id: string;
-  workspace_id: string;
+  empresa_id: string;
   name: string;
   description: string | null;
   status: 'active' | 'completed' | 'archived';
@@ -12,25 +12,25 @@ export interface Project {
   updated_at: string;
 }
 
-export function useProjects(workspaceId: string | null) {
+export function useProjects(empresaId: string | null) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (workspaceId) {
+    if (empresaId) {
       loadProjects();
     }
-  }, [workspaceId]);
+  }, [empresaId]);
 
   const loadProjects = async () => {
-    if (!workspaceId) return;
+    if (!empresaId) return;
     
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('workspace_id', workspaceId)
+        .eq('empresa_id', empresaId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -44,13 +44,13 @@ export function useProjects(workspaceId: string | null) {
   };
 
   const createProject = async (data: { name: string; description?: string }) => {
-    if (!workspaceId) return null;
+    if (!empresaId) return null;
 
     try {
       const { data: project, error } = await supabase
         .from('projects')
         .insert({
-          workspace_id: workspaceId,
+          empresa_id: empresaId,
           name: data.name,
           description: data.description || null,
           status: 'active',

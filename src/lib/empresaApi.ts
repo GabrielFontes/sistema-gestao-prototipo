@@ -1,31 +1,31 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * API para gerenciar Workspaces
+ * API para gerenciar Empresas
  * 
  * Exemplo de uso:
  * ```typescript
- * // Buscar workspaces do usuário
- * const workspaces = await workspaceApi.getWorkspaces();
+ * // Buscar empresas do usuário
+ * const empresas = await empresaApi.getEmpresas();
  * 
- * // Buscar projetos de um workspace
- * const projects = await workspaceApi.getProjects(workspaceId);
+ * // Buscar projetos de um empresa
+ * const projects = await empresaApi.getProjects(empresaId);
  * 
  * // Criar novo projeto
- * await workspaceApi.createProject(workspaceId, { name: "Novo Projeto", description: "..." });
+ * await empresaApi.createProject(empresaId, { name: "Novo Projeto", description: "..." });
  * ```
  */
 
-export const workspaceApi = {
+export const empresaApi = {
   /**
-   * Busca todos os workspaces do usuário autenticado
+   * Busca todos os empresas do usuário autenticado
    */
-  async getWorkspaces() {
+  async getEmpresas() {
     const { data, error } = await supabase
-      .from('workspaces')
+      .from('empresas')
       .select(`
         *,
-        workspace_members!inner(role)
+        empresa_members!inner(role)
       `)
       .order('name');
 
@@ -34,13 +34,13 @@ export const workspaceApi = {
   },
 
   /**
-   * Busca projetos de um workspace específico
+   * Busca projetos de um empresa específico
    */
-  async getProjects(workspaceId: string) {
+  async getProjects(empresaId: string) {
     const { data, error } = await supabase
       .from('projects')
       .select('*')
-      .eq('workspace_id', workspaceId)
+      .eq('empresa_id', empresaId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -48,9 +48,9 @@ export const workspaceApi = {
   },
 
   /**
-   * Cria um novo projeto em um workspace
+   * Cria um novo projeto em um empresa
    */
-  async createProject(workspaceId: string, project: {
+  async createProject(empresaId: string, project: {
     name: string;
     description?: string;
     status?: 'active' | 'completed' | 'archived';
@@ -58,7 +58,7 @@ export const workspaceApi = {
     const { data, error } = await supabase
       .from('projects')
       .insert({
-        workspace_id: workspaceId,
+        empresa_id: empresaId,
         ...project,
       })
       .select()

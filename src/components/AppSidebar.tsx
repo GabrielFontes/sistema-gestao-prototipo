@@ -1,26 +1,16 @@
 import { useState } from "react";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 import {
   Brain,
   Activity,
   Heart,
-  FileText,
-  Layers,
-  HelpCircle,
-  AlertCircle,
-  Medal,
-  DollarSign,
-  Clipboard,
-  Gauge,
-  CheckCircle,
-  StickyNote,
-  Menu,
   Footprints,
+  AlertCircle,
+  CheckCircle,
+  Menu
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import LogoClaro from "@/images/Logo_Claro.png";
-import { useWorkspace } from "@/contexts/WorkspaceContext";
-import { WorkspaceSelector } from "./WorkspaceSelector";
+import { EmpresaSelector } from "./EmpresaSelector";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -38,7 +28,7 @@ const menuItems = [
     ],
   },
   {
-    title: "Corpo", 
+    title: "Corpo",
     icon: Activity,
     mainUrl: "corpo",
     children: [
@@ -66,14 +56,11 @@ const menuItems = [
 
 export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
-  const { currentWorkspace } = useWorkspace();
-
+  const { empresaId } = useParams();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
     return saved ? JSON.parse(saved) : { Mente: true, Corpo: false, Alma: false };
   });
-
-  const currentPath = location.pathname;
 
   const toggleCollapsed = () => {
     setCollapsed(prev => {
@@ -82,53 +69,55 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
     });
   };
 
+  const currentEmpresa = {
+    logo: "/logo.png", // Aqui você coloca o caminho da logo real
+    name: "Nome da Empresa",
+    subtitle: "Subtítulo da Empresa"
+  };
+
   return (
-    <div
-      className={cn(
-        "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
-        collapsed ? "w-16" : "w-80"
-      )}
-    >
-      {/* Header */}
+    <div className={cn(
+      "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
+      collapsed ? "w-16" : "w-80"
+    )}>
+      {/* Header igual ao da referência */}
       <div className="p-4 border-b border-border flex items-center gap-2">
-        <div
-          className={cn(
-            "flex items-center justify-center transition-all duration-300",
-            collapsed ? "w-8 h-8" : "w-10 h-10"
-          )}
-        >
+        <div className={cn(
+          "flex items-center justify-center transition-all duration-300",
+          collapsed ? "w-8 h-8" : "w-10 h-10"
+        )}>
           <img
-            src={currentWorkspace.logo}
+            src={currentEmpresa.logo}
             alt="Logo da Empresa"
             className="object-contain w-full h-full"
           />
         </div>
         {!collapsed && (
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col">
             <h1 className="font-semibold text-base text-foreground truncate">
-              {currentWorkspace.name}
+              {currentEmpresa.name}
             </h1>
             <p className="text-muted-foreground text-xs truncate">
-              {currentWorkspace.subtitle}
+              {currentEmpresa.subtitle}
             </p>
           </div>
         )}
-        {!collapsed && <WorkspaceSelector />}
+        {!collapsed && <EmpresaSelector />}
       </div>
 
       {/* Navigation */}
       <div className="flex-1 p-3 overflow-y-auto">
-      {menuItems.map((item, index) => (
-  <div
-    key={item.title}
-    className={cn(
-      "mb-2",
-      index > 0 ? "mt-4" : "" // adiciona margem extra aos menus principais depois do primeiro
-    )}
-  >
+        {menuItems.map((item, index) => (
+          <div
+            key={item.title}
+            className={cn(
+              "mb-2",
+              index > 0 ? "mt-4" : ""
+            )}
+          >
             <div className="flex">
               <NavLink
-                to={item.mainUrl}
+                to={`/empresa/${empresaId}/${item.mainUrl}`}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm",
@@ -145,7 +134,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 {item.children.map((child) => (
                   <NavLink
                     key={child.url}
-                    to={child.url}
+                    to={`/empresa/${empresaId}/${child.url}`}
                     className={({ isActive }) =>
                       cn(
                         "flex items-center gap-2 p-1 rounded-lg text-xs transition-colors",
@@ -167,13 +156,11 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
       {/* Toggle Button */}
       <div className="p-3 border-t border-border">
-        <button
-          onClick={toggleCollapsed}
-          className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg"
-        >
+        <button onClick={toggleCollapsed} className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg">
           <Menu className="h-5 w-5 text-muted-foreground" />
         </button>
       </div>
     </div>
   );
 }
+  

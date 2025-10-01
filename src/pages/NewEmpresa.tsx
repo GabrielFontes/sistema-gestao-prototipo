@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useEmpresa } from '@/contexts/EmpresaContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
-function NewWorkspace() {
+function NewEmpresa() {
   const { user } = useAuth();
-  const { setWorkspace } = useWorkspace();
+  const { setEmpresa } = useEmpresa();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -26,9 +26,9 @@ function NewWorkspace() {
     }
 
     try {
-      console.log('Criando workspace com dados:', { name, subtitle, logo, primaryColor });
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
+      console.log('Criando empresa com dados:', { name, subtitle, logo, primaryColor });
+      const { data: empresa, error: empresaError } = await supabase
+        .from('empresas')
         .insert({
           name,
           subtitle,
@@ -38,17 +38,17 @@ function NewWorkspace() {
         .select()
         .single();
 
-      if (workspaceError) {
-        console.error('Erro ao criar workspace:', workspaceError);
-        throw workspaceError;
+      if (empresaError) {
+        console.error('Erro ao criar empresa:', empresaError);
+        throw empresaError;
       }
 
-      console.log('Workspace criado:', workspace);
+      console.log('Empresa criado:', empresa);
 
       const { error: memberError } = await supabase
-        .from('workspace_members')
+        .from('empresa_members')
         .insert({
-          workspace_id: workspace.id,
+          empresa_id: empresa.id,
           user_id: user.id,
           role: 'member',
         });
@@ -59,17 +59,17 @@ function NewWorkspace() {
       }
 
       console.log('Associação criada para user_id:', user.id);
-      setWorkspace(workspace.id);
+      setEmpresa(empresa.id);
       toast({
         title: 'Sucesso',
-        description: 'Workspace criado com sucesso!',
+        description: 'Empresa criado com sucesso!',
       });
-      navigate(`/workspace/${workspace.id}`);
+      navigate(`/empresa/${empresa.id}`);
     } catch (error: any) {
-      console.error('Erro geral ao criar workspace:', error);
+      console.error('Erro geral ao criar empresa:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível criar o workspace: ' + error.message,
+        description: 'Não foi possível criar o empresa: ' + error.message,
         variant: 'destructive',
       });
     }
@@ -78,11 +78,11 @@ function NewWorkspace() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-md mx-auto px-4">
-        <h1 className="text-2xl font-bold mb-6">Criar Novo Workspace</h1>
+        <h1 className="text-2xl font-bold mb-6">Criar Novo Empresa</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Nome do Workspace
+              Nome do Empresa
             </label>
             <Input
               id="name"
@@ -127,11 +127,11 @@ function NewWorkspace() {
               className="mt-1"
             />
           </div>
-          <Button type="submit">Criar Workspace</Button>
+          <Button type="submit">Criar Empresa</Button>
         </form>
       </div>
     </div>
   );
 }
 
-export default NewWorkspace;
+export default NewEmpresa;

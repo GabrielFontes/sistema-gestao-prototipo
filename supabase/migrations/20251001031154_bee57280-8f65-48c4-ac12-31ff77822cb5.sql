@@ -1,5 +1,5 @@
--- Criar tabela de workspaces
-CREATE TABLE public.workspaces (
+-- Criar tabela de empresas
+CREATE TABLE public.empresas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   subtitle TEXT,
@@ -9,20 +9,20 @@ CREATE TABLE public.workspaces (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Criar tabela de membros de workspace (usuário pode estar em múltiplos workspaces)
-CREATE TABLE public.workspace_members (
+-- Criar tabela de membros de empresa (usuário pode estar em múltiplos empresas)
+CREATE TABLE public.empresa_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workspace_id UUID NOT NULL REFERENCES public.workspaces(id) ON DELETE CASCADE,
+  empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'admin', 'member')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(workspace_id, user_id)
+  UNIQUE(empresa_id, user_id)
 );
 
 -- Criar tabela de projetos
 CREATE TABLE public.projects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workspace_id UUID NOT NULL REFERENCES public.workspaces(id) ON DELETE CASCADE,
+  empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'archived')),
@@ -56,14 +56,14 @@ CREATE TABLE public.tasks (
 );
 
 -- Habilitar RLS em todas as tabelas
-ALTER TABLE public.workspaces ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.workspace_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.empresas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.empresa_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.milestones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 
--- Função auxiliar para verificar se usuário é membro de um workspace
-CREATE OR REPLACE FUNCTION public.is_workspace_member(workspace_id UUID, user_id UUID)
+-- Função auxiliar para verificar se usuário é membro de um empresa
+CREATE OR REPLACE FUNCTION public.is_empresa_member(empresa_id UUID, user_id UUID)
 RETURNS BOOLEAN
 LANGUAGE SQL
 STABLE
@@ -71,109 +71,109 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.workspace_members
-    WHERE workspace_members.workspace_id = $1
-    AND workspace_members.user_id = $2
+    SELECT 1 FROM public.empresa_members
+    WHERE empresa_members.empresa_id = $1
+    AND empresa_members.user_id = $2
   );
 $$;
 
--- RLS Policies para workspaces
-CREATE POLICY "Users can view workspaces they are members of"
-  ON public.workspaces FOR SELECT
-  USING (public.is_workspace_member(id, auth.uid()));
+-- RLS Policies para empresas
+CREATE POLICY "Users can view empresas they are members of"
+  ON public.empresas FOR SELECT
+  USING (public.is_empresa_member(id, auth.uid()));
 
-CREATE POLICY "Workspace owners and admins can update workspace"
-  ON public.workspaces FOR UPDATE
+CREATE POLICY "Empresa owners and admins can update empresa"
+  ON public.empresas FOR UPDATE
   USING (
     EXISTS (
-      SELECT 1 FROM public.workspace_members
-      WHERE workspace_members.workspace_id = workspaces.id
-      AND workspace_members.user_id = auth.uid()
-      AND workspace_members.role IN ('owner', 'admin')
+      SELECT 1 FROM public.empresa_members
+      WHERE empresa_members.empresa_id = empresas.id
+      AND empresa_members.user_id = auth.uid()
+      AND empresa_members.role IN ('owner', 'admin')
     )
   );
 
--- RLS Policies para workspace_members
-CREATE POLICY "Users can view members of their workspaces"
-  ON public.workspace_members FOR SELECT
-  USING (public.is_workspace_member(workspace_id, auth.uid()));
+-- RLS Policies para empresa_members
+CREATE POLICY "Users can view members of their empresas"
+  ON public.empresa_members FOR SELECT
+  USING (public.is_empresa_member(empresa_id, auth.uid()));
 
-CREATE POLICY "Workspace owners and admins can manage members"
-  ON public.workspace_members FOR ALL
+CREATE POLICY "Empresa owners and admins can manage members"
+  ON public.empresa_members FOR ALL
   USING (
     EXISTS (
-      SELECT 1 FROM public.workspace_members wm
-      WHERE wm.workspace_id = workspace_members.workspace_id
+      SELECT 1 FROM public.empresa_members wm
+      WHERE wm.empresa_id = empresa_members.empresa_id
       AND wm.user_id = auth.uid()
       AND wm.role IN ('owner', 'admin')
     )
   );
 
 -- RLS Policies para projects
-CREATE POLICY "Users can view projects in their workspaces"
+CREATE POLICY "Users can view projects in their empresas"
   ON public.projects FOR SELECT
-  USING (public.is_workspace_member(workspace_id, auth.uid()));
+  USING (public.is_empresa_member(empresa_id, auth.uid()));
 
-CREATE POLICY "Workspace members can create projects"
+CREATE POLICY "Empresa members can create projects"
   ON public.projects FOR INSERT
-  WITH CHECK (public.is_workspace_member(workspace_id, auth.uid()));
+  WITH CHECK (public.is_empresa_member(empresa_id, auth.uid()));
 
-CREATE POLICY "Workspace members can update projects"
+CREATE POLICY "Empresa members can update projects"
   ON public.projects FOR UPDATE
-  USING (public.is_workspace_member(workspace_id, auth.uid()));
+  USING (public.is_empresa_member(empresa_id, auth.uid()));
 
-CREATE POLICY "Workspace owners and admins can delete projects"
+CREATE POLICY "Empresa owners and admins can delete projects"
   ON public.projects FOR DELETE
   USING (
     EXISTS (
-      SELECT 1 FROM public.workspace_members
-      WHERE workspace_members.workspace_id = projects.workspace_id
-      AND workspace_members.user_id = auth.uid()
-      AND workspace_members.role IN ('owner', 'admin')
+      SELECT 1 FROM public.empresa_members
+      WHERE empresa_members.empresa_id = projects.empresa_id
+      AND empresa_members.user_id = auth.uid()
+      AND empresa_members.role IN ('owner', 'admin')
     )
   );
 
 -- RLS Policies para milestones
-CREATE POLICY "Users can view milestones in their workspace projects"
+CREATE POLICY "Users can view milestones in their empresa projects"
   ON public.milestones FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM public.projects
       WHERE projects.id = milestones.project_id
-      AND public.is_workspace_member(projects.workspace_id, auth.uid())
+      AND public.is_empresa_member(projects.empresa_id, auth.uid())
     )
   );
 
-CREATE POLICY "Workspace members can manage milestones"
+CREATE POLICY "Empresa members can manage milestones"
   ON public.milestones FOR ALL
   USING (
     EXISTS (
       SELECT 1 FROM public.projects
       WHERE projects.id = milestones.project_id
-      AND public.is_workspace_member(projects.workspace_id, auth.uid())
+      AND public.is_empresa_member(projects.empresa_id, auth.uid())
     )
   );
 
 -- RLS Policies para tasks
-CREATE POLICY "Users can view tasks in their workspace milestones"
+CREATE POLICY "Users can view tasks in their empresa milestones"
   ON public.tasks FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM public.milestones
       JOIN public.projects ON projects.id = milestones.project_id
       WHERE milestones.id = tasks.milestone_id
-      AND public.is_workspace_member(projects.workspace_id, auth.uid())
+      AND public.is_empresa_member(projects.empresa_id, auth.uid())
     )
   );
 
-CREATE POLICY "Workspace members can manage tasks"
+CREATE POLICY "Empresa members can manage tasks"
   ON public.tasks FOR ALL
   USING (
     EXISTS (
       SELECT 1 FROM public.milestones
       JOIN public.projects ON projects.id = milestones.project_id
       WHERE milestones.id = tasks.milestone_id
-      AND public.is_workspace_member(projects.workspace_id, auth.uid())
+      AND public.is_empresa_member(projects.empresa_id, auth.uid())
     )
   );
 
@@ -186,8 +186,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_workspaces_updated_at
-  BEFORE UPDATE ON public.workspaces
+CREATE TRIGGER update_empresas_updated_at
+  BEFORE UPDATE ON public.empresas
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TRIGGER update_projects_updated_at

@@ -1,9 +1,9 @@
-// /src/hooks/useWorkspaces.ts
+// /src/hooks/useEmpresas.ts
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
-export interface Workspace {
+export interface Empresa {
   id: string;
   name: string;
   subtitle: string;
@@ -11,32 +11,32 @@ export interface Workspace {
   primaryColor: string;
 }
 
-export function useWorkspaces(user: User | null) {
-  const { data: workspaces = [], isLoading } = useQuery({
-    queryKey: ['workspaces', user?.id],
+export function useEmpresas(user: User | null) {
+  const { data: empresas = [], isLoading } = useQuery({
+    queryKey: ['empresas', user?.id],
     queryFn: async () => {
       if (!user) return [];
 
-      // Buscar workspaces via workspace_members (como no WorkspaceContext)
+      // Buscar empresas via empresa_members (como no EmpresaContext)
       const { data: memberData, error: memberError } = await supabase
-        .from('workspace_members')
-        .select('workspace_id')
+        .from('empresa_members')
+        .select('empresa_id')
         .eq('user_id', user.id);
 
       if (memberError) throw memberError;
 
       if (!memberData || memberData.length === 0) return [];
 
-      const workspaceIds = memberData.map(m => m.workspace_id);
+      const empresaIds = memberData.map(m => m.empresa_id);
 
-      const { data: workspaceData, error: workspaceError } = await supabase
-        .from('workspaces')
+      const { data: empresaData, error: empresaError } = await supabase
+        .from('empresas')
         .select('id, name, subtitle, logo, primary_color')
-        .in('id', workspaceIds);
+        .in('id', empresaIds);
 
-      if (workspaceError) throw workspaceError;
+      if (empresaError) throw empresaError;
 
-      return (workspaceData || []).map(w => ({
+      return (empresaData || []).map(w => ({
         id: w.id,
         name: w.name,
         subtitle: w.subtitle || '',
@@ -47,5 +47,5 @@ export function useWorkspaces(user: User | null) {
     enabled: !!user,
   });
 
-  return { workspaces, loading: isLoading };
+  return { empresas, loading: isLoading };
 }
