@@ -3,14 +3,19 @@ import { NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   Brain,
   Activity,
+  Layers,
   Heart,
+  BarChart,
   Footprints,
+  FileText,
+  ListChecks,
+  Repeat,
+  TrendingUp,
   AlertCircle,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
   LogOut,
-  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
@@ -41,8 +46,8 @@ const menuItems = [
     icon: Brain,
     mainUrl: "mente",
     children: [
-      { title: "DRE", url: "dre", icon: AlertCircle },
-      { title: "Movimentações", url: "movimentacoes", icon: CheckCircle },
+      { title: "DRE", url: "dre", icon: BarChart },
+      { title: "Movimentações", url: "movimentacoes", icon: ListChecks },
     ],
   },
   {
@@ -50,15 +55,15 @@ const menuItems = [
     icon: Activity,
     mainUrl: "corpo",
     children: [
-      { title: "Fluxos", url: "fluxos", icon: AlertCircle },
-      { title: "Indicadores", url: "indicadores", icon: CheckCircle },
+      { title: "Fluxos", url: "fluxos", icon: Repeat },
+      { title: "Indicadores", url: "indicadores", icon: TrendingUp },
     ],
   },
   {
     title: "Alma",
     icon: Heart,
     mainUrl: "alma",
-    children: [{ title: "Notas", url: "app", icon: AlertCircle }],
+    children: [{ title: "Notas", url: "app", icon: FileText }],
   },
   {
     title: "Pernas",
@@ -84,7 +89,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
     });
   };
 
-  const { currentEmpresa, isLoading } = useEmpresa();
+  const { currentEmpresa } = useEmpresa();
   const { user, signOut } = useAuth();
 
   const getInitials = (email: string | undefined) => {
@@ -130,16 +135,16 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           {menuItems.map((item, index) => (
             <div
               key={item.title}
-              className={cn(
-                "mb-2",
-                index > 0 ? "mt-4" : ""
-              )}
+              className={cn("mb-2", index > 0 ? "mt-4" : "")}
             >
               {collapsed ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div
-                      className="flex items-center p-2 hover:bg-accent rounded-lg cursor-pointer"
+                      className={cn(
+                        "flex items-center p-2 rounded-lg cursor-pointer transition-colors",
+                        item.title === "Pernas" ? "bg-primary/20" : "hover:bg-accent"
+                      )}
                       onClick={() => navigate(`/empresa/${empresaId}/${item.mainUrl}`)}
                     >
                       <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
@@ -154,8 +159,12 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                   to={`/empresa/${empresaId}/${item.mainUrl}`}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm",
-                      isActive ? "bg-primary/10 text-primary" : ""
+                      "flex items-center gap-3 p-2 text-left rounded-lg flex-1 text-sm transition-colors",
+                      item.title === "Pernas"
+                        ? "bg-primary/20 text-foreground"
+                        : isActive
+                        ? "bg-primary/10 text-primary"
+                        : "hover:bg-accent"
                     )
                   }
                 >
@@ -190,32 +199,9 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
         {/* Footer with User and Toggle */}
         <div className="p-3 border-t border-border space-y-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                    {getInitials(user?.email)}
-                  </AvatarFallback>
-                </Avatar>
-                {!collapsed && (
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-medium truncate">{user?.email}</p>
-                  </div>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           <button
             onClick={toggleCollapsed}
-            className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg transition-colors border border-border"
+            className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg"
           >
             {collapsed ? (
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
