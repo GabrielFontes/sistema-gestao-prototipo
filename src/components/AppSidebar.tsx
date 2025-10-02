@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   Brain,
   Activity,
@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  User
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
@@ -58,30 +58,27 @@ const menuItems = [
     title: "Alma",
     icon: Heart,
     mainUrl: "alma",
-    children: [
-      { title: "Notas", url: "app", icon: AlertCircle },
-    ],
+    children: [{ title: "Notas", url: "app", icon: AlertCircle }],
   },
   {
     title: "Pernas",
     icon: Footprints,
     mainUrl: "pernas",
-    children: [
-      { title: "Tarefas", url: "tarefas", icon: CheckCircle },
-    ],
+    children: [{ title: "Tarefas", url: "tarefas", icon: CheckCircle }],
   },
 ];
 
 export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
   const { empresaId } = useParams();
+  const navigate = useNavigate();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
     return saved ? JSON.parse(saved) : { Mente: true, Corpo: false, Alma: false };
   });
 
   const toggleCollapsed = () => {
-    setCollapsed(prev => {
+    setCollapsed((prev) => {
       localStorage.setItem("sidebar-collapsed", String(!prev));
       return !prev;
     });
@@ -97,34 +94,36 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className={cn(
-        "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
-        collapsed ? "w-16" : "w-80"
-      )}>
-        {/* Header */}
-      <div className="p-4 border-b border-border flex items-center gap-2">
-        <div className={cn(
-          "flex items-center justify-center transition-all duration-300",
-          collapsed ? "w-8 h-8" : "w-10 h-10"
-        )}>
-          <img
-            src={currentEmpresa.logo}
-            alt="Logo da Empresa"
-            className="object-contain w-full h-full"
-          />
-        </div>
-        {!collapsed && (
-          <div className="flex-1 min-w-0 flex flex-col">
-            <h1 className="font-semibold text-base text-foreground truncate">
-              {currentEmpresa.name}
-            </h1>
-            <p className="text-muted-foreground text-xs truncate">
-              {currentEmpresa.subtitle}
-            </p>
-          </div>
+      <div
+        className={cn(
+          "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
+          collapsed ? "w-16" : "w-80"
         )}
-        {!collapsed && <EmpresaSelector />}
-      </div>
+      >
+        {/* Header */}
+        <div className="p-4 border-b border-border flex items-center gap-2">
+          <div
+            className={cn(
+              "flex items-center justify-center transition-all duration-300",
+              collapsed ? "w-8 h-8" : "w-10 h-10"
+            )}
+          >
+            <img
+              src={currentEmpresa.logo}
+              alt="Logo da Empresa"
+              className="object-contain w-full h-full"
+            />
+          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0 flex flex-col">
+              <h1 className="font-semibold text-base text-foreground truncate">
+                {currentEmpresa.name}
+              </h1>
+              <p className="text-muted-foreground text-xs truncate">{currentEmpresa.subtitle}</p>
+            </div>
+          )}
+          {!collapsed && <EmpresaSelector />}
+        </div>
 
         {/* Navigation */}
         <div className="flex-1 p-3 overflow-y-auto">
@@ -136,29 +135,34 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 index > 0 ? "mt-4" : ""
               )}
             >
-              <div className="flex">
+              {collapsed ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink
-                      to={`/empresa/${empresaId}/${item.mainUrl}`}
-                      className={({ isActive }) =>
-                        cn(
-                          "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm relative group",
-                          isActive ? "bg-primary/10 text-primary" : ""
-                        )
-                      }
+                    <div
+                      className="flex items-center p-2 hover:bg-accent rounded-lg cursor-pointer"
+                      onClick={() => navigate(`/empresa/${empresaId}/${item.mainUrl}`)}
                     >
                       <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
-                      {!collapsed && <span className="font-medium">{item.title}</span>}
-                    </NavLink>
+                    </div>
                   </TooltipTrigger>
-                  {collapsed && (
-                    <TooltipContent side="right" className="bg-primary text-primary-foreground">
-                      {item.title}
-                    </TooltipContent>
-                  )}
+                  <TooltipContent side="right" className="bg-primary text-primary-foreground">
+                    {item.title}
+                  </TooltipContent>
                 </Tooltip>
-              </div>
+              ) : (
+                <NavLink
+                  to={`/empresa/${empresaId}/${item.mainUrl}`}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm",
+                      isActive ? "bg-primary/10 text-primary" : ""
+                    )
+                  }
+                >
+                  <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
+                  <span className="font-medium">{item.title}</span>
+                </NavLink>
+              )}
               {!collapsed && (
                 <div className="ml-7 mt-1 space-y-1">
                   {item.children.map((child) => (
@@ -186,7 +190,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
         {/* Footer with User and Toggle */}
         <div className="p-3 border-t border-border space-y-2">
-          {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors">
@@ -210,7 +213,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Toggle Button */}
           <button
             onClick={toggleCollapsed}
             className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg transition-colors border border-border"
@@ -226,4 +228,3 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
     </TooltipProvider>
   );
 }
-  
