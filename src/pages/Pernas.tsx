@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus } from "lucide-react";
 import { ProjectKanbanDialog } from "@/components/ProjectKanbanDialog";
 import { ProcessChecklistDialog } from "@/components/ProcessChecklistDialog";
+import { ProjectsList } from "@/components/ProjectsList";
 
 const operacoesColumns = [
   {
@@ -206,66 +207,7 @@ export default function Pernas() {
 
           {/* Conteúdo Projetos */}
           <TabsContent value="projetos" className="mt-6">
-{/*            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {kanbanColumns.map((column, columnIndex) => (
-                <Card key={columnIndex} className="h-fit">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{column.title}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {column.items.length}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {column.items.map((item) => (
-                      <Card
-                        key={item.id}
-                        className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => setSelectedProject({ title: item.title })}
-                      >
-                        <div className="space-y-2">
-                          <h4 className="font-medium text-sm">{item.title}</h4>
-                          <Badge className={getPriorityColor(item.priority)}>
-                            {item.priority}
-                          </Badge>
-                        </div>
-                      </Card>
-                    ))}
-                    <Button
-                      variant="ghost"
-                      className="w-full border-2 border-dashed border-muted-foreground/25 h-12 hover:border-primary hover:bg-primary/5"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Adicionar Item
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-*/}
-
-<div className="space-y-6">
-        
-        {/* Header */}
-        <Card className="h-[80vh] flex flex-col"> {/* Altura relativa à tela */}
-          <CardContent className="flex-1 p-0">
-          <iframe
-            src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
-            className="w-full h-full border-none"
-            style={{
-              display: "block",
-              transform: "scale(0.8)",
-              transformOrigin: "0 0", // garante que o zoom saia do canto superior esquerdo
-              width: "125%", // compensar o zoom
-              height: "125%" // compensar o zoom
-            }}
-            title="Planilha Indicadores"
-          />
-
-          </CardContent>
-        </Card>
-      </div>
+            <ProjectsList />
           </TabsContent>
 
           {/* Conteúdo Operações */}

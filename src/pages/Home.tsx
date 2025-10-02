@@ -1,17 +1,17 @@
 // /src/pages/Home.tsx
 import { useAuth } from '@/hooks/useAuth';
 import { useEmpresa } from '@/contexts/EmpresaContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { Settings } from 'lucide-react';
+import { CreateEmpresaDialog } from '@/components/CreateEmpresaDialog';
+import { EmpresaSettingsDialog } from '@/components/EmpresaSettingsDialog';
 
 function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { empresas, isLoading: empresasLoading, setEmpresa } = useEmpresa();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   console.log('Usuário logado:', user); // Adicione este log
   console.log('Empresas:', empresas); // Adicione este log
@@ -38,14 +38,9 @@ function Home() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meus Empresas</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Minhas Empresas</h1>
           <div className="flex items-center space-x-4">
-            <Button asChild>
-              <Link to="/new-empresa" className="flex items-center">
-                <Plus className="w-4 h-4 mr-2" />
-                Novo Empresa
-              </Link>
-            </Button>
+            <CreateEmpresaDialog />
             <Button variant="outline" onClick={signOut}>
               Sair
             </Button>
@@ -54,10 +49,12 @@ function Home() {
 
         {empresas.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Nenhum empresa encontrado.</p>
-            <Button asChild className="mt-4">
-              <Link to="/new-empresa">Crie o primeiro!</Link>
-            </Button>
+            <p className="text-gray-500 text-lg">Nenhuma empresa encontrada.</p>
+            <CreateEmpresaDialog
+              trigger={
+                <Button className="mt-4">Criar sua primeira empresa!</Button>
+              }
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -88,27 +85,32 @@ interface EmpresaCardProps {
 
 function EmpresaCard({ empresa, onClick }: EmpresaCardProps) {
   return (
-    <Card
-      className="cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={onClick}
-    >
-      <CardHeader>
-        <CardTitle className="text-xl">{empresa.name}</CardTitle>
-        {empresa.subtitle && <CardDescription>{empresa.subtitle}</CardDescription>}
-      </CardHeader>
-      <CardContent>
-        <img
-          src={empresa.logo}
-          alt={`${empresa.name} logo`}
-          className="w-16 h-16 mb-4 object-contain"
-          onError={(e) => {
-            e.currentTarget.src = '/src/images/Logo_Claro.png'; // Fallback
-          }}
+    <Card className="cursor-pointer hover:shadow-lg transition-shadow group relative">
+      <div onClick={onClick}>
+        <CardHeader>
+          <CardTitle className="text-xl">{empresa.name}</CardTitle>
+          {empresa.subtitle && <CardDescription>{empresa.subtitle}</CardDescription>}
+        </CardHeader>
+        <CardContent>
+          <img
+            src={empresa.logo}
+            alt={`${empresa.name} logo`}
+            className="w-16 h-16 mb-4 object-contain"
+            onError={(e) => {
+              e.currentTarget.src = '/src/images/Logo_Claro.png';
+            }}
+          />
+        </CardContent>
+      </div>
+      <div className="absolute top-2 right-2">
+        <EmpresaSettingsDialog
+          trigger={
+            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Settings className="h-4 w-4" />
+            </Button>
+          }
         />
-        <p className="text-xs text-gray-500">
-          Cor primária: <span style={{ color: empresa.primaryColor }}>{empresa.primaryColor}</span>
-        </p>
-      </CardContent>
+      </div>
     </Card>
   );
 }

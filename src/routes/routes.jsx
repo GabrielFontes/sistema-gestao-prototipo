@@ -4,7 +4,7 @@ import Mente from '../pages/Mente';
 import DRE from '../pages/mente/DRE';
 import Movimentacoes from '../pages/mente/Movimentacoes';
 import Alma from '../pages/Alma';
-import AlmaApp from '../pages/alma/App';
+import Notas from '../pages/alma/Notas';
 import Corpo from '../pages/Corpo';
 import Fluxos from '../pages/corpo/Fluxos';
 import Indicadores from '../pages/corpo/Indicadores';
@@ -31,7 +31,7 @@ export function AppRoutes() {
         <Route path="dre" element={<DRE />} />
         <Route path="movimentacoes" element={<Movimentacoes />} />
         <Route path="alma" element={<Alma />} />
-        <Route path="app" element={<AlmaApp />} />
+        <Route path="app" element={<Notas />} />
         <Route path="corpo" element={<Corpo />} />
         <Route path="fluxos" element={<Fluxos />} />
         <Route path="indicadores" element={<Indicadores />} />

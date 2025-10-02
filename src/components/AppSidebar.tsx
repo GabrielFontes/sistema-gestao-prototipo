@@ -7,11 +7,28 @@ import {
   Footprints,
   AlertCircle,
   CheckCircle,
-  Menu
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
+import { useAuth } from "@/hooks/useAuth";
 import { EmpresaSelector } from "./EmpresaSelector";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -71,13 +88,20 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   };
 
   const { currentEmpresa, isLoading } = useEmpresa();
+  const { user, signOut } = useAuth();
+
+  const getInitials = (email: string | undefined) => {
+    if (!email) return "U";
+    return email.charAt(0).toUpperCase();
+  };
 
   return (
-    <div className={cn(
-      "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
-      collapsed ? "w-16" : "w-80"
-    )}>
-      {/* Header */}
+    <TooltipProvider delayDuration={0}>
+      <div className={cn(
+        "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
+        collapsed ? "w-16" : "w-80"
+      )}>
+        {/* Header */}
       <div className="p-4 border-b border-border flex items-center gap-2">
         <div className={cn(
           "flex items-center justify-center transition-all duration-300",
@@ -102,62 +126,104 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
         {!collapsed && <EmpresaSelector />}
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 p-3 overflow-y-auto">
-        {menuItems.map((item, index) => (
-          <div
-            key={item.title}
-            className={cn(
-              "mb-2",
-              index > 0 ? "mt-4" : ""
-            )}
-          >
-            <div className="flex">
-              <NavLink
-                to={`/empresa/${empresaId}/${item.mainUrl}`}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm",
-                    isActive ? "bg-primary/10 text-primary" : ""
-                  )
-                }
-              >
-                <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
-                {!collapsed && <span className="font-medium">{item.title}</span>}
-              </NavLink>
-            </div>
-            {!collapsed && (
-              <div className="ml-7 mt-1 space-y-1">
-                {item.children.map((child) => (
-                  <NavLink
-                    key={child.url}
-                    to={`/empresa/${empresaId}/${child.url}`}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-2 p-1 rounded-lg text-xs transition-colors",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                      )
-                    }
-                  >
-                    <child.icon className="h-4 w-4" />
-                    {child.title}
-                  </NavLink>
-                ))}
+        {/* Navigation */}
+        <div className="flex-1 p-3 overflow-y-auto">
+          {menuItems.map((item, index) => (
+            <div
+              key={item.title}
+              className={cn(
+                "mb-2",
+                index > 0 ? "mt-4" : ""
+              )}
+            >
+              <div className="flex">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <NavLink
+                      to={`/empresa/${empresaId}/${item.mainUrl}`}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-3 p-2 text-left hover:bg-accent rounded-lg flex-1 text-sm relative group",
+                          isActive ? "bg-primary/10 text-primary" : ""
+                        )
+                      }
+                    >
+                      <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
+                      {!collapsed && <span className="font-medium">{item.title}</span>}
+                    </NavLink>
+                  </TooltipTrigger>
+                  {collapsed && (
+                    <TooltipContent side="right" className="bg-primary text-primary-foreground">
+                      {item.title}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+              {!collapsed && (
+                <div className="ml-7 mt-1 space-y-1">
+                  {item.children.map((child) => (
+                    <NavLink
+                      key={child.url}
+                      to={`/empresa/${empresaId}/${child.url}`}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-2 p-1 rounded-lg text-xs transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        )
+                      }
+                    >
+                      <child.icon className="h-4 w-4" />
+                      {child.title}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
-      {/* Toggle Button */}
-      <div className="p-3 border-t border-border">
-        <button onClick={toggleCollapsed} className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg">
-          <Menu className="h-5 w-5 text-muted-foreground" />
-        </button>
+        {/* Footer with User and Toggle */}
+        <div className="p-3 border-t border-border space-y-2">
+          {/* User Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center gap-2 p-2 hover:bg-accent rounded-lg transition-colors">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    {getInitials(user?.email)}
+                  </AvatarFallback>
+                </Avatar>
+                {!collapsed && (
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-sm font-medium truncate">{user?.email}</p>
+                  </div>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Toggle Button */}
+          <button
+            onClick={toggleCollapsed}
+            className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg transition-colors border border-border"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
   

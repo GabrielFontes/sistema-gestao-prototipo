@@ -18,16 +18,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useParams } from "react-router-dom";
+import { useState } from "react";
 
 const projectSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
-  descricao: z.string().min(1, "Descrição é obrigatória"),
-  previsaoEncerramento: z.string().min(1, "Previsão de encerramento é obrigatória"),
-  milestone1: z.string().min(1, "Milestone 1 é obrigatório"),
-  milestone2: z.string().min(1, "Milestone 2 é obrigatório"),
-  milestone3: z.string().min(1, "Milestone 3 é obrigatório"),
-  objetivo: z.string().min(1, "Objetivo é obrigatório"),
+  descricao: z.string().optional(),
+  previsaoEncerramento: z.string().optional(),
+  milestone1: z.string().optional(),
+  milestone2: z.string().optional(),
+  milestone3: z.string().optional(),
+  objetivo: z.string().optional(),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -35,10 +38,13 @@ type ProjectFormValues = z.infer<typeof projectSchema>;
 interface ProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onProjectCreated?: () => void;
 }
 
-export function ProjectDialog({ open, onOpenChange }: ProjectDialogProps) {
-  const { toast } = useToast();
+export function ProjectDialog({ open, onOpenChange, onProjectCreated }: ProjectDialogProps) {
+  const { empresaId } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -52,14 +58,60 @@ export function ProjectDialog({ open, onOpenChange }: ProjectDialogProps) {
     },
   });
 
-  const onSubmit = (data: ProjectFormValues) => {
-    console.log("Novo projeto:", data);
-    toast({
-      title: "Projeto criado!",
-      description: `${data.nome} foi criado com sucesso.`,
-    });
-    form.reset();
-    onOpenChange(false);
+  const onSubmit = async (data: ProjectFormValues) => {
+    if (!empresaId) {
+      toast.error("Empresa não identificada");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Criar projeto
+      const { data: project, error: projectError } = await supabase
+        .from('projects')
+        .insert({
+          empresa_id: empresaId,
+          name: data.nome,
+          description: data.descricao || data.objetivo || null,
+          status: 'active',
+        })
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+
+      // Criar milestones se fornecidos
+      const milestones = [
+        data.milestone1,
+        data.milestone2,
+        data.milestone3,
+      ].filter(Boolean);
+
+      if (milestones.length > 0 && project) {
+        const milestonesData = milestones.map((name, index) => ({
+          project_id: project.id,
+          name,
+          status: 'pending',
+          due_date: data.previsaoEncerramento || null,
+        }));
+
+        const { error: milestonesError } = await supabase
+          .from('milestones')
+          .insert(milestonesData);
+
+        if (milestonesError) throw milestonesError;
+      }
+
+      toast.success(`Projeto "${data.nome}" criado com sucesso!`);
+      form.reset();
+      onOpenChange(false);
+      onProjectCreated?.();
+    } catch (error: any) {
+      console.error('Erro ao criar projeto:', error);
+      toast.error('Não foi possível criar o projeto: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -175,10 +227,13 @@ export function ProjectDialog({ open, onOpenChange }: ProjectDialogProps) {
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                disabled={isLoading}
               >
                 Cancelar
               </Button>
-              <Button type="submit">Criar Projeto</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Criando..." : "Criar Projeto"}
+              </Button>
             </div>
           </form>
         </Form>
