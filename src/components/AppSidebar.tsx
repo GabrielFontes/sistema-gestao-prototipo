@@ -10,6 +10,7 @@ import {
   Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEmpresa } from "@/contexts/EmpresaContext";
 import { EmpresaSelector } from "./EmpresaSelector";
 
 interface AppSidebarProps {
@@ -69,18 +70,14 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
     });
   };
 
-  const currentEmpresa = {
-    logo: "/logo.png", // Aqui você coloca o caminho da logo real
-    name: "Nome da Empresa",
-    subtitle: "Subtítulo da Empresa"
-  };
+  const { currentEmpresa, isLoading } = useEmpresa();
 
   return (
     <div className={cn(
       "transition-all duration-300 bg-card border-r border-border h-screen flex flex-col fixed top-0 left-0 z-50",
       collapsed ? "w-16" : "w-80"
     )}>
-      {/* Header igual ao da referência */}
+      {/* Header */}
       <div className="p-4 border-b border-border flex items-center gap-2">
         <div className={cn(
           "flex items-center justify-center transition-all duration-300",

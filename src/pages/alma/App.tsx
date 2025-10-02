@@ -76,27 +76,6 @@ export default function App() {
           <div>
             <h1 className="text-2xl font-bold">Notas</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <Select defaultValue="2025">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2025">2025</SelectItem>
-                <SelectItem value="2024">2024</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="dezembro">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dezembro">Dezembro</SelectItem>
-                <SelectItem value="novembro">Novembro</SelectItem>
-                <SelectItem value="outubro">Outubro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
             {/* Lista de Notas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

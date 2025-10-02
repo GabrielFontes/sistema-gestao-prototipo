@@ -10,36 +10,6 @@ export default function Mente() {
           <div>
             <h1 className="text-2xl font-bold">Mente</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <Select defaultValue="2025">
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2024">2024</SelectItem>
-                <SelectItem value="2025">2025</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="dezembro">
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="janeiro">Janeiro</SelectItem>
-                <SelectItem value="fevereiro">Fevereiro</SelectItem>
-                <SelectItem value="março">Março</SelectItem>
-                <SelectItem value="abril">Abril</SelectItem>
-                <SelectItem value="maio">Maio</SelectItem>
-                <SelectItem value="junho">Junho</SelectItem>
-                <SelectItem value="julho">Julho</SelectItem>
-                <SelectItem value="agosto">Agosto</SelectItem>
-                <SelectItem value="setembro">Setembro</SelectItem>
-                <SelectItem value="outubro">Outubro</SelectItem>
-                <SelectItem value="novembro">Novembro</SelectItem>
-                <SelectItem value="dezembro">Dezembro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
 {/* Resumo Financeiro */}
