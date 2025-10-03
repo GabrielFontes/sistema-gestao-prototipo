@@ -9,7 +9,7 @@ import Corpo from '../pages/Corpo';
 import Fluxos from '../pages/corpo/Fluxos';
 import Indicadores from '../pages/corpo/Indicadores';
 import Pernas from '../pages/Pernas';
-import Tarefas from '../pages/pernas/Tarefas';
+import Tarefas from '../pages/alma/Tarefas';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import NewEmpresa from '../pages/NewEmpresa';

@@ -1,7 +1,8 @@
 import { Layout } from "@/components/Layout";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+
 
 const tarefas = [
   { id: 1, title: "🥇 Implementar autenticação", responsavel: "João Silva", concluida: false, iniciativa: "Sistema de Login", deadline: "2025-10-02" },
@@ -28,10 +29,30 @@ export default function Tarefas() {
   return (
       <div className="space-y-6">
         <div>
+        <h2 className="text-2xl font-bold mb-6">Tarefas</h2>
+        </div>
+  <Card className="h-[80vh] flex flex-col">
+    <CardContent className="flex-1 p-0">
+      <iframe
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+        className="w-full h-full border-none"
+        style={{
+          display: "block",
+          transform: "scale(0.8)",
+          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
+          width: "125%", // compensar o zoom
+          height: "125%" // compensar o zoom
+        }}
+        title="Planilha Indicadores"
+      />
+    </CardContent>
+  </Card>
+
+{/*        <div>
           <h2 className="text-2xl font-bold mb-6">Tarefas</h2>
-          
+*/}          
           {/* Tarefas Ouro */}
-          {tasksByPriority.ouro.length > 0 && (
+{/*          {tasksByPriority.ouro.length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Alta 🥇</h3>
               <div className="space-y-3">
@@ -60,9 +81,9 @@ export default function Tarefas() {
               </div>
             </div>
           )}
-
+*/}
           {/* Tarefas Prata */}
-          {tasksByPriority.prata.length > 0 && (
+{/*          {tasksByPriority.prata.length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Média 🥈</h3>
               <div className="space-y-3">
@@ -93,7 +114,7 @@ export default function Tarefas() {
           )}
 
           {/* Tarefas Bronze */}
-          {tasksByPriority.bronze.length > 0 && (
+{/*          {tasksByPriority.bronze.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Baixa 🥉</h3>
               <div className="space-y-3">
@@ -118,6 +139,7 @@ export default function Tarefas() {
             </div>
           )}
         </div>
+*/}
       </div>
   );
 }

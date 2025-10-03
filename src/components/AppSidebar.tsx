@@ -63,13 +63,17 @@ const menuItems = [
     title: "Alma",
     icon: Heart,
     mainUrl: "alma",
-    children: [{ title: "Notas", url: "app", icon: FileText }],
+    children: [
+      { title: "Notas", url: "app", icon: FileText },
+      { title: "Tarefas", url: "tarefas", icon: CheckCircle },
+    ],
   },
+  
   {
     title: "Pernas",
     icon: Footprints,
     mainUrl: "pernas",
-    children: [{ title: "Tarefas", url: "tarefas", icon: CheckCircle }],
+    children: [],
   },
 ];
 

@@ -126,9 +126,29 @@ export default function Pernas() {
 
           {/* Sprint Atual */}
           <TabsContent value="sprint" className="mt-6">
+  <Card className="h-[80vh] flex flex-col">
+    <CardContent className="flex-1 p-0">
+      <iframe
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+        className="w-full h-full border-none"
+        style={{
+          display: "block",
+          transform: "scale(0.8)",
+          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
+          width: "125%", // compensar o zoom
+          height: "125%" // compensar o zoom
+        }}
+        title="Planilha Indicadores"
+      />
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
+{/*          <TabsContent value="sprint" className="mt-6">
             <div className="space-y-6">
               {/* Tarefas Ouro */}
-              {tasksByPriority.ouro.length > 0 && (
+{/*              {tasksByPriority.ouro.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Alta 🥇</h3>
                   <div className="space-y-3">
@@ -155,7 +175,7 @@ export default function Pernas() {
               )}
 
               {/* Tarefas Prata */}
-              {tasksByPriority.prata.length > 0 && (
+{/*              {tasksByPriority.prata.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Média 🥈</h3>
                   <div className="space-y-3">
@@ -182,7 +202,7 @@ export default function Pernas() {
               )}
 
               {/* Tarefas Bronze */}
-              {tasksByPriority.bronze.length > 0 && (
+{/*              {tasksByPriority.bronze.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase">Prioridade Baixa 🥉</h3>
                   <div className="space-y-3">
@@ -204,14 +224,50 @@ export default function Pernas() {
               )}
             </div>
           </TabsContent>
+*/}
 
           {/* Conteúdo Projetos */}
-          <TabsContent value="projetos" className="mt-6">
-            <ProjectsList />
-          </TabsContent>
+{/* Conteúdo Projetos */}
+<TabsContent value="projetos" className="mt-6">
+  <Card className="h-[80vh] flex flex-col">
+    <CardContent className="flex-1 p-0">
+      <iframe
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+        className="w-full h-full border-none"
+        style={{
+          display: "block",
+          transform: "scale(0.8)",
+          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
+          width: "125%", // compensar o zoom
+          height: "125%" // compensar o zoom
+        }}
+        title="Planilha Indicadores"
+      />
+    </CardContent>
+  </Card>
+</TabsContent>
+
 
           {/* Conteúdo Operações */}
           <TabsContent value="operacoes" className="mt-6">
+  <Card className="h-[80vh] flex flex-col">
+    <CardContent className="flex-1 p-0">
+      <iframe
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+        className="w-full h-full border-none"
+        style={{
+          display: "block",
+          transform: "scale(0.8)",
+          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
+          width: "125%", // compensar o zoom
+          height: "125%" // compensar o zoom
+        }}
+        title="Planilha Indicadores"
+      />
+    </CardContent>
+  </Card>
+</TabsContent>
+{/*          <TabsContent value="operacoes" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {operacoesColumns.map((column, columnIndex) => (
                 <Card key={columnIndex} className="h-fit">
@@ -250,9 +306,11 @@ export default function Pernas() {
               ))}
             </div>
           </TabsContent>
-        </Tabs>
+*/}
+          </Tabs>
 
         {/* Dialogs */}
+
         <ProjectKanbanDialog
           open={selectedProject !== null}
           onOpenChange={(open) => !open && setSelectedProject(null)}
