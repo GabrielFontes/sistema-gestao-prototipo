@@ -34,7 +34,7 @@ export default function Tarefas() {
   <Card className="h-[80vh] flex flex-col">
     <CardContent className="flex-1 p-0">
       <iframe
-        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc#view=To%20do"
         className="w-full h-full border-none"
         style={{
           display: "block",

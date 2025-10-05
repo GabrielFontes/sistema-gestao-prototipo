@@ -5,7 +5,11 @@ import {
   Activity,
   Layers,
   Heart,
+  ArrowUpZA,
+  Filter,
+  Atom,
   BarChart,
+  ListFilter,
   Footprints,
   FileText,
   ListChecks,
@@ -64,16 +68,9 @@ const menuItems = [
     icon: Heart,
     mainUrl: "alma",
     children: [
-      { title: "Notas", url: "app", icon: FileText },
+      { title: "Iniciativas", url: "iniciativas", icon: ListFilter },
       { title: "Tarefas", url: "tarefas", icon: CheckCircle },
     ],
-  },
-  
-  {
-    title: "Pernas",
-    icon: Footprints,
-    mainUrl: "pernas",
-    children: [],
   },
 ];
 
@@ -128,7 +125,9 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
               <h1 className="font-semibold text-base text-foreground truncate">
                 {currentEmpresa.name}
               </h1>
-              <p className="text-muted-foreground text-xs truncate">{currentEmpresa.subtitle}</p>
+              <p className="text-muted-foreground text-xs truncate">
+                {currentEmpresa.subtitle}
+              </p>
             </div>
           )}
           {!collapsed && <EmpresaSelector />}
@@ -147,14 +146,21 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                     <div
                       className={cn(
                         "flex items-center p-2 rounded-lg cursor-pointer transition-colors",
-                        item.title === "Pernas" ? "bg-primary/20" : "hover:bg-accent"
+                        item.mainUrl === "iniciativas"
+                          ? "bg-primary/20"
+                          : "hover:bg-accent"
                       )}
-                      onClick={() => navigate(`/empresa/${empresaId}/${item.mainUrl}`)}
+                      onClick={() =>
+                        navigate(`/empresa/${empresaId}/${item.mainUrl}`)
+                      }
                     >
                       <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-primary text-primary-foreground">
+                  <TooltipContent
+                    side="right"
+                    className="bg-primary text-primary-foreground"
+                  >
                     {item.title}
                   </TooltipContent>
                 </Tooltip>
@@ -164,7 +170,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                   className={({ isActive }) =>
                     cn(
                       "flex items-center gap-3 p-2 text-left rounded-lg flex-1 text-sm transition-colors",
-                      item.title === "Pernas"
+                      item.mainUrl === "iniciativas"
                         ? "bg-primary/20 text-foreground"
                         : isActive
                         ? "bg-primary/10 text-primary"
@@ -176,7 +182,9 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                   <span className="font-medium">{item.title}</span>
                 </NavLink>
               )}
-              {!collapsed && (
+
+              {/* Só renderiza filhos se existirem */}
+              {!collapsed && item.children.length > 0 && (
                 <div className="ml-7 mt-1 space-y-1">
                   {item.children.map((child) => (
                     <NavLink
@@ -201,7 +209,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           ))}
         </div>
 
-        {/* Footer with User and Toggle */}
+        {/* Footer */}
         <div className="p-3 border-t border-border space-y-2">
           <button
             onClick={toggleCollapsed}

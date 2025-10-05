@@ -4,17 +4,15 @@ import Mente from '../pages/Mente';
 import DRE from '../pages/mente/DRE';
 import Movimentacoes from '../pages/mente/Movimentacoes';
 import Alma from '../pages/Alma';
-import Notas from '../pages/alma/Notas';
 import Corpo from '../pages/Corpo';
 import Fluxos from '../pages/corpo/Fluxos';
 import Indicadores from '../pages/corpo/Indicadores';
-import Pernas from '../pages/Pernas';
+import Iniciativas from '../pages/alma/Iniciativas';
 import Tarefas from '../pages/alma/Tarefas';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import NewEmpresa from '../pages/NewEmpresa';
 import NotFound from '../pages/NotFound';
-// Remova a importação do Layout se não for mais usada em nenhuma rota
 
 export function AppRoutes() {
   return (
@@ -31,11 +29,10 @@ export function AppRoutes() {
         <Route path="dre" element={<DRE />} />
         <Route path="movimentacoes" element={<Movimentacoes />} />
         <Route path="alma" element={<Alma />} />
-        <Route path="app" element={<Notas />} />
         <Route path="corpo" element={<Corpo />} />
         <Route path="fluxos" element={<Fluxos />} />
         <Route path="indicadores" element={<Indicadores />} />
-        <Route path="pernas" element={<Pernas />} />
+        <Route path="iniciativas" element={<Iniciativas />} />
         <Route path="tarefas" element={<Tarefas />} />
       </Route>
       

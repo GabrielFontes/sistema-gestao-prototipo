@@ -60,14 +60,6 @@ const kanbanColumns = [
   },
 ];
 
-const sprintTasks = [
-  { id: 1, title: "🥇 Implementar autenticação", responsavel: "João Silva", concluida: false, iniciativa: "Sistema de Login" },
-  { id: 2, title: "🥇 Migrar banco de dados", responsavel: "Maria Santos", concluida: true, iniciativa: "Infraestrutura" },
-  { id: 3, title: "🥈 Criar tela de dashboard", responsavel: "Pedro Costa", concluida: false, iniciativa: "Interface Admin" },
-  { id: 4, title: "🥈 Integrar API de pagamentos", responsavel: "Ana Oliveira", concluida: false, iniciativa: "E-commerce" },
-  { id: 5, title: "🥉 Documentar APIs", responsavel: "Carlos Souza", concluida: false },
-  { id: 6, title: "🥉 Revisar código", responsavel: "Juliana Lima", concluida: true },
-];
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
@@ -92,17 +84,17 @@ export default function Pernas() {
   const [selectedProject, setSelectedProject] = useState<{ title: string } | null>(null);
   const [selectedProcess, setSelectedProcess] = useState<{ title: string } | null>(null);
   
-  const tasksByPriority = {
-    ouro: sprintTasks.filter(t => getPriorityFromEmoji(t.title) === "ouro"),
-    prata: sprintTasks.filter(t => getPriorityFromEmoji(t.title) === "prata"),
-    bronze: sprintTasks.filter(t => getPriorityFromEmoji(t.title) === "bronze"),
-  };
-
   return (
     <div className="space-y-6">
         <Tabs defaultValue="projetos" className="w-full">
           <div className="flex justify-center">
             <TabsList className="flex max-w-4xl justify-between">
+            <TabsTrigger
+                value="notas"
+                className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Notas
+              </TabsTrigger>
               <TabsTrigger
                 value="projetos"
                 className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -110,39 +102,14 @@ export default function Pernas() {
                 Projetos
               </TabsTrigger>
               <TabsTrigger
-                value="operacoes"
+                value="processos"
                 className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
-                Operações
-              </TabsTrigger>
-              <TabsTrigger
-                value="sprint"
-                className="w-32 text-center px-4 py-2 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                Sprint
+                Processos
               </TabsTrigger>
             </TabsList>
           </div>
 
-          {/* Sprint Atual */}
-          <TabsContent value="sprint" className="mt-6">
-  <Card className="h-[80vh] flex flex-col">
-    <CardContent className="flex-1 p-0">
-      <iframe
-        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
-        className="w-full h-full border-none"
-        style={{
-          display: "block",
-          transform: "scale(0.8)",
-          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
-          width: "125%", // compensar o zoom
-          height: "125%" // compensar o zoom
-        }}
-        title="Planilha Indicadores"
-      />
-    </CardContent>
-  </Card>
-</TabsContent>
 
 
 {/*          <TabsContent value="sprint" className="mt-6">
@@ -226,7 +193,26 @@ export default function Pernas() {
           </TabsContent>
 */}
 
-          {/* Conteúdo Projetos */}
+{/* Conteúdo Notas */}
+<TabsContent value="notas" className="mt-6">
+<Card className="h-[80vh] flex flex-col">
+    <CardContent className="flex-1 p-0">
+      <iframe
+        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc#view=Notas"
+        className="w-full h-full border-none"
+        style={{
+          display: "block",
+          transform: "scale(0.8)",
+          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
+          width: "125%", // compensar o zoom
+          height: "125%" // compensar o zoom
+        }}
+        title="Planilha Indicadores"
+      />
+    </CardContent>
+  </Card>
+  </TabsContent>
+
 {/* Conteúdo Projetos */}
 <TabsContent value="projetos" className="mt-6">
   <Card className="h-[80vh] flex flex-col">
@@ -249,7 +235,7 @@ export default function Pernas() {
 
 
           {/* Conteúdo Operações */}
-          <TabsContent value="operacoes" className="mt-6">
+          <TabsContent value="processos" className="mt-6">
   <Card className="h-[80vh] flex flex-col">
     <CardContent className="flex-1 p-0">
       <iframe
