@@ -32,7 +32,7 @@ function NewEmpresa() {
         .insert({
           name,
           subtitle,
-          logo: logo || '/src/images/Logo_Claro.png',
+          logo: logo || '/images/Logo_Claro.png',
           primary_color: primaryColor,
         })
         .select()

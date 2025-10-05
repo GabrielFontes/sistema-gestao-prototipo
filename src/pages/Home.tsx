@@ -97,7 +97,7 @@ function EmpresaCard({ empresa, onClick }: EmpresaCardProps) {
             alt={`${empresa.name} logo`}
             className="w-16 h-16 mb-4 object-contain"
             onError={(e) => {
-              e.currentTarget.src = '/src/images/Logo_Claro.png';
+              e.currentTarget.src = '/images/Logo_Claro.png';
             }}
           />
         </CardContent>

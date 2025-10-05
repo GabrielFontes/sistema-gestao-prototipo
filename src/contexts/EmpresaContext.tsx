@@ -90,7 +90,7 @@ export function EmpresaProvider({ children }: { children: React.ReactNode }) {
         id: w.id,
         name: w.name,
         subtitle: w.subtitle || '',
-        logo: w.logo || '/src/images/Sem_Imagem.png',
+        logo: w.logo || '/images/Sem_Imagem.png',
         primaryColor: w.primary_color,
       }));
       console.log('Empresas formatados:', formattedEmpresas);

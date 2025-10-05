@@ -40,7 +40,7 @@ export function useEmpresas(user: User | null) {
         id: w.id,
         name: w.name,
         subtitle: w.subtitle || '',
-        logo: w.logo || '/src/images/Logo_Claro.png',
+        logo: w.logo || '/images/Logo_Claro.png',
         primaryColor: w.primary_color,
       }));
     },
