@@ -44,6 +44,13 @@ export type Database = {
             referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "empresa_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_display_info"
+            referencedColumns: ["id"]
+          },
         ]
       }
       empresas: {
@@ -221,6 +228,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "user_display_info"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_milestone_id_fkey"
             columns: ["milestone_id"]
             isOneToOne: false
@@ -231,11 +245,31 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_display_info: {
+        Row: {
+          display_name: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
+        }
+        Insert: {
+          display_name?: never
+          email?: string | null
+          full_name?: never
+          id?: string | null
+        }
+        Update: {
+          display_name?: never
+          email?: string | null
+          full_name?: never
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_owner_or_admin: {
-        Args: { empresa_id: string; user_id: string }
+        Args: { p_empresa_id: string; p_user_id: string }
         Returns: boolean
       }
     }
