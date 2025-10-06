@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      empresa_members: {
+        Row: {
+          created_at: string
+          empresa_id: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "empresa_members_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      empresas: {
+        Row: {
+          corpo_link: string | null
+          created_at: string
+          dre_link: string | null
+          fluxos_link: string | null
+          id: string
+          logo: string | null
+          movimentacoes_link: string | null
+          name: string
+          notas_link: string | null
+          operacao_link: string | null
+          organograma_link: string | null
+          primary_color: string
+          projetos_link: string | null
+          slug: string | null
+          sprint_link: string | null
+          subtitle: string | null
+          updated_at: string
+        }
+        Insert: {
+          corpo_link?: string | null
+          created_at?: string
+          dre_link?: string | null
+          fluxos_link?: string | null
+          id?: string
+          logo?: string | null
+          movimentacoes_link?: string | null
+          name: string
+          notas_link?: string | null
+          operacao_link?: string | null
+          organograma_link?: string | null
+          primary_color?: string
+          projetos_link?: string | null
+          slug?: string | null
+          sprint_link?: string | null
+          subtitle?: string | null
+          updated_at?: string
+        }
+        Update: {
+          corpo_link?: string | null
+          created_at?: string
+          dre_link?: string | null
+          fluxos_link?: string | null
+          id?: string
+          logo?: string | null
+          movimentacoes_link?: string | null
+          name?: string
+          notas_link?: string | null
+          operacao_link?: string | null
+          organograma_link?: string | null
+          primary_color?: string
+          projetos_link?: string | null
+          slug?: string | null
+          sprint_link?: string | null
+          subtitle?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       milestones: {
         Row: {
           created_at: string
@@ -59,29 +151,29 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          empresa_id: string
           id: string
           name: string
           status: string
           updated_at: string
-          empresa_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          empresa_id: string
           id?: string
           name: string
           status?: string
           updated_at?: string
-          empresa_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          empresa_id?: string
           id?: string
           name?: string
           status?: string
           updated_at?: string
-          empresa_id?: string
         }
         Relationships: [
           {
@@ -137,75 +229,13 @@ export type Database = {
           },
         ]
       }
-      empresa_members: {
-        Row: {
-          created_at: string
-          id: string
-          role: string
-          user_id: string
-          empresa_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role?: string
-          user_id: string
-          empresa_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: string
-          user_id?: string
-          empresa_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "empresa_members_empresa_id_fkey"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      empresas: {
-        Row: {
-          created_at: string
-          id: string
-          logo: string | null
-          name: string
-          primary_color: string
-          subtitle: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          logo?: string | null
-          name: string
-          primary_color?: string
-          subtitle?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          logo?: string | null
-          name?: string
-          primary_color?: string
-          subtitle?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      is_empresa_member: {
-        Args: { user_id: string; empresa_id: string }
+      is_owner_or_admin: {
+        Args: { empresa_id: string; user_id: string }
         Returns: boolean
       }
     }

@@ -16,7 +16,7 @@ function NewEmpresa() {
   const [name, setName] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [logo, setLogo] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('hsl(220, 60%, 50%)');
+  const [primary_Color, setPrimaryColor] = useState('hsl(220, 60%, 50%)');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +26,14 @@ function NewEmpresa() {
     }
 
     try {
-      console.log('Criando empresa com dados:', { name, subtitle, logo, primaryColor });
+      console.log('Criando empresa com dados:', { name, subtitle, logo, primary_Color });
       const { data: empresa, error: empresaError } = await supabase
         .from('empresas')
         .insert({
           name,
           subtitle,
           logo: logo || '/images/Logo_Claro.png',
-          primary_color: primaryColor,
+          primary_color: primary_Color,
         })
         .select()
         .single();
@@ -116,12 +116,12 @@ function NewEmpresa() {
             />
           </div>
           <div>
-            <label htmlFor="primaryColor" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="primary_Color" className="block text-sm font-medium text-gray-700">
               Cor Primária (HSL)
             </label>
             <Input
-              id="primaryColor"
-              value={primaryColor}
+              id="primary_Color"
+              value={primary_Color}
               onChange={(e) => setPrimaryColor(e.target.value)}
               placeholder="Ex: hsl(220, 60%, 50%)"
               className="mt-1"

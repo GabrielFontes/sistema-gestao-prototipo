@@ -85,16 +85,38 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
     if (!currentEmpresa) return;
 
     try {
-      // Buscar configurações salvas (você pode adicionar uma tabela empresa_settings no futuro)
-      // Por enquanto, apenas carrega a cor primária
-      setPrimaryColor(hslToHex(currentEmpresa.primaryColor));
+      const { data, error } = await supabase
+        .from('empresas')
+        .select('primary_color, dre_link, movimentacoes_link, fluxos_link, organograma_link, corpo_link, notas_link, projetos_link, operacao_link, sprint_link')
+        .eq('id', currentEmpresa.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setPrimaryColor(hslToHex(data.primary_color || '0 0% 50%'));
+        setLinks({
+          dre: data.dre_link || '',
+          movimentacoes: data.movimentacoes_link || '',
+          fluxos: data.fluxos_link || '',
+          organograma: data.organograma_link || '',
+          corpo: data.corpo_link || '',
+          notas: data.notas_link || '',
+          projetos: data.projetos_link || '',
+          operacao: data.operacao_link || '',
+          sprint: data.sprint_link || '',
+        });
+      }
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
+      toast.error('Não foi possível carregar as configurações.');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit chamado', { currentEmpresa, links, primaryColor });
+
     if (!currentEmpresa) return;
 
     setIsLoading(true);
@@ -105,6 +127,15 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
         .from('empresas')
         .update({
           primary_color: hslColor,
+          dre_link: links.dre,
+          movimentacoes_link: links.movimentacoes,
+          fluxos_link: links.fluxos,
+          organograma_link: links.organograma,
+          corpo_link: links.corpo,
+          notas_link: links.notas,
+          projetos_link: links.projetos,
+          operacao_link: links.operacao,
+          sprint_link: links.sprint,
         })
         .eq('id', currentEmpresa.id);
 

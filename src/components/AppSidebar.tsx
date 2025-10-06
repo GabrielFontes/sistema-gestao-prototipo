@@ -3,23 +3,17 @@ import { NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   Brain,
   Activity,
-  Layers,
   Heart,
-  ArrowUpZA,
-  Filter,
-  Atom,
   BarChart,
-  ListFilter,
-  Footprints,
-  FileText,
   ListChecks,
   Repeat,
   TrendingUp,
-  AlertCircle,
+  StickyNote,
+  Target,
+  ListFilter,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
-  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
@@ -31,13 +25,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -68,7 +55,9 @@ const menuItems = [
     icon: Heart,
     mainUrl: "alma",
     children: [
-      { title: "Iniciativas", url: "iniciativas", icon: ListFilter },
+      { title: "Notas", url: "notas", icon: StickyNote },
+      { title: "Projetos", url: "projetos", icon: Target },
+      { title: "Processos", url: "processos", icon: ListFilter },
       { title: "Tarefas", url: "tarefas", icon: CheckCircle },
     ],
   },
@@ -78,6 +67,9 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
   const { empresaId } = useParams();
   const navigate = useNavigate();
+  const { currentEmpresa, isLoading } = useEmpresa();
+  const { user } = useAuth();
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
     return saved ? JSON.parse(saved) : { Mente: true, Corpo: false, Alma: false };
@@ -90,13 +82,21 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
     });
   };
 
-  const { currentEmpresa } = useEmpresa();
-  const { user, signOut } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-card border-r border-border flex items-center justify-center">
+        <div className="text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
 
-  const getInitials = (email: string | undefined) => {
-    if (!email) return "U";
-    return email.charAt(0).toUpperCase();
-  };
+  if (!currentEmpresa) {
+    return (
+      <div className="h-screen bg-card border-r border-border flex items-center justify-center">
+        <div className="text-muted-foreground">Nenhuma empresa selecionada</div>
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -115,7 +115,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
             )}
           >
             <img
-              src={currentEmpresa.logo}
+              src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
               alt="Logo da Empresa"
               className="object-contain w-full h-full"
             />
@@ -146,7 +146,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                     <div
                       className={cn(
                         "flex items-center p-2 rounded-lg cursor-pointer transition-colors",
-                        item.mainUrl === "iniciativas"
+                        item.mainUrl === "processos"
                           ? "bg-primary/20"
                           : "hover:bg-accent"
                       )}
@@ -170,7 +170,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                   className={({ isActive }) =>
                     cn(
                       "flex items-center gap-3 p-2 text-left rounded-lg flex-1 text-sm transition-colors",
-                      item.mainUrl === "iniciativas"
+                      item.mainUrl === "processos"
                         ? "bg-primary/20 text-foreground"
                         : isActive
                         ? "bg-primary/10 text-primary"
@@ -183,7 +183,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 </NavLink>
               )}
 
-              {/* Só renderiza filhos se existirem */}
               {!collapsed && item.children.length > 0 && (
                 <div className="ml-7 mt-1 space-y-1">
                   {item.children.map((child) => (

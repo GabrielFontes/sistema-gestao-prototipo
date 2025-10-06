@@ -80,7 +80,7 @@ const getPriorityFromEmoji = (title: string) => {
   return "bronze";
 };
 
-export default function Pernas() {
+export default function Processos() {
   const [selectedProject, setSelectedProject] = useState<{ title: string } | null>(null);
   const [selectedProcess, setSelectedProcess] = useState<{ title: string } | null>(null);
   

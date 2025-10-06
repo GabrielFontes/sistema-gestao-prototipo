@@ -78,7 +78,7 @@ interface EmpresaCardProps {
     name: string;
     subtitle: string;
     logo: string;
-    primaryColor: string;
+    primary_Color: string;
   };
   onClick: () => void;
 }

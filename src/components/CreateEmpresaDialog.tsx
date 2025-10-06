@@ -29,7 +29,7 @@ export function CreateEmpresaDialog({ trigger }: CreateEmpresaDialogProps) {
   const [name, setName] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [logo, setLogo] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
+  const [primary_Color, setPrimaryColor] = useState('#3b82f6');
   const [isLoading, setIsLoading] = useState(false);
 
   const hslToHex = (hsl: string) => {
@@ -80,7 +80,7 @@ export function CreateEmpresaDialog({ trigger }: CreateEmpresaDialogProps) {
 
     setIsLoading(true);
     try {
-      const hslColor = hexToHsl(primaryColor);
+      const hslColor = hexToHsl(primary_Color);
       
       const { data: empresa, error: empresaError } = await supabase
         .from('empresas')
@@ -168,18 +168,18 @@ export function CreateEmpresaDialog({ trigger }: CreateEmpresaDialogProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="primaryColor">Cor Primária</Label>
+            <Label htmlFor="primary_Color">Cor Primária</Label>
             <div className="flex gap-2">
               <Input
                 type="color"
-                id="primaryColor"
-                value={primaryColor}
+                id="primary_Color"
+                value={primary_Color}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 className="w-20 h-10 cursor-pointer"
               />
               <Input
                 type="text"
-                value={primaryColor}
+                value={primary_Color}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 placeholder="#3b82f6"
                 className="flex-1"
