@@ -12,16 +12,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Building2, Link2, Users } from 'lucide-react';
+import { Settings, Building2, Link2, Users, Trash2, UserX } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface EmpresaSettingsDialogProps {
   trigger?: React.ReactNode;
 }
 
+interface MemberWithDetails {
+  id: string;
+  user_id: string;
+  email: string;
+  display_name: string;
+  role: string;
+  created_at: string;
+}
+
 export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
   const { currentEmpresa } = useEmpresa();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('geral');
   const [empresaName, setEmpresaName] = useState('');
@@ -39,7 +68,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
   });
   const [primaryColor, setPrimaryColor] = useState('#3b82f6');
   const [isLoading, setIsLoading] = useState(false);
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<MemberWithDetails[]>([]);
 
   useEffect(() => {
     if (open && currentEmpresa) {
@@ -115,11 +144,9 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
         });
       }
 
-      // Carregar membros
+      // Carregar membros com detalhes
       const { data: membersData, error: membersError } = await supabase
-        .from('empresa_members')
-        .select('id, user_id, role')
-        .eq('empresa_id', currentEmpresa.id);
+        .rpc('get_empresa_members_with_details', { p_empresa_id: currentEmpresa.id });
 
       if (membersError) throw membersError;
       setMembers(membersData || []);
@@ -192,6 +219,67 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
     }
   };
 
+  const handleUpdateMemberRole = async (memberId: string, newRole: string) => {
+    if (!currentEmpresa) return;
+
+    try {
+      const { error } = await supabase
+        .from('empresa_members')
+        .update({ role: newRole })
+        .eq('id', memberId);
+
+      if (error) throw error;
+
+      toast.success('Função atualizada com sucesso!');
+      loadSettings();
+    } catch (error: any) {
+      console.error('Erro ao atualizar função:', error);
+      toast.error('Não foi possível atualizar a função: ' + error.message);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!currentEmpresa) return;
+
+    try {
+      const { error } = await supabase
+        .from('empresa_members')
+        .delete()
+        .eq('id', memberId);
+
+      if (error) throw error;
+
+      toast.success('Membro removido com sucesso!');
+      loadSettings();
+    } catch (error: any) {
+      console.error('Erro ao remover membro:', error);
+      toast.error('Não foi possível remover o membro: ' + error.message);
+    }
+  };
+
+  const handleDeleteEmpresa = async () => {
+    if (!currentEmpresa) return;
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('empresas')
+        .delete()
+        .eq('id', currentEmpresa.id);
+
+      if (error) throw error;
+
+      toast.success('Empresa excluída com sucesso!');
+      setOpen(false);
+      navigate('/');
+    } catch (error: any) {
+      console.error('Erro ao excluir empresa:', error);
+      toast.error('Não foi possível excluir a empresa: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!currentEmpresa) return null;
 
   return (
@@ -224,6 +312,10 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
             <TabsTrigger value="membros" className="w-full justify-start gap-2">
               <Users className="h-4 w-4" />
               Membros
+            </TabsTrigger>
+            <TabsTrigger value="excluir" className="w-full justify-start gap-2 text-destructive">
+              <Trash2 className="h-4 w-4" />
+              Excluir Empresa
             </TabsTrigger>
           </TabsList>
 
@@ -384,12 +476,92 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
                 <div className="border rounded-lg divide-y">
                   {members.map((member) => (
                     <div key={member.id} className="p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">ID: {member.user_id}</p>
-                        <p className="text-sm text-muted-foreground capitalize">{member.role}</p>
+                      <div className="flex-1">
+                        <p className="font-medium">{member.display_name}</p>
+                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={member.role}
+                          onValueChange={(value) => handleUpdateMemberRole(member.id, value)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="owner">Owner</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="member">Membro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive">
+                              <UserX className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remover membro?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza que deseja remover {member.display_name} da empresa?
+                                Esta ação não pode ser desfeita.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleRemoveMember(member.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="excluir" className="mt-0">
+              <div className="space-y-4">
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                  <h3 className="font-semibold text-destructive mb-2">Zona de Perigo</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    A exclusão da empresa é permanente e não pode ser desfeita. Todos os dados, 
+                    projetos, tarefas e membros associados serão perdidos.
+                  </p>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="w-full">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Excluir Empresa Permanentemente
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação não pode ser desfeita. Isso irá excluir permanentemente a empresa
+                          <span className="font-semibold"> {empresaName}</span> e remover todos os dados
+                          associados dos nossos servidores.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteEmpresa}
+                          disabled={isLoading}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {isLoading ? 'Excluindo...' : 'Sim, excluir empresa'}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </TabsContent>
