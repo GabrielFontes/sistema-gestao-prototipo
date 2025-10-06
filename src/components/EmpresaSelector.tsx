@@ -64,6 +64,11 @@ export function EmpresaSelector() {
                   currentEmpresa.id === empresa.id && "bg-accent"
                 )}
               >
+                <img
+                  src={empresa.logo || '/images/Sem_Imagem.png'}
+                  alt={empresa.name}
+                  className="h-8 w-8 object-cover rounded-full aspect-square shrink-0"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate">{empresa.name}</div>
                   <div className="text-xs text-muted-foreground truncate">
