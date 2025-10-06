@@ -53,6 +53,7 @@ const menuItems = [
     icon: Activity,
     mainUrl: "corpo",
     children: [
+      { title: "OKRs", url: "okrs", icon: Target },
       { title: "Fluxos", url: "fluxos", icon: Repeat },
       { title: "Indicadores", url: "indicadores", icon: TrendingUp },
     ],
