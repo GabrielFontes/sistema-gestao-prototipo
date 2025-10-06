@@ -110,18 +110,21 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
       >
         {/* Header */}
         <div className="p-4 border-b border-border flex items-center gap-2">
-        <div
-          className={cn(
-            "flex items-center justify-center transition-all duration-300",
-            collapsed ? "w-8 h-8" : "w-10 h-10"
-          )}
-        >
-          <img
-            src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
-            alt="Logo da Empresa"
-            className="object-cover w-full h-full rounded-full aspect-square border-4 border-gray-300"
-          />
-        </div>
+          <div
+            className={cn(
+              "flex items-center justify-center transition-all duration-300",
+              collapsed ? "w-8 h-8" : "w-10 h-10"
+            )}
+          >
+            <img
+              src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
+              alt="Logo da Empresa"
+              className="object-cover w-full h-full rounded-full aspect-square border-4"
+              style={{
+                borderColor: currentEmpresa.primaryColor || "#ccc",
+              }}
+            />
+          </div>
           {!collapsed && (
             <div className="flex-1 min-w-0 flex flex-col">
               <h1 className="font-semibold text-base text-foreground truncate">
@@ -138,10 +141,8 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
         {/* Navigation */}
         <div className="flex-1 p-3 overflow-y-auto">
           {menuItems.map((item, index) => (
-            <div
-              key={item.title}
-              className={cn("mb-2", index > 0 ? "mt-4" : "")}
-            >
+            <div key={item.title} className={cn("mb-2", index > 0 ? "mt-4" : "")}>
+              {/* Item principal */}
               {collapsed ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -182,15 +183,28 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 >
                   <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
                   <span className="font-medium">{item.title}</span>
+                  {item.title === "Corpo" && (
+                    <div
+                      className="flex items-center justify-center w-6 h-6 ml-auto rounded-full text-[10px] font-semibold text-white border border-gray-300"
+                      style={{
+                        backgroundColor: currentEmpresa?.primaryColor
+                          ? `hsl(${currentEmpresa.primaryColor})`
+                          : "#000",
+                      }}
+                    >
+                      {almaStats.activeProcesses}
+                    </div>
+                  )}
                 </NavLink>
               )}
 
+              {/* Filhos */}
               {!collapsed && item.children.length > 0 && (
                 <div className="ml-7 mt-1 space-y-1">
                   {item.children.map((child) => {
                     const getStatCount = () => {
                       if (item.title !== "Alma") return null;
-                      
+
                       switch (child.url) {
                         case "tarefas":
                           return almaStats.sprintTasks;
@@ -222,11 +236,13 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                       >
                         <child.icon className="h-4 w-4" />
                         <span className="flex-1">{child.title}</span>
-                        {statCount !== null && statCount > 0 && (
+                        {item.title === "Alma" && statCount !== null && (
                           <div
-                            className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold text-white"
+                            className="flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold text-white border border-gray-300"
                             style={{
-                              backgroundColor: `hsl(${currentEmpresa?.primaryColor || '240 5.9% 10%'})`
+                              backgroundColor: currentEmpresa?.primaryColor
+                                ? `hsl(${currentEmpresa.primaryColor})`
+                                : "#000",
                             }}
                           >
                             {statCount}
