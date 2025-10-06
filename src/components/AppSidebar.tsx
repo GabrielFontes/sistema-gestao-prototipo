@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
 import { useAuth } from "@/hooks/useAuth";
 import { EmpresaSelector } from "./EmpresaSelector";
+import { useAlmaStats } from "@/hooks/useAlmaStats";
 import {
   Tooltip,
   TooltipContent,
@@ -69,6 +70,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const navigate = useNavigate();
   const { currentEmpresa, isLoading } = useEmpresa();
   const { user } = useAuth();
+  const almaStats = useAlmaStats(empresaId || null);
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem("sidebar-openSections");
@@ -185,23 +187,54 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
               {!collapsed && item.children.length > 0 && (
                 <div className="ml-7 mt-1 space-y-1">
-                  {item.children.map((child) => (
-                    <NavLink
-                      key={child.url}
-                      to={`/empresa/${empresaId}/${child.url}`}
-                      className={({ isActive }) =>
-                        cn(
-                          "flex items-center gap-2 p-1 rounded-lg text-xs transition-colors",
-                          isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        )
+                  {item.children.map((child) => {
+                    const getStatCount = () => {
+                      if (item.title !== "Alma") return null;
+                      
+                      switch (child.url) {
+                        case "tarefas":
+                          return almaStats.sprintTasks;
+                        case "processos":
+                          return almaStats.activeProcesses;
+                        case "projetos":
+                          return almaStats.activeProjects;
+                        case "notas":
+                          return almaStats.unorganizedNotes;
+                        default:
+                          return null;
                       }
-                    >
-                      <child.icon className="h-4 w-4" />
-                      {child.title}
-                    </NavLink>
-                  ))}
+                    };
+
+                    const statCount = getStatCount();
+
+                    return (
+                      <NavLink
+                        key={child.url}
+                        to={`/empresa/${empresaId}/${child.url}`}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex items-center gap-2 p-1 rounded-lg text-xs transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                          )
+                        }
+                      >
+                        <child.icon className="h-4 w-4" />
+                        <span className="flex-1">{child.title}</span>
+                        {statCount !== null && statCount > 0 && (
+                          <div
+                            className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold text-white"
+                            style={{
+                              backgroundColor: `hsl(${currentEmpresa?.primaryColor || '240 5.9% 10%'})`
+                            }}
+                          >
+                            {statCount}
+                          </div>
+                        )}
+                      </NavLink>
+                    );
+                  })}
                 </div>
               )}
             </div>
