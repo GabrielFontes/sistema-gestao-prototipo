@@ -39,7 +39,7 @@ interface EmpresaSettingsDialogProps {
   trigger?: React.ReactNode;
 }
 
-interface MemberWithDetails {
+interface Member {
   id: string;
   user_id: string;
   email: string;
@@ -68,7 +68,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
   });
   const [primaryColor, setPrimaryColor] = useState('#3b82f6');
   const [isLoading, setIsLoading] = useState(false);
-  const [members, setMembers] = useState<MemberWithDetails[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
     if (open && currentEmpresa) {
@@ -230,7 +230,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
 
       if (error) throw error;
 
-      toast.success('Função atualizada com sucesso!');
+      toast.success('Função do membro atualizada!');
       loadSettings();
     } catch (error: any) {
       console.error('Erro ao atualizar função:', error);
@@ -249,7 +249,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
 
       if (error) throw error;
 
-      toast.success('Membro removido com sucesso!');
+      toast.success('Membro removido da empresa!');
       loadSettings();
     } catch (error: any) {
       console.error('Erro ao remover membro:', error);
