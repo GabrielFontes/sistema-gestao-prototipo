@@ -67,7 +67,7 @@ export function EmpresaSelector() {
                 <img
                   src={empresa.logo || '/images/Sem_Imagem.png'}
                   alt={empresa.name}
-                  className="h-8 w-8 object-cover rounded-full aspect-square shrink-0"
+                  className="h-8 w-8 object-cover rounded-full aspect-square shrink-0 border-2 border-gray-300 "
                 />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate">{empresa.name}</div>

@@ -108,18 +108,18 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
       >
         {/* Header */}
         <div className="p-4 border-b border-border flex items-center gap-2">
-          <div
-            className={cn(
-              "flex items-center justify-center transition-all duration-300",
-              collapsed ? "w-8 h-8" : "w-10 h-10"
-            )}
-          >
-            <img
-              src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
-              alt="Logo da Empresa"
-              className="object-cover w-full h-full rounded-full aspect-square"
-            />
-          </div>
+        <div
+          className={cn(
+            "flex items-center justify-center transition-all duration-300",
+            collapsed ? "w-8 h-8" : "w-10 h-10"
+          )}
+        >
+          <img
+            src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
+            alt="Logo da Empresa"
+            className="object-cover w-full h-full rounded-full aspect-square border-4 border-gray-300"
+          />
+        </div>
           {!collapsed && (
             <div className="flex-1 min-w-0 flex flex-col">
               <h1 className="font-semibold text-base text-foreground truncate">
