@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
+import { AwardWithNumber } from "@/components/icons/AwardWithNumber";
+import { MedalWithNumber } from "@/components/icons/MedalWithNumber";
 import {
   Brain,
   Activity,
+  Medal,
+  Award,
   Heart,
   BarChart,
   ListChecks,
@@ -14,6 +18,8 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Circle,
+  CircleCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
@@ -57,12 +63,28 @@ const menuItems = [
     mainUrl: "alma",
     children: [
       { title: "Notas", url: "notas", icon: StickyNote },
-      { title: "Projetos", url: "projetos", icon: Target },
-      { title: "Processos", url: "processos", icon: ListFilter },
-      { title: "Tarefas", url: "tarefas", icon: CheckCircle },
+      {
+        title: "Processos",
+        url: "processos",
+//        icon: () => <AwardWithNumber number={1} color="gold" />,
+        icon: ListFilter,
+      },
+      {
+        title: "Projetos",
+        url: "projetos",
+//        icon: () => <AwardWithNumber number={2} color="silver" />,
+        icon: Target,
+      },
+      {
+        title: "Tarefas",
+        url: "tarefas",
+//        icon: () => <AwardWithNumber number={3} color="#cd7f32" />,
+        icon: CheckCircle,
+      },
     ],
   },
 ];
+
 
 export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
@@ -213,7 +235,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                         case "projetos":
                           return almaStats.activeProjects;
                         case "notas":
-                          return almaStats.unorganizedNotes;
+                          return null;
                         default:
                           return null;
                       }
