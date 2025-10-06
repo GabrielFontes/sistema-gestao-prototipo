@@ -64,19 +64,19 @@ const menuItems = [
     children: [
       { title: "Notas", url: "notas", icon: StickyNote },
       {
-        title: "Processos",
+        title: "🥇Processos",
         url: "processos",
 //        icon: () => <AwardWithNumber number={1} color="gold" />,
         icon: ListFilter,
       },
       {
-        title: "Projetos",
+        title: "🥈Projetos",
         url: "projetos",
 //        icon: () => <AwardWithNumber number={2} color="silver" />,
         icon: Target,
       },
       {
-        title: "Tarefas",
+        title: "🥉Tarefas",
         url: "tarefas",
 //        icon: () => <AwardWithNumber number={3} color="#cd7f32" />,
         icon: CheckCircle,
