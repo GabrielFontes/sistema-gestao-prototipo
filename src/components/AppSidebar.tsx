@@ -183,7 +183,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 >
                   <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
                   <span className="font-medium">{item.title}</span>
-                  {item.title === "Corpo" && (
+                  {!collapsed && item.title === "Corpo" && (
                     <div
                       className="flex items-center justify-center w-6 h-6 ml-auto rounded-full text-[10px] font-semibold text-white border border-gray-300"
                       style={{
