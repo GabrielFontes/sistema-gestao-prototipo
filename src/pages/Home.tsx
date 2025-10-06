@@ -78,7 +78,7 @@ interface EmpresaCardProps {
     name: string;
     subtitle: string;
     logo: string;
-    primary_Color: string;
+    primary_Color?: string;
   };
   onClick: () => void;
 }
@@ -95,7 +95,7 @@ function EmpresaCard({ empresa, onClick }: EmpresaCardProps) {
           <img
             src={empresa.logo}
             alt={`${empresa.name} logo`}
-            className="w-16 h-16 mb-4 object-contain"
+            className="w-16 h-16 mb-4 object-cover rounded-full aspect-square"
             onError={(e) => {
               e.currentTarget.src = '/images/Logo_Claro.png';
             }}

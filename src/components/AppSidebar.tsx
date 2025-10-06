@@ -117,7 +117,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
             <img
               src={currentEmpresa.logo || "/images/Sem_Imagem.png"}
               alt="Logo da Empresa"
-              className="object-contain w-full h-full"
+              className="object-cover w-full h-full rounded-full aspect-square"
             />
           </div>
           {!collapsed && (
