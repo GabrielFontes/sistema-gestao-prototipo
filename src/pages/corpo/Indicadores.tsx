@@ -1,5 +1,6 @@
 import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Edit2, Plus } from "lucide-react";
 
 export default function Indicadores() {
   return (
@@ -11,11 +12,13 @@ export default function Indicadores() {
         </div>
 
         {/* Card do gráfico */}
-        <Card className="h-[80vh] flex flex-col"> {/* Altura relativa à tela */}
-          <CardContent className="flex-1 p-0">
-          <iframe
-            src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit#gid=268125083"
-            className="w-full h-full border-none"
+        <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center h-[74vh]">
+                  <div className="flex-1 h-full border-none">
+                  <iframe
+            src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit?rm=minimal#gid=268125083"
+            className="w-full h-full border border-gray-300 rounded overflow-hidden"
             style={{
               display: "block",
               transform: "scale(0.8)",
@@ -25,9 +28,10 @@ export default function Indicadores() {
             }}
             title="Planilha Indicadores"
           />
-
-          </CardContent>
-        </Card>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
       </div>
   );
 }

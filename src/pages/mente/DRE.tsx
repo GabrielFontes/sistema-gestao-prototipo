@@ -11,11 +11,13 @@ export default function DRE() {
         </div>
 
         {/* Card com o iframe da planilha */}
-        <Card className="h-[80vh] flex flex-col"> {/* altura relativa à tela */}
-          <CardContent className="flex-1 p-0">
-            <iframe
-              src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit#gid=1277586829"
-              className="w-full h-full border-none"
+        <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center h-[74vh]">
+                  <div className="flex-1 h-full border-none">
+                  <iframe
+              src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit?rm=minimal#gid=1277586829"
+            className="w-full h-full border border-gray-300 rounded overflow-hidden"
               style={{
                 display: "block",
                 transform: "scale(0.8)",
@@ -25,8 +27,10 @@ export default function DRE() {
               }}
               title="Planilha DRE"
             />
-          </CardContent>
-        </Card>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
       </div>
   );
 }

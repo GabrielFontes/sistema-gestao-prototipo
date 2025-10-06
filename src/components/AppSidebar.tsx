@@ -207,7 +207,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                   <span className="font-medium">{item.title}</span>
                   {!collapsed && item.title === "Corpo" && (
                     <div
-                      className="flex items-center justify-center w-6 h-6 ml-auto rounded-full text-[10px] font-semibold text-white border border-gray-300"
+                      className="flex items-center justify-center w-4 h-4 ml-auto rounded-full text-[10px] font-semibold text-white border border-gray-300"
                       style={{
                         backgroundColor: currentEmpresa?.primaryColor
                           ? `hsl(${currentEmpresa.primaryColor})`
@@ -260,7 +260,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                         <span className="flex-1">{child.title}</span>
                         {item.title === "Alma" && statCount !== null && (
                           <div
-                            className="flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold text-white border border-gray-300"
+                            className="flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-semibold text-white border border-gray-300"
                             style={{
                               backgroundColor: currentEmpresa?.primaryColor
                                 ? `hsl(${currentEmpresa.primaryColor})`

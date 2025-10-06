@@ -41,22 +41,26 @@ export default function Movimentacoes() {
       </div>
 
       {/* Card com o iframe da planilha */}
-      <Card className="h-[80vh] flex flex-col"> {/* altura relativa à tela */}
-        <CardContent className="flex-1 p-0">
-          <iframe
-            src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit#gid=398711427"
-            className="w-full h-full border-none"
-            style={{
+      <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center h-[74vh]">
+                  <div className="flex-1 h-full border-none">
+                  <iframe
+            src="https://docs.google.com/spreadsheets/d/1_Xpqje95N1gof2Vo5cQzJAGutkyPqmH4ljBP0rED6Ik/edit?rm=minimal#gid=398711427"
+            className="w-full h-full border border-gray-300 rounded overflow-hidden"
+              style={{
               display: "block",
               transform: "scale(0.8)",
               transformOrigin: "0 0", // garante que o zoom saia do canto superior esquerdo
               width: "125%", // compensa o zoom
               height: "125%" // compensa o zoom
             }}
-            title="Planilha DRE"
+            title="Planilha de Movimentações"
           />
-        </CardContent>
-      </Card>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
     </div>
   );
 }
