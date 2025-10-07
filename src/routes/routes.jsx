@@ -7,7 +7,7 @@ import Alma from '../pages/Alma';
 import Corpo from '../pages/Corpo';
 import Fluxos from '../pages/corpo/Fluxos';
 import Indicadores from '../pages/corpo/Indicadores';
-import OKRs from '../pages/corpo/OKRs';
+import Organograma from '../pages/corpo/Organograma';
 import Projetos from '../pages/alma/Projetos';
 import Notas from '../pages/alma/Notas';
 import Processos from '../pages/alma/Processos';
@@ -35,7 +35,7 @@ export function AppRoutes() {
         <Route path="corpo" element={<Corpo />} />
         <Route path="fluxos" element={<Fluxos />} />
         <Route path="indicadores" element={<Indicadores />} />
-        <Route path="okrs" element={<OKRs />} />
+        <Route path="organograma" element={<Organograma />} />
         <Route path="processos" element={<Processos />} />
         <Route path="projetos" element={<Projetos />} />
         <Route path="notas" element={<Notas />} />

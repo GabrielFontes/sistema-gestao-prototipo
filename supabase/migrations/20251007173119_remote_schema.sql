@@ -176,6 +176,23 @@ CREATE TABLE IF NOT EXISTS "public"."empresas" (
 ALTER TABLE "public"."empresas" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."key_results" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "objective_id" "uuid" NOT NULL,
+    "name" "text" NOT NULL,
+    "description" "text",
+    "target_value" numeric,
+    "current_value" numeric DEFAULT 0,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "project_ids" "uuid"[],
+    "unit" "text" DEFAULT '%'::"text"
+);
+
+
+ALTER TABLE "public"."key_results" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."milestones" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "project_id" "uuid" NOT NULL,
@@ -192,6 +209,22 @@ CREATE TABLE IF NOT EXISTS "public"."milestones" (
 ALTER TABLE "public"."milestones" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."objectives" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "empresa_id" "uuid" NOT NULL,
+    "name" "text" NOT NULL,
+    "description" "text",
+    "trimestre" integer NOT NULL,
+    "year" integer NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "objectives_quarter_check" CHECK ((("trimestre" >= 1) AND ("trimestre" <= 4)))
+);
+
+
+ALTER TABLE "public"."objectives" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "empresa_id" "uuid" NOT NULL,
@@ -200,6 +233,10 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
     "status" "text" DEFAULT 'active'::"text" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "owner" "text",
+    "target_value" numeric,
+    "current_value" numeric DEFAULT 0,
+    "unit" "text" DEFAULT '%'::"text",
     CONSTRAINT "projects_status_check" CHECK (("status" = ANY (ARRAY['active'::"text", 'completed'::"text", 'archived'::"text"])))
 );
 
@@ -244,8 +281,18 @@ ALTER TABLE ONLY "public"."empresas"
 
 
 
+ALTER TABLE ONLY "public"."key_results"
+    ADD CONSTRAINT "key_results_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."milestones"
     ADD CONSTRAINT "milestones_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."objectives"
+    ADD CONSTRAINT "objectives_pkey" PRIMARY KEY ("id");
 
 
 
@@ -259,6 +306,10 @@ ALTER TABLE ONLY "public"."tasks"
 
 
 
+CREATE INDEX "idx_key_results_project_ids" ON "public"."key_results" USING "gin" ("project_ids");
+
+
+
 CREATE OR REPLACE TRIGGER "trg_gerar_slug_empresas" BEFORE INSERT OR UPDATE OF "name" ON "public"."empresas" FOR EACH ROW EXECUTE FUNCTION "public"."gerar_slug_workspace"();
 
 
@@ -267,7 +318,15 @@ CREATE OR REPLACE TRIGGER "update_empresas_updated_at" BEFORE UPDATE ON "public"
 
 
 
+CREATE OR REPLACE TRIGGER "update_key_results_updated_at" BEFORE UPDATE ON "public"."key_results" FOR EACH ROW EXECUTE FUNCTION "public"."handle_updated_at"();
+
+
+
 CREATE OR REPLACE TRIGGER "update_milestones_updated_at" BEFORE UPDATE ON "public"."milestones" FOR EACH ROW EXECUTE FUNCTION "public"."handle_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "update_objectives_updated_at" BEFORE UPDATE ON "public"."objectives" FOR EACH ROW EXECUTE FUNCTION "public"."handle_updated_at"();
 
 
 
@@ -289,8 +348,18 @@ ALTER TABLE ONLY "public"."empresa_members"
 
 
 
+ALTER TABLE ONLY "public"."key_results"
+    ADD CONSTRAINT "key_results_objective_id_fkey" FOREIGN KEY ("objective_id") REFERENCES "public"."objectives"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."milestones"
     ADD CONSTRAINT "milestones_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."objectives"
+    ADD CONSTRAINT "objectives_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "public"."empresas"("id") ON DELETE CASCADE;
 
 
 
@@ -315,9 +384,25 @@ ALTER TABLE "public"."empresa_members" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."empresas" ENABLE ROW LEVEL SECURITY;
 
 
+ALTER TABLE "public"."key_results" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "members_can_create_objectives" ON "public"."objectives" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."empresa_members"
+  WHERE (("empresa_members"."empresa_id" = "objectives"."empresa_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
+
+
+
 CREATE POLICY "members_can_create_projects" ON "public"."projects" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."empresa_members"
   WHERE (("empresa_members"."empresa_id" = "projects"."empresa_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
+
+
+
+CREATE POLICY "members_can_manage_key_results" ON "public"."key_results" USING ((EXISTS ( SELECT 1
+   FROM ("public"."objectives"
+     JOIN "public"."empresa_members" ON (("empresa_members"."empresa_id" = "objectives"."empresa_id")))
+  WHERE (("objectives"."id" = "key_results"."objective_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
 
 
 
@@ -336,6 +421,12 @@ CREATE POLICY "members_can_manage_tasks" ON "public"."tasks" USING ((EXISTS ( SE
 
 
 
+CREATE POLICY "members_can_update_objectives" ON "public"."objectives" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."empresa_members"
+  WHERE (("empresa_members"."empresa_id" = "objectives"."empresa_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
+
+
+
 CREATE POLICY "members_can_update_projects" ON "public"."projects" FOR UPDATE USING ((EXISTS ( SELECT 1
    FROM "public"."empresa_members"
   WHERE (("empresa_members"."empresa_id" = "projects"."empresa_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
@@ -343,6 +434,13 @@ CREATE POLICY "members_can_update_projects" ON "public"."projects" FOR UPDATE US
 
 
 ALTER TABLE "public"."milestones" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."objectives" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "owners_and_admins_can_delete_objectives" ON "public"."objectives" FOR DELETE USING ("public"."is_owner_or_admin"("auth"."uid"(), "empresa_id"));
+
 
 
 CREATE POLICY "owners_and_admins_can_delete_projects" ON "public"."projects" FOR DELETE USING ("public"."is_owner_or_admin"("auth"."uid"(), "empresa_id"));
@@ -387,10 +485,23 @@ CREATE POLICY "users_can_view_empresas" ON "public"."empresas" FOR SELECT USING 
 
 
 
+CREATE POLICY "users_can_view_key_results" ON "public"."key_results" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM ("public"."objectives"
+     JOIN "public"."empresa_members" ON (("empresa_members"."empresa_id" = "objectives"."empresa_id")))
+  WHERE (("objectives"."id" = "key_results"."objective_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
+
+
+
 CREATE POLICY "users_can_view_milestones" ON "public"."milestones" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM ("public"."projects"
      JOIN "public"."empresa_members" ON (("empresa_members"."empresa_id" = "projects"."empresa_id")))
   WHERE (("projects"."id" = "milestones"."project_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
+
+
+
+CREATE POLICY "users_can_view_objectives" ON "public"."objectives" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."empresa_members"
+  WHERE (("empresa_members"."empresa_id" = "objectives"."empresa_id") AND ("empresa_members"."user_id" = "auth"."uid"())))));
 
 
 
@@ -629,9 +740,21 @@ GRANT ALL ON TABLE "public"."empresas" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."key_results" TO "anon";
+GRANT ALL ON TABLE "public"."key_results" TO "authenticated";
+GRANT ALL ON TABLE "public"."key_results" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."milestones" TO "anon";
 GRANT ALL ON TABLE "public"."milestones" TO "authenticated";
 GRANT ALL ON TABLE "public"."milestones" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."objectives" TO "anon";
+GRANT ALL ON TABLE "public"."objectives" TO "authenticated";
+GRANT ALL ON TABLE "public"."objectives" TO "service_role";
 
 
 

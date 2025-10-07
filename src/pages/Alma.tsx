@@ -55,9 +55,6 @@ export default function Alma() {
 </div>
 
 
-
-
-
         {/* Lista de colaboradores */}
         <Card>
           <CardContent className="p-0">
