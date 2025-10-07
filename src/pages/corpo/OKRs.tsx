@@ -1,39 +1,97 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useObjectives } from '@/hooks/useObjectives';
-import { useProjects } from '@/hooks/useProjects';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Plus, Target, TrendingUp, Pencil, Trash2 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useObjectives } from "@/hooks/useObjectives";
+import { useProjects } from "@/hooks/useProjects";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+
+// Circular Progress Component
+const CircularProgress = ({ value }: { value: number }) => {
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
+  return (
+    <svg className="w-12 h-12" viewBox="0 0 50 50">
+      <circle
+        cx="25"
+        cy="25"
+        r={radius}
+        fill="none"
+        stroke="#e5e7eb"
+        strokeWidth="4"
+      />
+      <circle
+        cx="25"
+        cy="25"
+        r={radius}
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth="4"
+        strokeDasharray={circumference}
+        strokeDashoffset={strokeDashoffset}
+        transform="rotate(-90 25 25)"
+      />
+      <text x="25" y="25" textAnchor="middle" dy="0.3em" className="text-xs">
+        {Math.round(value)}%
+      </text>
+    </svg>
+  );
+};
 
 export default function OKRs() {
   const { empresaId } = useParams<{ empresaId: string }>();
-  const { objectives, keyResults, isLoading, createObjective, createKeyResult, updateKeyResult, deleteObjective, deleteKeyResult } = useObjectives(empresaId || null);
+  const {
+    objectives,
+    keyResults,
+    isLoading,
+    createObjective,
+    createKeyResult,
+    updateKeyResult,
+    deleteObjective,
+    deleteKeyResult,
+  } = useObjectives(empresaId || null);
   const { projects } = useProjects(empresaId || null);
 
-  const [openObjectiveDialog, setOpenObjectiveDialog] = useState(false);
-  const [openKeyResultDialog, setOpenKeyResultDialog] = useState(false);
-  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+  const [openObjective, setOpenObjective] = useState(false);
+  const [openKR, setOpenKR] = useState(false);
+  const [selectedObjective, setSelectedObjective] = useState<string | null>(null);
 
   const [objectiveForm, setObjectiveForm] = useState({
-    name: '',
-    description: '',
-    quarter: '1',
+    name: "",
+    description: "",
+    quarter: "1",
     year: new Date().getFullYear().toString(),
   });
 
+  const allPeriods = ["T1", "T2", "T3", "T4"];
+
   const [keyResultForm, setKeyResultForm] = useState({
-    name: '',
-    description: '',
-    project_id: '',
-    target_value: '',
-    current_value: '0',
+    name: "",
+    description: "",
+    project_ids: [] as string[],
+    target_value: "",
+    current_value: "0",
   });
 
   const handleCreateObjective = () => {
@@ -43,301 +101,365 @@ export default function OKRs() {
       quarter: parseInt(objectiveForm.quarter),
       year: parseInt(objectiveForm.year),
     });
-    setObjectiveForm({ name: '', description: '', quarter: '1', year: new Date().getFullYear().toString() });
-    setOpenObjectiveDialog(false);
+    setObjectiveForm({
+      name: "",
+      description: "",
+      quarter: "1",
+      year: new Date().getFullYear().toString(),
+    });
+    setOpenObjective(false);
   };
 
   const handleCreateKeyResult = () => {
-    if (!selectedObjectiveId) return;
-    
-    createKeyResult(selectedObjectiveId, {
+    if (!selectedObjective) return;
+    createKeyResult(selectedObjective, {
       name: keyResultForm.name,
       description: keyResultForm.description,
-      project_id: keyResultForm.project_id || undefined,
-      target_value: keyResultForm.target_value ? parseFloat(keyResultForm.target_value) : undefined,
+      project_ids: keyResultForm.project_ids.length ? keyResultForm.project_ids : undefined,
+      target_value: keyResultForm.target_value
+        ? parseFloat(keyResultForm.target_value)
+        : undefined,
       current_value: parseFloat(keyResultForm.current_value),
     });
-    setKeyResultForm({ name: '', description: '', project_id: '', target_value: '', current_value: '0' });
-    setOpenKeyResultDialog(false);
-    setSelectedObjectiveId(null);
+    setKeyResultForm({
+      name: "",
+      description: "",
+      project_ids: [],
+      target_value: "",
+      current_value: "0",
+    });
+    setOpenKR(false);
+    setSelectedObjective(null);
   };
 
   const handleUpdateProgress = async (krId: string, newValue: string) => {
     const value = parseFloat(newValue);
-    if (!isNaN(value)) {
-      await updateKeyResult(krId, { current_value: value });
-    }
+    if (!isNaN(value)) await updateKeyResult(krId, { current_value: value });
   };
 
-  const getProgressPercentage = (current: number, target?: number) => {
-    if (!target || target === 0) return 0;
-    return Math.min((current / target) * 100, 100);
+  const getProgress = (current: number, target?: number) =>
+    !target || target === 0 ? 0 : Math.min((current / target) * 100, 100);
+
+  const getProjectName = (id?: string) =>
+    id ? projects.find((p) => p.id === id)?.name || "Projeto não encontrado" : "Sem projeto";
+
+  const getProjectOwner = (id?: string) =>
+    id ? projects.find((p) => p.id === id)?.owner || "Não atribuído" : "Não atribuído";
+
+  const getProjectStatus = (id?: string) =>
+    id ? projects.find((p) => p.id === id)?.status || "Desconhecido" : "Desconhecido";
+
+  const getProjectProgress = (id?: string) => {
+    const project = projects.find((p) => p.id === id);
+    if (!project || !project.target_value) return 0;
+    return getProgress(project.current_value || 0, project.target_value);
   };
 
-  const getProjectName = (projectId?: string) => {
-    if (!projectId) return 'Sem projeto';
-    const project = projects.find(p => p.id === projectId);
-    return project?.name || 'Projeto não encontrado';
-  };
-
-  // Group objectives by year and quarter
-  const groupedObjectives = objectives.reduce((acc, obj) => {
-    const key = `${obj.year}-Q${obj.quarter}`;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(obj);
+  const grouped = objectives.reduce((acc, o) => {
+    const key = `${o.year}-T${o.quarter}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(o);
     return acc;
   }, {} as Record<string, typeof objectives>);
 
-  const sortedPeriods = Object.keys(groupedObjectives).sort().reverse();
+  const sorted = Object.keys(grouped).sort().reverse();
+  const currentquarter = `${new Date().getFullYear()}-T${Math.ceil((new Date().getMonth() + 1) / 3)}`;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* Cabeçalho */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">OKRs</h1>
-          <p className="text-muted-foreground">Gestão de Objetivos e Resultados-Chave</p>
-        </div>
-        <Dialog open={openObjectiveDialog} onOpenChange={setOpenObjectiveDialog}>
+        <h1 className="text-xl font-semibold">OKRs</h1>
+        <Dialog open={openObjective} onOpenChange={setOpenObjective}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Objetivo
-            </Button>
+            <Button size="sm">Novo Objetivo</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Criar Objetivo</DialogTitle>
-              <DialogDescription>Defina um novo objetivo para o trimestre.</DialogDescription>
+              <DialogTitle>Novo Objetivo</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome do Objetivo</Label>
+              <Input
+                placeholder="Nome"
+                value={objectiveForm.name}
+                onChange={(e) =>
+                  setObjectiveForm({ ...objectiveForm, name: e.target.value })
+                }
+              />
+              <Textarea
+                placeholder="Descrição"
+                value={objectiveForm.description}
+                onChange={(e) =>
+                  setObjectiveForm({ ...objectiveForm, description: e.target.value })
+                }
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <Select
+                  value={objectiveForm.quarter}
+                  onValueChange={(v) =>
+                    setObjectiveForm({ ...objectiveForm, quarter: v })
+                  }
+                >
+                  <SelectTrigger><SelectValue placeholder="quarter" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1º quarter</SelectItem>
+                    <SelectItem value="2">2º quarter</SelectItem>
+                    <SelectItem value="3">3º quarter</SelectItem>
+                    <SelectItem value="4">4º quarter</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Input
-                  id="name"
-                  value={objectiveForm.name}
-                  onChange={(e) => setObjectiveForm({ ...objectiveForm, name: e.target.value })}
-                  placeholder="Ex: Aumentar a receita recorrente"
+                  type="number"
+                  placeholder="Ano"
+                  value={objectiveForm.year}
+                  onChange={(e) =>
+                    setObjectiveForm({ ...objectiveForm, year: e.target.value })
+                  }
                 />
-              </div>
-              <div>
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  value={objectiveForm.description}
-                  onChange={(e) => setObjectiveForm({ ...objectiveForm, description: e.target.value })}
-                  placeholder="Descreva o objetivo..."
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="quarter">Trimestre</Label>
-                  <Select value={objectiveForm.quarter} onValueChange={(value) => setObjectiveForm({ ...objectiveForm, quarter: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Q1</SelectItem>
-                      <SelectItem value="2">Q2</SelectItem>
-                      <SelectItem value="3">Q3</SelectItem>
-                      <SelectItem value="4">Q4</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="year">Ano</Label>
-                  <Input
-                    id="year"
-                    type="number"
-                    value={objectiveForm.year}
-                    onChange={(e) => setObjectiveForm({ ...objectiveForm, year: e.target.value })}
-                  />
-                </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpenObjectiveDialog(false)}>Cancelar</Button>
-              <Button onClick={handleCreateObjective} disabled={!objectiveForm.name}>Criar</Button>
+              <Button
+                variant="ghost"
+                onClick={() => setOpenObjective(false)}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleCreateObjective} disabled={!objectiveForm.name}>
+                Criar
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Objectives by Period */}
+      {/* Tabs de quarters */}
       {isLoading ? (
-        <div className="text-center py-8 text-muted-foreground">Carregando...</div>
-      ) : sortedPeriods.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            Nenhum objetivo criado ainda. Clique em "Novo Objetivo" para começar.
-          </CardContent>
-        </Card>
+        <p className="text-center text-muted-foreground">Carregando...</p>
       ) : (
-        sortedPeriods.map((period) => (
-          <div key={period} className="space-y-4">
-            <h2 className="text-xl font-semibold">{period}</h2>
-            {groupedObjectives[period].map((objective) => (
-              <Card key={objective.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <Target className="h-5 w-5 mt-1 text-primary" />
-                      <div>
-                        <CardTitle className="text-lg">{objective.name}</CardTitle>
-                        {objective.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{objective.description}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setSelectedObjectiveId(objective.id);
-                          setOpenKeyResultDialog(true);
-                        }}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteObjective(objective.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {keyResults[objective.id] && keyResults[objective.id].length > 0 ? (
-                    <div className="space-y-4">
-                      {keyResults[objective.id].map((kr) => (
-                        <div key={kr.id} className="border rounded-lg p-4 space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-2 flex-1">
-                              <TrendingUp className="h-4 w-4 mt-1 text-muted-foreground" />
-                              <div className="flex-1">
-                                <p className="font-medium">{kr.name}</p>
-                                {kr.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">{kr.description}</p>
-                                )}
-                                <p className="text-xs text-muted-foreground mt-2">
-                                  Projeto: {getProjectName(kr.project_id)}
-                                </p>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => deleteKeyResult(kr.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+        <Tabs defaultValue={currentquarter} className="w-full">
+          <CardHeader>
+            <div className="flex justify-center">
+              <TabsList className="flex gap-4">
+                {allPeriods.map((period) => {
+                  const value = `${new Date().getFullYear()}-${period}`;
+                  return (
+                    <TabsTrigger
+                      key={period}
+                      value={value}
+                      className={`w-32 text-center px-4 py-2 rounded-md ${
+                        value === currentquarter
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {period}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
+          </CardHeader>
+
+          {allPeriods.map((period) => {
+            const value = `${new Date().getFullYear()}-${period}`;
+            const objectivesForPeriod = grouped[value] || [];
+
+            return (
+              <TabsContent key={period} value={value}>
+                {objectivesForPeriod.length > 0 ? (
+                  objectivesForPeriod.map((o) => (
+                    <Card key={o.id} className="border-muted p-4 mb-4">
+                      <CardHeader className="p-0 mb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-base font-medium">{o.name}</CardTitle>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="ghost" onClick={() => {
+                              setSelectedObjective(o.id);
+                              setOpenKR(true);
+                            }}>+ KR</Button>
+                            <Button size="sm" variant="ghost" onClick={() => deleteObjective(o.id)}>✕</Button>
                           </div>
-                          {kr.target_value && (
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between text-sm">
-                                <span>Progresso</span>
-                                <span className="font-medium">
-                                  {kr.current_value} / {kr.target_value}
-                                </span>
-                              </div>
-                              <Progress value={getProgressPercentage(kr.current_value, kr.target_value)} />
-                              <Input
-                                type="number"
-                                placeholder="Atualizar valor atual"
-                                className="w-full"
-                                onBlur={(e) => handleUpdateProgress(kr.id, e.target.value)}
-                              />
-                            </div>
-                          )}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      Nenhum resultado-chave definido. Clique no + para adicionar.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ))
+                      </CardHeader>
+                      {o.description && <p className="text-sm text-muted-foreground mb-3">{o.description}</p>}
+                      <CardContent className="space-y-3 p-0">
+                        {keyResults[o.id]?.length ? (
+                          keyResults[o.id].map((kr) => (
+                            <div key={kr.id} className="space-y-2 border-t pt-3">
+                              <div className="flex items-start gap-4">
+                                {kr.target_value && (
+                                  <CircularProgress value={getProgress(kr.current_value, kr.target_value)} />
+                                )}
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <p className="text-sm font-medium">{kr.name}</p>
+                                      {kr.description && (
+                                        <p className="text-sm text-muted-foreground">{kr.description}</p>
+                                      )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        type="number"
+                                        className="w-20"
+                                        defaultValue={kr.current_value}
+                                        onBlur={(e) => handleUpdateProgress(kr.id, e.target.value)}
+                                        placeholder="Atualizar"
+                                      />
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => deleteKeyResult(kr.id)}
+                                      >
+                                        ✕
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  {kr.project_ids?.length > 0 && (
+                                    <div className="mt-3">
+                                      <table className="w-full">
+                                        <tbody>
+                                          {kr.project_ids.map((projectId) => (
+                                            <tr key={projectId} className="border-t border-gray-200">
+                                              <td className="py-2 text-sm">{getProjectName(projectId)}</td>
+                                              <td className="py-2 text-sm text-muted-foreground">
+                                                {getProjectOwner(projectId)}
+                                              </td>
+                                              <td className="py-2 text-sm text-muted-foreground">
+                                                {getProjectStatus(projectId)}
+                                              </td>
+                                              <td className="py-2 w-1/3">
+                                                <Progress value={getProjectProgress(projectId)} />
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground">Nenhum resultado-chave.</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-10">
+                    Nenhum objetivo criado ainda.
+                  </p>
+                )}
+              </TabsContent>
+            );
+          })}
+        </Tabs>
       )}
 
-      {/* Key Result Dialog */}
-      <Dialog open={openKeyResultDialog} onOpenChange={setOpenKeyResultDialog}>
+      {/* Diálogo de Key Result */}
+      <Dialog open={openKR} onOpenChange={setOpenKR}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Adicionar Resultado-Chave</DialogTitle>
-            <DialogDescription>Defina um resultado-chave mensurável para este objetivo.</DialogDescription>
+            <DialogTitle>Novo Resultado-Chave</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            <Input
+              placeholder="Nome"
+              value={keyResultForm.name}
+              onChange={(e) =>
+                setKeyResultForm({ ...keyResultForm, name: e.target.value })
+              }
+            />
+            <Textarea
+              placeholder="Descrição"
+              value={keyResultForm.description}
+              onChange={(e) =>
+                setKeyResultForm({ ...keyResultForm, description: e.target.value })
+              }
+            />
             <div>
-              <Label htmlFor="kr-name">Nome do Resultado-Chave</Label>
-              <Input
-                id="kr-name"
-                value={keyResultForm.name}
-                onChange={(e) => setKeyResultForm({ ...keyResultForm, name: e.target.value })}
-                placeholder="Ex: Alcançar R$ 100k MRR"
-              />
-            </div>
-            <div>
-              <Label htmlFor="kr-description">Descrição</Label>
-              <Textarea
-                id="kr-description"
-                value={keyResultForm.description}
-                onChange={(e) => setKeyResultForm({ ...keyResultForm, description: e.target.value })}
-                placeholder="Descreva o resultado-chave..."
-              />
-            </div>
-            <div>
-              <Label htmlFor="kr-project">Projeto Associado</Label>
-              <Select value={keyResultForm.project_id} onValueChange={(value) => setKeyResultForm({ ...keyResultForm, project_id: value })}>
+              <Label>Projetos</Label>
+              <Select
+                onValueChange={(value) => {
+                  if (value === "none") return;
+                  setKeyResultForm({
+                    ...keyResultForm,
+                    project_ids: [...keyResultForm.project_ids, value],
+                  });
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um projeto" />
+                  <SelectValue placeholder="Selecionar projetos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Sem projeto</SelectItem>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
+                  <SelectItem value="none">Sem projeto</SelectItem>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {keyResultForm.project_ids.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-muted-foreground">Projetos selecionados:</p>
+                  <ul className="list-disc pl-5">
+                    {keyResultForm.project_ids.map((id) => (
+                      <li key={id} className="text-sm flex justify-between items-center">
+                        {getProjectName(id)}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() =>
+                            setKeyResultForm({
+                              ...keyResultForm,
+                              project_ids: keyResultForm.project_ids.filter((pid) => pid !== id),
+                            })
+                          }
+                        >
+                          ✕
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="kr-target">Meta</Label>
-                <Input
-                  id="kr-target"
-                  type="number"
-                  value={keyResultForm.target_value}
-                  onChange={(e) => setKeyResultForm({ ...keyResultForm, target_value: e.target.value })}
-                  placeholder="100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="kr-current">Valor Atual</Label>
-                <Input
-                  id="kr-current"
-                  type="number"
-                  value={keyResultForm.current_value}
-                  onChange={(e) => setKeyResultForm({ ...keyResultForm, current_value: e.target.value })}
-                  placeholder="0"
-                />
-              </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                type="number"
+                placeholder="Meta"
+                value={keyResultForm.target_value}
+                onChange={(e) =>
+                  setKeyResultForm({
+                    ...keyResultForm,
+                    target_value: e.target.value,
+                  })
+                }
+              />
+              <Input
+                type="number"
+                placeholder="Atual"
+                value={keyResultForm.current_value}
+                onChange={(e) =>
+                  setKeyResultForm({
+                    ...keyResultForm,
+                    current_value: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenKeyResultDialog(false)}>Cancelar</Button>
-            <Button onClick={handleCreateKeyResult} disabled={!keyResultForm.name}>Adicionar</Button>
+            <Button variant="ghost" onClick={() => setOpenKR(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateKeyResult} disabled={!keyResultForm.name}>
+              Salvar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

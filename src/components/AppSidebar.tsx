@@ -5,6 +5,9 @@ import { MedalWithNumber } from "@/components/icons/MedalWithNumber";
 import {
   Brain,
   Activity,
+  KanbanIcon,
+  Columns,
+  Columns2Icon,
   Medal,
   Award,
   Heart,
@@ -20,6 +23,7 @@ import {
   ChevronRight,
   Circle,
   CircleCheck,
+  Kanban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEmpresa } from "@/contexts/EmpresaContext";
@@ -68,7 +72,7 @@ const menuItems = [
         title: "🥇Processos",
         url: "processos",
 //        icon: () => <AwardWithNumber number={1} color="gold" />,
-        icon: ListFilter,
+        icon: Columns2Icon,
       },
       {
         title: "🥈Projetos",
