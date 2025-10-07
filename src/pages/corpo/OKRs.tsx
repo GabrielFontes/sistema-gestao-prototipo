@@ -80,7 +80,7 @@ export default function OKRs() {
   const [objectiveForm, setObjectiveForm] = useState({
     name: "",
     description: "",
-    quarter: "1",
+    trimestre: "1",
     year: new Date().getFullYear().toString(),
   });
 
@@ -98,13 +98,13 @@ export default function OKRs() {
     createObjective({
       name: objectiveForm.name,
       description: objectiveForm.description,
-      quarter: parseInt(objectiveForm.quarter),
+      trimestre: parseInt(objectiveForm.trimestre),
       year: parseInt(objectiveForm.year),
     });
     setObjectiveForm({
       name: "",
       description: "",
-      quarter: "1",
+      trimestre: "1",
       year: new Date().getFullYear().toString(),
     });
     setOpenObjective(false);
@@ -156,14 +156,14 @@ export default function OKRs() {
   };
 
   const grouped = objectives.reduce((acc, o) => {
-    const key = `${o.year}-T${o.quarter}`;
+    const key = `${o.year}-T${o.trimestre}`;
     if (!acc[key]) acc[key] = [];
     acc[key].push(o);
     return acc;
   }, {} as Record<string, typeof objectives>);
 
   const sorted = Object.keys(grouped).sort().reverse();
-  const currentquarter = `${new Date().getFullYear()}-T${Math.ceil((new Date().getMonth() + 1) / 3)}`;
+  const currentTrimestre = `${new Date().getFullYear()}-T${Math.ceil((new Date().getMonth() + 1) / 3)}`;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -195,17 +195,17 @@ export default function OKRs() {
               />
               <div className="grid grid-cols-2 gap-2">
                 <Select
-                  value={objectiveForm.quarter}
+                  value={objectiveForm.trimestre}
                   onValueChange={(v) =>
-                    setObjectiveForm({ ...objectiveForm, quarter: v })
+                    setObjectiveForm({ ...objectiveForm, trimestre: v })
                   }
                 >
-                  <SelectTrigger><SelectValue placeholder="quarter" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Trimestre" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1º quarter</SelectItem>
-                    <SelectItem value="2">2º quarter</SelectItem>
-                    <SelectItem value="3">3º quarter</SelectItem>
-                    <SelectItem value="4">4º quarter</SelectItem>
+                    <SelectItem value="1">1º Trimestre</SelectItem>
+                    <SelectItem value="2">2º Trimestre</SelectItem>
+                    <SelectItem value="3">3º Trimestre</SelectItem>
+                    <SelectItem value="4">4º Trimestre</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
@@ -233,11 +233,11 @@ export default function OKRs() {
         </Dialog>
       </div>
 
-      {/* Tabs de quarters */}
+      {/* Tabs de trimestres */}
       {isLoading ? (
         <p className="text-center text-muted-foreground">Carregando...</p>
       ) : (
-        <Tabs defaultValue={currentquarter} className="w-full">
+        <Tabs defaultValue={currentTrimestre} className="w-full">
           <CardHeader>
             <div className="flex justify-center">
               <TabsList className="flex gap-4">
@@ -248,7 +248,7 @@ export default function OKRs() {
                       key={period}
                       value={value}
                       className={`w-32 text-center px-4 py-2 rounded-md ${
-                        value === currentquarter
+                        value === currentTrimestre
                           ? "bg-primary text-primary-foreground"
                           : "bg-gray-100 text-gray-600"
                       }`}

@@ -7,7 +7,7 @@ export interface Objective {
   empresa_id: string;
   name: string;
   description?: string;
-  quarter: number;
+  trimestre: number;
   year: number;
   created_at: string;
   updated_at: string;
@@ -16,7 +16,7 @@ export interface Objective {
 export interface KeyResult {
   id: string;
   objective_id: string;
-  project_id?: string;
+  project_ids?: string[];
   name: string;
   description?: string;
   target_value?: number;
@@ -46,7 +46,7 @@ export function useObjectives(empresaId: string | null) {
         .select('*')
         .eq('empresa_id', empresaId)
         .order('year', { ascending: false })
-        .order('quarter', { ascending: false });
+        .order('trimestre', { ascending: false });
 
       if (objectivesError) throw objectivesError;
 
@@ -87,7 +87,7 @@ export function useObjectives(empresaId: string | null) {
   const createObjective = async (data: {
     name: string;
     description?: string;
-    quarter: number;
+    trimestre: number;
     year: number;
   }) => {
     if (!empresaId) return;
@@ -168,7 +168,7 @@ export function useObjectives(empresaId: string | null) {
   const createKeyResult = async (objectiveId: string, data: {
     name: string;
     description?: string;
-    project_id?: string;
+    project_ids?: string[];
     target_value?: number;
     current_value?: number;
   }) => {

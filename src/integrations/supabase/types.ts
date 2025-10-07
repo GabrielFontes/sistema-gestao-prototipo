@@ -114,7 +114,7 @@ export type Database = {
           id: string
           name: string
           objective_id: string
-          project_id: string | null
+          project_ids: string[] | null
           target_value: number | null
           updated_at: string
         }
@@ -125,7 +125,7 @@ export type Database = {
           id?: string
           name: string
           objective_id: string
-          project_id?: string | null
+          project_ids?: string[] | null
           target_value?: number | null
           updated_at?: string
         }
@@ -136,7 +136,7 @@ export type Database = {
           id?: string
           name?: string
           objective_id?: string
-          project_id?: string | null
+          project_ids?: string[] | null
           target_value?: number | null
           updated_at?: string
         }
@@ -146,13 +146,6 @@ export type Database = {
             columns: ["objective_id"]
             isOneToOne: false
             referencedRelation: "objectives"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "key_results_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -205,7 +198,7 @@ export type Database = {
           empresa_id: string
           id: string
           name: string
-          quarter: number
+          trimestre: number
           updated_at: string
           year: number
         }
@@ -215,7 +208,7 @@ export type Database = {
           empresa_id: string
           id?: string
           name: string
-          quarter: number
+          trimestre: number
           updated_at?: string
           year: number
         }
@@ -225,7 +218,7 @@ export type Database = {
           empresa_id?: string
           id?: string
           name?: string
-          quarter?: number
+          trimestre?: number
           updated_at?: string
           year?: number
         }
@@ -242,29 +235,38 @@ export type Database = {
       projects: {
         Row: {
           created_at: string
+          current_value: number | null
           description: string | null
           empresa_id: string
           id: string
           name: string
+          owner: string | null
           status: string
+          target_value: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          current_value?: number | null
           description?: string | null
           empresa_id: string
           id?: string
           name: string
+          owner?: string | null
           status?: string
+          target_value?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          current_value?: number | null
           description?: string | null
           empresa_id?: string
           id?: string
           name?: string
+          owner?: string | null
           status?: string
+          target_value?: number | null
           updated_at?: string
         }
         Relationships: [

@@ -8,6 +8,9 @@ export interface Project {
   name: string;
   description: string | null;
   status: 'active' | 'completed' | 'archived';
+  owner: string | null;
+  target_value: number | null;
+  current_value: number | null;
   created_at: string;
   updated_at: string;
 }
