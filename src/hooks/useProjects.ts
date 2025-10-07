@@ -11,6 +11,7 @@ export interface Project {
   owner: string | null;
   target_value: number | null;
   current_value: number | null;
+  unit: string | null;
   created_at: string;
   updated_at: string;
 }

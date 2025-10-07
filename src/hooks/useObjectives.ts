@@ -21,6 +21,7 @@ export interface KeyResult {
   description?: string;
   target_value?: number;
   current_value: number;
+  unit?: string;
   created_at: string;
   updated_at: string;
 }
@@ -171,6 +172,7 @@ export function useObjectives(empresaId: string | null) {
     project_ids?: string[];
     target_value?: number;
     current_value?: number;
+    unit?: string;
   }) => {
     try {
       const { error } = await supabase
