@@ -410,16 +410,16 @@ export default function Corpo() {
                                             <table className="w-full">
                                               <tbody>
                                                 {kr.project_ids.map((projectId) => (
-                                                  <tr key={projectId} className="border-t border-gray-200">
-                                                    <td className="py-2 text-sm">{getProjectName(projectId)}</td>
-                                                    <td className="py-2 text-sm text-muted-foreground">
+                                                  <tr key={projectId}>
+                                                    <td className="py-1 text-xs">{getProjectName(projectId)}</td>
+                                                    <td className="py-1 text-xs text-muted-foreground">
                                                       {getProjectOwner(projectId)}
                                                     </td>
-                                                    <td className="py-2 text-sm text-muted-foreground">
+                                                    <td className="py-1 text-xs text-muted-foreground">
                                                       {getProjectStatus(projectId)}
                                                     </td>
-                                                    <td className="py-2 w-1/3">
-                                                      <Progress value={getProjectProgress(projectId)} />
+                                                    <td className="py-1 w-1/3">
+                                                      <Progress value={getProjectProgress(projectId)} className="h-1" />
                                                     </td>
                                                   </tr>
                                                 ))}
