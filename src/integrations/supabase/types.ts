@@ -116,7 +116,6 @@ export type Database = {
           objective_id: string
           project_ids: string[] | null
           target_value: number | null
-          unit: string | null
           updated_at: string
         }
         Insert: {
@@ -128,7 +127,6 @@ export type Database = {
           objective_id: string
           project_ids?: string[] | null
           target_value?: number | null
-          unit?: string | null
           updated_at?: string
         }
         Update: {
@@ -140,7 +138,6 @@ export type Database = {
           objective_id?: string
           project_ids?: string[] | null
           target_value?: number | null
-          unit?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -246,7 +243,6 @@ export type Database = {
           owner: string | null
           status: string
           target_value: number | null
-          unit: string | null
           updated_at: string
         }
         Insert: {
@@ -259,7 +255,6 @@ export type Database = {
           owner?: string | null
           status?: string
           target_value?: number | null
-          unit?: string | null
           updated_at?: string
         }
         Update: {
@@ -272,7 +267,6 @@ export type Database = {
           owner?: string | null
           status?: string
           target_value?: number | null
-          unit?: string | null
           updated_at?: string
         }
         Relationships: [
