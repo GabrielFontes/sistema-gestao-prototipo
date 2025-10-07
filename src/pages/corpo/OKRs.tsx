@@ -137,8 +137,8 @@ export default function OKRs() {
     if (!isNaN(value)) await updateKeyResult(krId, { current_value: value });
   };
 
-  const getProgress = (current: number, target?: number) =>
-    !target || target === 0 ? 0 : Math.min((current / target) * 100, 100);
+  const getProgress = (current: number | undefined, target: number | undefined) =>
+    !target || target === 0 || !current ? 0 : Math.min((current / target) * 100, 100);
 
   const getProjectName = (id?: string) =>
     id ? projects.find((p) => p.id === id)?.name || "Projeto não encontrado" : "Sem projeto";
@@ -288,9 +288,7 @@ export default function OKRs() {
                           keyResults[o.id].map((kr) => (
                             <div key={kr.id} className="space-y-2 border-t pt-3">
                               <div className="flex items-start gap-4">
-                                {kr.target_value && (
-                                  <CircularProgress value={getProgress(kr.current_value, kr.target_value)} />
-                                )}
+                                <CircularProgress value={getProgress(kr.current_value, kr.target_value)} />
                                 <div className="flex-1">
                                   <div className="flex justify-between items-start">
                                     <div>
