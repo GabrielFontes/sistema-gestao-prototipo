@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { QuickActionButton } from "@/components/QuickActionButton";
+import { TasksOverviewButton } from "@/components/TasksOverviewButton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface EmpresaConfig {
   id: string;
@@ -15,8 +18,8 @@ interface EmpresaContextType {
   empresas: EmpresaConfig[];
   setEmpresa: (empresaId: string) => void;
   isLoading: boolean;
-  collapsed: boolean; // Adicionado
-  setCollapsed: (collapsed: boolean) => void; // Adicionado
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
 const EmpresaContext = createContext<EmpresaContextType | undefined>(undefined);
@@ -27,7 +30,7 @@ export function EmpresaProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [collapsed, setCollapsed] = useState<boolean>(
     localStorage.getItem('sidebar-collapsed') === 'true'
-  ); // Adicionado
+  );
 
   useEffect(() => {
     loadEmpresas();
@@ -42,7 +45,7 @@ export function EmpresaProvider({ children }: { children: React.ReactNode }) {
   }, [currentEmpresa]);
 
   useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', collapsed.toString()); // Salva collapsed no localStorage
+    localStorage.setItem('sidebar-collapsed', collapsed.toString());
   }, [collapsed]);
 
   const loadEmpresas = async () => {
@@ -123,7 +126,47 @@ export function EmpresaProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <EmpresaContext.Provider value={{ currentEmpresa, empresas, setEmpresa, isLoading, collapsed, setCollapsed }}>
+<TooltipProvider delayDuration={0}>
+  <div className="flex flex-col h-screen">
+    <div className="flex-1 overflow-auto">
       {children}
+    </div>
+    <div className="fixed bottom-24 right-6 space-y-4 z-50">
+    <Tooltip>
+  <TooltipTrigger asChild>
+    <div>
+      <TasksOverviewButton />
+    </div>
+  </TooltipTrigger>
+  <TooltipContent
+    side="left"
+    align="center"
+    sideOffset={12}
+    className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
+  >
+    Minhas Tarefas
+  </TooltipContent>
+</Tooltip>
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    <div>
+      <QuickActionButton />
+    </div>
+  </TooltipTrigger>
+  <TooltipContent
+    side="left"
+    align="center"
+    sideOffset={12}
+    className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
+  >
+    Ações Rápidas
+  </TooltipContent>
+</Tooltip>
+
+    </div>
+  </div>
+</TooltipProvider>
     </EmpresaContext.Provider>
   );
 }
@@ -133,5 +176,6 @@ export function useEmpresa() {
   if (context === undefined) {
     throw new Error('useEmpresa must be used within a EmpresaProvider');
   }
+
   return context;
 }
