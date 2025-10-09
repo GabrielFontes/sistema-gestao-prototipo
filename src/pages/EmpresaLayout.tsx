@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
-import { FloatingButtons } from '@/components/FloatingButtons';
 import { useState } from 'react';
 
 export default function EmpresaLayout() {
@@ -19,7 +18,6 @@ export default function EmpresaLayout() {
           <Outlet />
         </main>
       </div>
-      <FloatingButtons />
     </div>
   );
 }

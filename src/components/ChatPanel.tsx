@@ -6,10 +6,23 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useChat } from "@/hooks/useChat";
 import { ChatConversation } from "./ChatConversation";
 import { supabase } from "@/integrations/supabase/client";
+import { useParams } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ChatPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+interface Empresa {
+  id: string;
+  name: string;
 }
 
 interface EmpresaMember {
@@ -19,34 +32,75 @@ interface EmpresaMember {
 }
 
 export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
-  const { conversations, loading, currentUserId, createConversation } = useChat();
+  const { empresaId } = useParams();
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string>(empresaId || "all");
+  const { conversations, loading, currentUserId, createConversation } = useChat(selectedEmpresaId === "all" ? null : selectedEmpresaId);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [empresaMembers, setEmpresaMembers] = useState<EmpresaMember[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+
+  useEffect(() => {
+    if (empresaId) {
+      setSelectedEmpresaId(empresaId);
+    }
+  }, [empresaId]);
 
   useEffect(() => {
     if (open) {
+      loadEmpresas();
       loadEmpresaMembers();
     }
-  }, [open]);
+  }, [open, selectedEmpresaId]);
 
-  const loadEmpresaMembers = async () => {
+  const loadEmpresas = async () => {
     try {
-      // Get all user's empresas
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: memberData, error: memberError } = await supabase
+      const { data: memberData } = await supabase
         .from('empresa_members')
         .select('empresa_id')
         .eq('user_id', user.id);
 
-      if (memberError) throw memberError;
-      if (!memberData || memberData.length === 0) return;
+      if (!memberData) return;
 
       const empresaIds = memberData.map(m => m.empresa_id);
+      
+      const { data: empresasData } = await supabase
+        .from('empresas')
+        .select('id, name')
+        .in('id', empresaIds);
 
-      // Get all members from all user's empresas
+      if (empresasData) {
+        setEmpresas(empresasData);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar empresas:', error);
+    }
+  };
+
+  const loadEmpresaMembers = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      let empresaIds: string[] = [];
+
+      if (selectedEmpresaId === "all") {
+        // Get all user's empresas
+        const { data: memberData } = await supabase
+          .from('empresa_members')
+          .select('empresa_id')
+          .eq('user_id', user.id);
+
+        if (!memberData || memberData.length === 0) return;
+        empresaIds = memberData.map(m => m.empresa_id);
+      } else {
+        empresaIds = [selectedEmpresaId];
+      }
+
+      // Get all members from selected empresas
       const allMembers: EmpresaMember[] = [];
       
       for (const empresaId of empresaIds) {
@@ -150,48 +204,68 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
 
   return (
     <div 
-      className={`fixed bottom-6 right-24 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-40 transition-all duration-300`}
+      className={`fixed bottom-6 right-24 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-30 transition-all duration-300`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        {selectedConversationId ? (
-          <>
+      <div className="flex flex-col border-b border-border">
+        <div className="flex items-center justify-between p-4">
+          {selectedConversationId ? (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedConversationId(null)}
+                className="h-8 w-8"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h2 className="font-semibold text-lg flex-1 text-center">
+                {getConversationName(conversations.find(c => c.id === selectedConversationId))}
+              </h2>
+            </>
+          ) : (
+            <h2 className="font-semibold text-lg">
+              Mensagens
+            </h2>
+          )}
+          
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setSelectedConversationId(null)}
+              onClick={() => setIsMaximized(!isMaximized)}
               className="h-8 w-8"
             >
-              <ArrowLeft className="h-5 w-5" />
+              {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
-            <h2 className="font-semibold text-lg flex-1 text-center">
-              {getConversationName(conversations.find(c => c.id === selectedConversationId))}
-            </h2>
-          </>
-        ) : (
-          <h2 className="font-semibold text-lg">
-            Mensagens
-          </h2>
-        )}
-        
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMaximized(!isMaximized)}
-            className="h-8 w-8"
-          >
-            {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenChange(false)}
-            className="h-8 w-8"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="h-8 w-8"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
+        
+        {!selectedConversationId && (
+          <div className="px-4 pb-3">
+            <Select value={selectedEmpresaId} onValueChange={setSelectedEmpresaId}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as empresas</SelectItem>
+                {empresas.map((empresa) => (
+                  <SelectItem key={empresa.id} value={empresa.id}>
+                    {empresa.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Content */}

@@ -30,7 +30,7 @@ export interface ConversationMember {
   };
 }
 
-export function useChat() {
+export function useChat(empresaId: string | null = null) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,7 @@ export function useChat() {
       const unsubscribe = subscribeToMessages();
       return unsubscribe;
     }
-  }, [currentUserId]);
+  }, [currentUserId, empresaId]);
 
   const loadCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -61,8 +61,8 @@ export function useChat() {
     try {
       setLoading(true);
 
-      // Get all conversations for the current user (all empresas)
-      const { data: convData, error: convError } = await supabase
+      // Build query
+      let query = supabase
         .from('conversation_members')
         .select(`
           conversation_id,
@@ -74,6 +74,13 @@ export function useChat() {
           )
         `)
         .eq('user_id', currentUserId);
+
+      // Filter by empresa if specified
+      if (empresaId) {
+        query = query.eq('conversations.empresa_id', empresaId);
+      }
+
+      const { data: convData, error: convError } = await query;
 
       if (convError) throw convError;
 
