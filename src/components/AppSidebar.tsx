@@ -139,8 +139,8 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           collapsed ? "w-16" : "w-80"
         )}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-border flex items-center gap-2">
+        {/* Header - Fixo no topo */}
+        <div className="p-4 border-b border-border flex items-center gap-2 flex-shrink-0">
           <div
             className={cn(
               "flex items-center justify-center transition-all duration-300",
@@ -169,8 +169,8 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           {!collapsed && <EmpresaSelector />}
         </div>
 
-        {/* Navigation */}
-        <div className="flex-1 p-3 overflow-y-auto">
+        {/* Navigation - Área com scroll */}
+        <div className="flex-1 p-3 overflow-y-auto min-h-0">
           {menuItems.map((item, index) => (
             <div key={item.title} className={cn("mb-2", index > 0 ? "mt-4" : "")}>
               {/* Item principal */}
@@ -288,8 +288,8 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="p-3 border-t border-border space-y-2">
+        {/* Footer - Fixo no final */}
+        <div className="p-3 border-t border-border space-y-2 flex-shrink-0">
           <button
             onClick={toggleCollapsed}
             className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg"
