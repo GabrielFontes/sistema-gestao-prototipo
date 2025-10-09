@@ -29,6 +29,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { KanbanBoard, KanbanColumn } from "@/components/KanbanBoard";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface Task {
   id: string;
@@ -39,6 +41,12 @@ interface Task {
   due_date: string | null;
   milestone_id: string;
 }
+
+const columns: KanbanColumn[] = [
+  { id: 'pending', title: 'A Fazer', status: 'pending' },
+  { id: 'in_progress', title: 'Em Andamento', status: 'in_progress' },
+  { id: 'completed', title: 'Concluídas', status: 'completed' },
+];
 
 export default function Tarefas() {
   const { empresaId } = useParams();
@@ -54,6 +62,7 @@ export default function Tarefas() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban');
 
   // Load all milestones from all projects
   useEffect(() => {
@@ -133,6 +142,23 @@ export default function Tarefas() {
     }
   };
 
+  const handleStatusChange = async (taskId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      toast.success('Status atualizado!');
+      loadTasks();
+    } catch (error: any) {
+      console.error('Error updating status:', error);
+      toast.error('Erro ao atualizar status');
+    }
+  };
+
   const handleDeleteTask = async () => {
     if (!taskToDelete) return;
 
@@ -207,6 +233,10 @@ export default function Tarefas() {
           </p>
         </div>
         <div className="flex gap-2">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as any)}>
+            <ToggleGroupItem value="kanban">Kanban</ToggleGroupItem>
+            <ToggleGroupItem value="list">Lista</ToggleGroupItem>
+          </ToggleGroup>
           {canManageProjetos && selectedMilestoneId && (
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
@@ -259,23 +289,78 @@ export default function Tarefas() {
                     {filteredTasks.length} {filteredTasks.length === 1 ? 'tarefa' : 'tarefas'}
                   </p>
                 </div>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="pending">Pendentes</SelectItem>
-                    <SelectItem value="in_progress">Em Andamento</SelectItem>
-                    <SelectItem value="completed">Concluídas</SelectItem>
-                  </SelectContent>
-                </Select>
+                {viewMode === 'list' && (
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="pending">Pendentes</SelectItem>
+                      <SelectItem value="in_progress">Em Andamento</SelectItem>
+                      <SelectItem value="completed">Concluídas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               {loadingTasks ? (
                 <div className="flex items-center justify-center h-64">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
+              ) : tasks.length === 0 ? (
+                <Card className="p-12">
+                  <div className="flex flex-col items-center justify-center text-center space-y-4">
+                    <ListTodo className="h-12 w-12 text-muted-foreground" />
+                    <div>
+                      <h3 className="font-semibold">Nenhuma tarefa encontrada</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Crie sua primeira tarefa para este milestone
+                      </p>
+                    </div>
+                    {canManageProjetos && (
+                      <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Criar Primeira Tarefa
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              ) : viewMode === 'kanban' ? (
+                <KanbanBoard
+                  columns={columns}
+                  items={tasks.map(t => ({
+                    ...t,
+                    title: t.name,
+                  }))}
+                  onItemClick={(item) => setEditingTask(tasks.find(t => t.id === item.id) || null)}
+                  onStatusChange={handleStatusChange}
+                  onAddClick={() => setCreateDialogOpen(true)}
+                  renderItem={(item) => (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">{item.title}</h4>
+                      {item.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        {item.assigned_to && (
+                          <div className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {item.assigned_to}
+                          </div>
+                        )}
+                        {item.due_date && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(item.due_date).toLocaleDateString('pt-BR')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                />
               ) : filteredTasks.length === 0 ? (
                 <Card className="p-12">
                   <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -283,17 +368,9 @@ export default function Tarefas() {
                     <div>
                       <h3 className="font-semibold">Nenhuma tarefa encontrada</h3>
                       <p className="text-sm text-muted-foreground">
-                        {filterStatus === 'all'
-                          ? 'Crie sua primeira tarefa para este milestone'
-                          : 'Não há tarefas com este status'}
+                        Não há tarefas com este status
                       </p>
                     </div>
-                    {canManageProjetos && filterStatus === 'all' && (
-                      <Button onClick={() => setCreateDialogOpen(true)} size="sm">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Criar Primeira Tarefa
-                      </Button>
-                    )}
                   </div>
                 </Card>
               ) : (
