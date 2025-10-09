@@ -14,6 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversation_members: {
+        Row: {
+          conversation_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          empresa_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresa_members: {
         Row: {
           created_at: string
@@ -116,6 +174,7 @@ export type Database = {
           objective_id: string
           project_ids: string[] | null
           target_value: number | null
+          unit: string | null
           updated_at: string
         }
         Insert: {
@@ -127,6 +186,7 @@ export type Database = {
           objective_id: string
           project_ids?: string[] | null
           target_value?: number | null
+          unit?: string | null
           updated_at?: string
         }
         Update: {
@@ -138,6 +198,7 @@ export type Database = {
           objective_id?: string
           project_ids?: string[] | null
           target_value?: number | null
+          unit?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -146,6 +207,38 @@ export type Database = {
             columns: ["objective_id"]
             isOneToOne: false
             referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -243,6 +336,7 @@ export type Database = {
           owner: string | null
           status: string
           target_value: number | null
+          unit: string | null
           updated_at: string
         }
         Insert: {
@@ -255,6 +349,7 @@ export type Database = {
           owner?: string | null
           status?: string
           target_value?: number | null
+          unit?: string | null
           updated_at?: string
         }
         Update: {
@@ -267,6 +362,7 @@ export type Database = {
           owner?: string | null
           status?: string
           target_value?: number | null
+          unit?: string | null
           updated_at?: string
         }
         Relationships: [

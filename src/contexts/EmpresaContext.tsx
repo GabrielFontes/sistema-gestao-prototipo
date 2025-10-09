@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { QuickActionButton } from "@/components/QuickActionButton";
 import { TasksOverviewButton } from "@/components/TasksOverviewButton";
+import { ChatButton } from "@/components/ChatButton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface EmpresaConfig {
@@ -131,39 +132,54 @@ export function EmpresaProvider({ children }: { children: React.ReactNode }) {
     <div className="flex-1 overflow-auto">
       {children}
     </div>
-    <div className="fixed bottom-24 right-6 space-y-4 z-50">
-    <Tooltip>
-  <TooltipTrigger asChild>
-    <div>
-      <TasksOverviewButton />
-    </div>
-  </TooltipTrigger>
-  <TooltipContent
-    side="left"
-    align="center"
-    sideOffset={12}
-    className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
-  >
-    Minhas Tarefas
-  </TooltipContent>
-</Tooltip>
+    <div className="fixed bottom-6 right-6 flex flex-col-reverse gap-4 z-50">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <QuickActionButton />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="left"
+          align="center"
+          sideOffset={12}
+          className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
+        >
+          Ações Rápidas
+        </TooltipContent>
+      </Tooltip>
 
-<Tooltip>
-  <TooltipTrigger asChild>
-    <div>
-      <QuickActionButton />
-    </div>
-  </TooltipTrigger>
-  <TooltipContent
-    side="left"
-    align="center"
-    sideOffset={12}
-    className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
-  >
-    Ações Rápidas
-  </TooltipContent>
-</Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <ChatButton />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="left"
+          align="center"
+          sideOffset={12}
+          className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
+        >
+          Mensagens
+        </TooltipContent>
+      </Tooltip>
 
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <TasksOverviewButton />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="left"
+          align="center"
+          sideOffset={12}
+          className="bg-primary text-primary-foreground px-3 py-1 rounded-md font-medium shadow-md"
+        >
+          Minhas Tarefas
+        </TooltipContent>
+      </Tooltip>
     </div>
   </div>
 </TooltipProvider>
