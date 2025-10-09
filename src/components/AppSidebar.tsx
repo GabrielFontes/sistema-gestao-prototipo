@@ -9,6 +9,7 @@ import {
   AlignStartHorizontal,
   Columns,
   Columns2Icon,
+  Compass,
   FolderTree,
   Medal,
   Award,
@@ -52,6 +53,7 @@ const menuItems = [
     children: [
       { title: "DRE", url: "dre", icon: BarChart },
       { title: "Movimentações", url: "movimentacoes", icon: ListChecks },
+      { title: "Projeções", url: "projecoes", icon: Compass },
     ],
   },
   {

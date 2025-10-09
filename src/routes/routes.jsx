@@ -3,6 +3,7 @@ import EmpresaLayout from '../pages/EmpresaLayout';
 import Mente from '../pages/Mente';
 import DRE from '../pages/mente/DRE';
 import Movimentacoes from '../pages/mente/Movimentacoes';
+import Projecoes from '../pages/mente/Projecoes';
 import Alma from '../pages/Alma';
 import Corpo from '../pages/Corpo';
 import Fluxos from '../pages/corpo/Fluxos';
@@ -31,6 +32,7 @@ export function AppRoutes() {
         <Route path="mente" element={<Mente />} />
         <Route path="dre" element={<DRE />} />
         <Route path="movimentacoes" element={<Movimentacoes />} />
+        <Route path="projecoes" element={<Projecoes />} />
         <Route path="alma" element={<Alma />} />
         <Route path="corpo" element={<Corpo />} />
         <Route path="fluxos" element={<Fluxos />} />
