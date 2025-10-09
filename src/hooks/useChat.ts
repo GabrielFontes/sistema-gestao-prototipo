@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useEmpresa } from '@/contexts/EmpresaContext';
 import { toast } from 'sonner';
 
 export interface Message {
@@ -32,7 +31,6 @@ export interface ConversationMember {
 }
 
 export function useChat() {
-  const { currentEmpresa } = useEmpresa();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +43,8 @@ export function useChat() {
   useEffect(() => {
     if (currentUserId) {
       loadConversations();
-      subscribeToMessages();
+      const unsubscribe = subscribeToMessages();
+      return unsubscribe;
     }
   }, [currentUserId]);
 
@@ -94,9 +93,6 @@ export function useChat() {
 
       if (membersError) throw membersError;
 
-      // Get user details for all members
-      const userIds = [...new Set(membersData?.map(m => m.user_id) || [])];
-
       // Get last message for each conversation
       const { data: lastMessages, error: msgError } = await supabase
         .from('messages')
@@ -128,7 +124,6 @@ export function useChat() {
       });
 
       setConversations(formattedConversations);
-      console.log('Conversas carregadas:', formattedConversations);
     } catch (error: any) {
       console.error('Erro ao carregar conversas:', error);
       toast.error('Erro ao carregar conversas');
@@ -139,7 +134,6 @@ export function useChat() {
 
   const loadMessages = async (conversationId: string) => {
     try {
-      console.log('Buscando mensagens para conversa:', conversationId);
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -148,7 +142,6 @@ export function useChat() {
 
       if (error) throw error;
 
-      console.log('Mensagens carregadas:', data);
       setMessages(data || []);
     } catch (error: any) {
       console.error('Erro ao carregar mensagens:', error);
@@ -175,18 +168,29 @@ export function useChat() {
     }
   };
 
-  const createConversation = async (memberIds: string[], empresaId?: string) => {
+  const createConversation = async (memberIds: string[]) => {
     if (!currentUserId) return;
 
-    const targetEmpresaId = empresaId || currentEmpresa?.id;
-    if (!targetEmpresaId) return;
-
     try {
+      // Get user's first empresa for creating the conversation
+      const { data: memberData, error: memberError } = await supabase
+        .from('empresa_members')
+        .select('empresa_id')
+        .eq('user_id', currentUserId)
+        .limit(1)
+        .maybeSingle();
+
+      if (memberError) throw memberError;
+      if (!memberData) {
+        toast.error('Nenhuma empresa encontrada');
+        return;
+      }
+
       // Create conversation
       const { data: convData, error: convError } = await supabase
         .from('conversations')
         .insert({
-          empresa_id: targetEmpresaId,
+          empresa_id: memberData.empresa_id,
         })
         .select()
         .single();

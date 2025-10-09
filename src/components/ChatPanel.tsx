@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useChat } from "@/hooks/useChat";
 import { ChatConversation } from "./ChatConversation";
 import { supabase } from "@/integrations/supabase/client";
-import { useEmpresa } from "@/contexts/EmpresaContext";
 
 interface ChatPanelProps {
   open: boolean;
@@ -21,7 +20,6 @@ interface EmpresaMember {
 
 export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
   const { conversations, loading, currentUserId, createConversation } = useChat();
-  const { currentEmpresa } = useEmpresa();
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [empresaMembers, setEmpresaMembers] = useState<EmpresaMember[]>([]);
@@ -114,7 +112,7 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
 
       if (commonEmpresa) {
         // Create new conversation
-        const convId = await createConversation([memberId], commonEmpresa.empresa_id);
+        const convId = await createConversation([memberId]);
         console.log('Nova conversa criada:', convId);
         if (convId) {
           setSelectedConversationId(convId);
