@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { supabase } from "@/integrations/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -40,10 +41,12 @@ type TaskFormValues = z.infer<typeof taskSchema>;
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  milestoneId: string | null;
+  onTaskCreated?: () => void;
 }
 
-export function TaskDialog({ open, onOpenChange }: TaskDialogProps) {
-  const { toast } = useToast();
+export function TaskDialog({ open, onOpenChange, milestoneId, onTaskCreated }: TaskDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -54,14 +57,30 @@ export function TaskDialog({ open, onOpenChange }: TaskDialogProps) {
     },
   });
 
-  const onSubmit = (data: TaskFormValues) => {
-    console.log("Nova tarefa:", data);
-    toast({
-      title: "Tarefa criada!",
-      description: `${data.nome} foi criada com sucesso.`,
-    });
-    form.reset();
-    onOpenChange(false);
+  const onSubmit = async (data: TaskFormValues) => {
+    if (!milestoneId) return;
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.from('tasks').insert({
+        milestone_id: milestoneId,
+        name: data.nome,
+        description: data.descricao || null,
+        status: 'pending',
+        due_date: data.deadline || null,
+      });
+
+      if (error) throw error;
+
+      toast({ title: "Tarefa criada!", description: `${data.nome} foi criada.` });
+      form.reset();
+      onOpenChange(false);
+      onTaskCreated?.();
+    } catch (error: any) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
