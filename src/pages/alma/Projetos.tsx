@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, FolderOpen, Target } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderOpen, Target, LayoutGrid, List } from "lucide-react";
 import { ProjectDialog } from "@/components/ProjectDialog";
 import { ProjectEditDialog } from "@/components/ProjectEditDialog";
 import { MilestoneDialog } from "@/components/MilestoneDialog";
@@ -28,6 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { KanbanBoard, KanbanColumn } from "@/components/KanbanBoard";
 
 interface Milestone {
   id: string;
@@ -36,6 +38,19 @@ interface Milestone {
   due_date: string | null;
   description: string | null;
 }
+
+const columns: KanbanColumn[] = [
+  { id: 'pending', title: 'A Fazer', status: 'pending' },
+  { id: 'in_progress', title: 'Em Andamento', status: 'in_progress' },
+  { id: 'completed', title: 'Concluídos', status: 'completed' },
+];
+
+const categories = [
+  { id: 'pre_venda', label: 'Pré-venda', icon: '📦' },
+  { id: 'venda', label: 'Venda', icon: '🤝' },
+  { id: 'entrega', label: 'Entrega', icon: '🚚' },
+  { id: 'suporte', label: 'Suporte', icon: '🛟' },
+];
 
 export default function Projetos() {
   const { empresaId } = useParams();
@@ -50,6 +65,7 @@ export default function Projetos() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban');
 
   const loadMilestones = async (projectId: string) => {
     const { data, error } = await supabase
@@ -109,16 +125,41 @@ export default function Projetos() {
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
-      active: { variant: "default", label: "Ativo" },
-      completed: { variant: "secondary", label: "Concluído" },
-      archived: { variant: "outline", label: "Arquivado" },
+      pending: { variant: "default", label: "A Fazer" },
+      in_progress: { variant: "secondary", label: "Em Andamento" },
+      completed: { variant: "outline", label: "Concluído" },
+      archived: { variant: "destructive", label: "Arquivado" },
     };
-    const config = variants[status] || variants.active;
+    const config = variants[status] || variants.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const filteredProjects = projects.filter(p => 
     filterStatus === 'all' || p.status === filterStatus
+  );
+
+  const renderProjectCard = (project: any) => (
+    <Card
+      key={project.id}
+      className="p-3 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => setEditingProject(project)}
+    >
+      <div className="space-y-2">
+        <h4 className="font-medium text-sm line-clamp-2">{project.name}</h4>
+        {project.description && (
+          <p className="text-xs text-muted-foreground line-clamp-1">{project.description}</p>
+        )}
+        {project.owner && (
+          <p className="text-xs text-muted-foreground">👤 {project.owner}</p>
+        )}
+        {project.target_value && (
+          <div className="flex justify-between text-xs">
+            <span>{project.current_value || 0}{project.unit || '%'}</span>
+            <span className="text-muted-foreground">/ {project.target_value}{project.unit || '%'}</span>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 
   if (isLoading) {
@@ -139,13 +180,22 @@ export default function Projetos() {
           </p>
         </div>
         <div className="flex gap-2">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as any)}>
+            <ToggleGroupItem value="kanban" aria-label="Kanban">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="list" aria-label="Lista">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="active">Ativos</SelectItem>
+              <SelectItem value="pending">A Fazer</SelectItem>
+              <SelectItem value="in_progress">Em Andamento</SelectItem>
               <SelectItem value="completed">Concluídos</SelectItem>
               <SelectItem value="archived">Arquivados</SelectItem>
             </SelectContent>
@@ -179,6 +229,16 @@ export default function Projetos() {
             )}
           </div>
         </Card>
+      ) : viewMode === 'kanban' ? (
+        <KanbanBoard
+          columns={columns}
+          categories={categories}
+          items={filteredProjects}
+          renderItem={renderProjectCard}
+          onStatusChange={handleStatusChange}
+          getCategoryLabel={(catId) => categories.find(c => c.id === catId)?.label || ''}
+          getCategoryIcon={(catId) => categories.find(c => c.id === catId)?.icon || ''}
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (

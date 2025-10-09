@@ -15,8 +15,6 @@ import { useState } from "react";
 
 export interface KanbanItem {
   id: string;
-  title: string;
-  description?: string;
   status: string;
   category?: string;
   [key: string]: any;
@@ -31,11 +29,13 @@ export interface KanbanColumn {
 interface KanbanBoardProps {
   columns: KanbanColumn[];
   items: KanbanItem[];
-  categories?: { id: string; title: string }[];
+  categories?: { id: string; label?: string; icon?: string }[];
   onItemClick?: (item: KanbanItem) => void;
   onStatusChange: (itemId: string, newStatus: string) => void;
   onAddClick?: (status: string, category?: string) => void;
   renderItem?: (item: KanbanItem) => React.ReactNode;
+  getCategoryLabel?: (categoryId: string) => string;
+  getCategoryIcon?: (categoryId: string) => string;
 }
 
 export function KanbanBoard({
@@ -46,6 +46,8 @@ export function KanbanBoard({
   onStatusChange,
   onAddClick,
   renderItem,
+  getCategoryLabel,
+  getCategoryIcon,
 }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(useSensor(PointerSensor));
@@ -83,7 +85,7 @@ export function KanbanBoard({
 
   const defaultRenderItem = (item: KanbanItem) => (
     <div className="space-y-2">
-      <h4 className="font-medium text-sm">{item.title}</h4>
+      <h4 className="font-medium text-sm">{item.name || item.title || 'Sem título'}</h4>
       {item.description && (
         <p className="text-xs text-muted-foreground line-clamp-2">
           {item.description}
@@ -142,7 +144,10 @@ export function KanbanBoard({
                   <Card key={`${column.id}-${category.id}`} className="h-fit">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center justify-between text-sm">
-                        <span>{category.title}</span>
+                        <span className="flex items-center gap-2">
+                          {getCategoryIcon?.(category.id) || category.icon || ''}
+                          {getCategoryLabel?.(category.id) || category.label || category.id}
+                        </span>
                         <Badge variant="outline" className="text-xs">
                           {getItemsForColumn(column.status, category.id).length}
                         </Badge>

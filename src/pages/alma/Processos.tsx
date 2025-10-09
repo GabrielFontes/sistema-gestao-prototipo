@@ -1,166 +1,157 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus } from "lucide-react";
-import { ProjectKanbanDialog } from "@/components/ProjectKanbanDialog";
-import { ProcessChecklistDialog } from "@/components/ProcessChecklistDialog";
-import { ProjectsList } from "@/components/ProjectsList";
+import { Plus, LayoutGrid, List, FolderOpen } from "lucide-react";
+import { ProcessDialog } from "@/components/ProcessDialog";
+import { ProcessEditDialog } from "@/components/ProcessEditDialog";
+import { useProcesses } from "@/hooks/useProcesses";
+import { useParams } from "react-router-dom";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { KanbanBoard, KanbanColumn } from "@/components/KanbanBoard";
 
-const operacoesColumns = [
-  {
-    title: "Pendentes",
-    items: [
-      { id: 101, title: "Auditar logs do sistema", priority: "alta" },
-      { id: 102, title: "Verificar falhas no backup", priority: "media" },
-    ],
-  },
-  {
-    title: "Em Andamento",
-    items: [
-      { id: 103, title: "Atualizar servidores", priority: "alta" },
-      { id: 104, title: "Monitorar tráfego de rede", priority: "media" },
-      { id: 105, title: "Ajustar configuração de firewall", priority: "baixa" },
-    ],
-  },
-  {
-    title: "Finalizadas",
-    items: [
-      { id: 106, title: "Migração para nova versão", priority: "alta" },
-      { id: 107, title: "Teste de recuperação de desastres", priority: "media" },
-    ],
-  },
+const columns: KanbanColumn[] = [
+  { id: 'pending', title: 'A Fazer', status: 'pending' },
+  { id: 'in_progress', title: 'Em Andamento', status: 'in_progress' },
+  { id: 'completed', title: 'Concluídos', status: 'completed' },
 ];
 
-const kanbanColumns = [
-  {
-    title: "A Fazer",
-    items: [
-      { id: 1, title: "Implementar sistema de login", priority: "alta" },
-      { id: 2, title: "Criar dashboard financeiro", priority: "media" },
-      { id: 3, title: "Desenvolver relatórios", priority: "baixa" },
-    ],
-  },
-  {
-    title: "Em andamento",
-    items: [
-      { id: 4, title: "Otimizar performance do banco", priority: "alta" },
-      { id: 5, title: "Integração com API externa", priority: "media" },
-    ],
-  },
-  {
-    title: "Concluído",
-    items: [
-      { id: 6, title: "Setup inicial do projeto", priority: "alta" },
-      { id: 7, title: "Configuração do ambiente", priority: "media" },
-      { id: 8, title: "Design do sistema", priority: "baixa" },
-    ],
-  },
+const categories = [
+  { id: 'pre_venda', label: 'Pré-venda', icon: '📦' },
+  { id: 'venda', label: 'Venda', icon: '🤝' },
+  { id: 'entrega', label: 'Entrega', icon: '🚚' },
+  { id: 'suporte', label: 'Suporte', icon: '🛟' },
 ];
-
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case "alta":
-      return "bg-destructive text-destructive-foreground";
-    case "media":
-      return "bg-warning text-warning-foreground";
-    case "baixa":
-      return "bg-success text-success-foreground";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-};
-
-const getPriorityFromEmoji = (title: string) => {
-  if (title.includes("🥇")) return "ouro";
-  if (title.includes("🥈")) return "prata";
-  return "bronze";
-};
 
 export default function Processos() {
-  const [selectedProject, setSelectedProject] = useState<{ title: string } | null>(null);
-  const [selectedProcess, setSelectedProcess] = useState<{ title: string } | null>(null);
+  const { empresaId } = useParams();
+  const { processes, isLoading, updateProcess, createProcess, deleteProcess } = useProcesses(empresaId || '');
+  const { canManageOperacao } = useUserRoles(empresaId || null);
   
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editingProcess, setEditingProcess] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
+
+  const handleStatusChange = async (processId: string, newStatus: string) => {
+    await updateProcess(processId, { status: newStatus as any });
+  };
+
+  const handleCreateProcess = async (data: any) => {
+    await createProcess(data);
+  };
+
+  const handleUpdateProcess = async (data: any) => {
+    if (editingProcess) {
+      await updateProcess(editingProcess.id, data);
+    }
+  };
+
+  const handleDeleteProcess = async () => {
+    if (editingProcess) {
+      await deleteProcess(editingProcess.id);
+    }
+  };
+
+  const renderProcessCard = (process: any) => (
+    <Card
+      key={process.id}
+      className="p-3 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => setEditingProcess(process)}
+    >
+      <div className="space-y-2">
+        <h4 className="font-medium text-sm line-clamp-2">{process.name}</h4>
+        {process.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2">{process.description}</p>
+        )}
+        {process.owner && (
+          <p className="text-xs text-muted-foreground">👤 {process.owner}</p>
+        )}
+      </div>
+    </Card>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-        <h2 className="text-2xl font-bold mb-6">Processos</h2>
+          <h2 className="text-2xl font-bold">Processos</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Gerencie os processos operacionais
+          </p>
         </div>
-
-
-          {/* Conteúdo Operações */}
-  <Card className="h-[80vh] flex flex-col">
-    <CardContent className="flex-1 p-0">
-      <iframe
-        src="https://www.appsheet.com/start/47848970-00d0-48a1-a44f-75f6344f48cc"
-        className="w-full h-full border-none"
-        style={{
-          display: "block",
-          transform: "scale(0.8)",
-          transformOrigin: "0 0", // zoom a partir do canto superior esquerdo
-          width: "125%", // compensar o zoom
-          height: "125%" // compensar o zoom
-        }}
-        title="Planilha Indicadores"
-      />
-    </CardContent>
-  </Card>
-{/*          <TabsContent value="operacoes" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {operacoesColumns.map((column, columnIndex) => (
-                <Card key={columnIndex} className="h-fit">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{column.title}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {column.items.length}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {column.items.map((item) => (
-                      <Card
-                        key={item.id}
-                        className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => setSelectedProcess({ title: item.title })}
-                      >
-                        <div className="space-y-2">
-                          <h4 className="font-medium text-sm">{item.title}</h4>
-                          <Badge className={getPriorityColor(item.priority)}>
-                            {item.priority}
-                          </Badge>
-                        </div>
-                      </Card>
-                    ))}
-                    <Button
-                      variant="ghost"
-                      className="w-full border-2 border-dashed border-muted-foreground/25 h-12 hover:border-primary hover:bg-primary/5"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Adicionar Item
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-*/}
-
-        {/* Dialogs */}
-
-        <ProjectKanbanDialog
-          open={selectedProject !== null}
-          onOpenChange={(open) => !open && setSelectedProject(null)}
-          projectTitle={selectedProject?.title || ""}
-        />
-        <ProcessChecklistDialog
-          open={selectedProcess !== null}
-          onOpenChange={(open) => !open && setSelectedProcess(null)}
-          processTitle={selectedProcess?.title || ""}
-        />
+        <div className="flex gap-2">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as any)}>
+            <ToggleGroupItem value="kanban" aria-label="Kanban">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="list" aria-label="Lista">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+          {canManageOperacao && (
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Processo
+            </Button>
+          )}
+        </div>
       </div>
+
+      {processes.length === 0 ? (
+        <Card className="p-12">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <FolderOpen className="h-16 w-16 text-muted-foreground" />
+            <div>
+              <h3 className="text-lg font-semibold">Nenhum processo encontrado</h3>
+              <p className="text-sm text-muted-foreground">
+                Comece criando seu primeiro processo
+              </p>
+            </div>
+            {canManageOperacao && (
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Criar Primeiro Processo
+              </Button>
+            )}
+          </div>
+        </Card>
+      ) : viewMode === 'kanban' ? (
+        <KanbanBoard
+          columns={columns}
+          categories={categories}
+          items={processes}
+          renderItem={renderProcessCard}
+          onStatusChange={handleStatusChange}
+          getCategoryLabel={(catId) => categories.find(c => c.id === catId)?.label || ''}
+          getCategoryIcon={(catId) => categories.find(c => c.id === catId)?.icon || ''}
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {processes.map((process) => renderProcessCard(process))}
+        </div>
+      )}
+
+      <ProcessDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSubmit={handleCreateProcess}
+      />
+
+      <ProcessEditDialog
+        open={editingProcess !== null}
+        onOpenChange={(open) => !open && setEditingProcess(null)}
+        process={editingProcess}
+        onSubmit={handleUpdateProcess}
+        onDelete={handleDeleteProcess}
+      />
+    </div>
   );
 }

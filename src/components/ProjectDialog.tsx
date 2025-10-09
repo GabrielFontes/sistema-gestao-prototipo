@@ -17,6 +17,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +38,7 @@ const projectSchema = z.object({
   milestone2: z.string().optional(),
   milestone3: z.string().optional(),
   objetivo: z.string().optional(),
+  category: z.enum(['pre_venda', 'venda', 'entrega', 'suporte']).optional(),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -55,6 +63,7 @@ export function ProjectDialog({ open, onOpenChange, onProjectCreated }: ProjectD
       milestone2: "",
       milestone3: "",
       objetivo: "",
+      category: undefined,
     },
   });
 
@@ -73,7 +82,8 @@ export function ProjectDialog({ open, onOpenChange, onProjectCreated }: ProjectD
           empresa_id: empresaId,
           name: data.nome,
           description: data.descricao || data.objetivo || null,
-          status: 'active',
+          status: 'pending',
+          category: data.category || null,
         })
         .select()
         .single();
@@ -173,6 +183,30 @@ export function ProjectDialog({ open, onOpenChange, onProjectCreated }: ProjectD
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="pre_venda">Pré-venda</SelectItem>
+                      <SelectItem value="venda">Venda</SelectItem>
+                      <SelectItem value="entrega">Entrega</SelectItem>
+                      <SelectItem value="suporte">Suporte</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

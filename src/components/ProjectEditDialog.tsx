@@ -32,7 +32,8 @@ import { supabase } from "@/integrations/supabase/client";
 const projectSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório").max(200, "Nome muito longo"),
   description: z.string().max(1000, "Descrição muito longa").optional(),
-  status: z.enum(['active', 'completed', 'archived']),
+  status: z.enum(['pending', 'in_progress', 'completed', 'archived']),
+  category: z.enum(['pre_venda', 'venda', 'entrega', 'suporte']).optional(),
   owner: z.string().max(100).optional(),
   target_value: z.coerce.number().positive().optional(),
   current_value: z.coerce.number().min(0).optional(),
@@ -59,7 +60,8 @@ export function ProjectEditDialog({
     defaultValues: {
       name: "",
       description: "",
-      status: "active",
+      status: "pending",
+      category: undefined,
       owner: "",
       target_value: undefined,
       current_value: undefined,
@@ -72,7 +74,8 @@ export function ProjectEditDialog({
       form.reset({
         name: project.name || "",
         description: project.description || "",
-        status: project.status || "active",
+        status: project.status || "pending",
+        category: project.category || undefined,
         owner: project.owner || "",
         target_value: project.target_value || undefined,
         current_value: project.current_value || undefined,
@@ -91,6 +94,7 @@ export function ProjectEditDialog({
           name: data.name,
           description: data.description || null,
           status: data.status,
+          category: data.category || null,
           owner: data.owner || null,
           target_value: data.target_value || null,
           current_value: data.current_value || null,
@@ -145,7 +149,7 @@ export function ProjectEditDialog({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="status"
@@ -159,9 +163,34 @@ export function ProjectEditDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="pending">A Fazer</SelectItem>
+                        <SelectItem value="in_progress">Em Andamento</SelectItem>
                         <SelectItem value="completed">Concluído</SelectItem>
                         <SelectItem value="archived">Arquivado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoria</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sem categoria" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="pre_venda">Pré-venda</SelectItem>
+                        <SelectItem value="venda">Venda</SelectItem>
+                        <SelectItem value="entrega">Entrega</SelectItem>
+                        <SelectItem value="suporte">Suporte</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

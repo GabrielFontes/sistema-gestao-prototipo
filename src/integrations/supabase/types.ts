@@ -419,8 +419,53 @@ export type Database = {
           },
         ]
       }
+      processes: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          empresa_id: string
+          id: string
+          name: string
+          owner: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          empresa_id: string
+          id?: string
+          name: string
+          owner?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          empresa_id?: string
+          id?: string
+          name?: string
+          owner?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
+          category: string | null
           created_at: string
           current_value: number | null
           description: string | null
@@ -434,6 +479,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           current_value?: number | null
           description?: string | null
@@ -447,6 +493,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           current_value?: number | null
           description?: string | null
