@@ -50,7 +50,7 @@ export function QuickActionButton() {
         <PopoverTrigger asChild>
           <Button
             size="icon"
-            className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+            className="h-14 w-14 rounded-full shadow-lg"
           >
             <Plus className="h-6 w-6" />
           </Button>

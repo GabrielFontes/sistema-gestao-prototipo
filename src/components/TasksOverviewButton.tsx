@@ -12,7 +12,7 @@ export function TasksOverviewButton() {
         size="icon"
         variant="outline"
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
+        className="h-14 w-14 rounded-full shadow-lg"
       >
         <CheckSquare className="h-6 w-6" />
       </Button>
