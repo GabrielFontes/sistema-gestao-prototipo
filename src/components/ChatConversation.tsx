@@ -17,6 +17,7 @@ export function ChatConversation({ conversationId }: ChatConversationProps) {
 
   useEffect(() => {
     if (conversationId) {
+      console.log('Carregando mensagens da conversa:', conversationId);
       loadMessages(conversationId);
     }
   }, [conversationId]);

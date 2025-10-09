@@ -96,13 +96,6 @@ export function useChat() {
 
       // Get user details for all members
       const userIds = [...new Set(membersData?.map(m => m.user_id) || [])];
-      const { data: userData, error: userError } = await supabase
-        .from('empresa_members')
-        .select('user_id')
-        .in('user_id', userIds)
-        .eq('empresa_id', currentEmpresa.id);
-
-      if (userError) throw userError;
 
       // Get last message for each conversation
       const { data: lastMessages, error: msgError } = await supabase
@@ -135,6 +128,7 @@ export function useChat() {
       });
 
       setConversations(formattedConversations);
+      console.log('Conversas carregadas:', formattedConversations);
     } catch (error: any) {
       console.error('Erro ao carregar conversas:', error);
       toast.error('Erro ao carregar conversas');
@@ -145,6 +139,7 @@ export function useChat() {
 
   const loadMessages = async (conversationId: string) => {
     try {
+      console.log('Buscando mensagens para conversa:', conversationId);
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -153,6 +148,7 @@ export function useChat() {
 
       if (error) throw error;
 
+      console.log('Mensagens carregadas:', data);
       setMessages(data || []);
     } catch (error: any) {
       console.error('Erro ao carregar mensagens:', error);
@@ -179,15 +175,18 @@ export function useChat() {
     }
   };
 
-  const createConversation = async (memberIds: string[]) => {
-    if (!currentEmpresa || !currentUserId) return;
+  const createConversation = async (memberIds: string[], empresaId?: string) => {
+    if (!currentUserId) return;
+
+    const targetEmpresaId = empresaId || currentEmpresa?.id;
+    if (!targetEmpresaId) return;
 
     try {
       // Create conversation
       const { data: convData, error: convError } = await supabase
         .from('conversations')
         .insert({
-          empresa_id: currentEmpresa.id,
+          empresa_id: targetEmpresaId,
         })
         .select()
         .single();
@@ -216,8 +215,6 @@ export function useChat() {
   };
 
   const subscribeToMessages = () => {
-    if (!currentEmpresa) return;
-
     const channel = supabase
       .channel('messages-changes')
       .on(

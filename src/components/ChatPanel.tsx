@@ -27,10 +27,10 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
   const [empresaMembers, setEmpresaMembers] = useState<EmpresaMember[]>([]);
 
   useEffect(() => {
-    if (open && currentEmpresa) {
+    if (open) {
       loadEmpresaMembers();
     }
-  }, [open, currentEmpresa]);
+  }, [open]);
 
   const loadEmpresaMembers = async () => {
     try {
@@ -73,6 +73,10 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
   };
 
   const handleMemberClick = async (memberId: string) => {
+    console.log('Clicou no membro:', memberId);
+    console.log('User ID atual:', currentUserId);
+    console.log('Conversas existentes:', conversations);
+    
     if (memberId === currentUserId) return;
 
     // Check if conversation already exists
@@ -82,13 +86,39 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
       conv.members.some(m => m.user_id === currentUserId)
     );
 
+    console.log('Conversa existente encontrada:', existingConv);
+
     if (existingConv) {
       setSelectedConversationId(existingConv.id);
     } else {
-      // Create new conversation
-      const convId = await createConversation([memberId]);
-      if (convId) {
-        setSelectedConversationId(convId);
+      // Find a common empresa between users
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: userEmpresas } = await supabase
+        .from('empresa_members')
+        .select('empresa_id')
+        .eq('user_id', user.id);
+
+      const { data: memberEmpresas } = await supabase
+        .from('empresa_members')
+        .select('empresa_id')
+        .eq('user_id', memberId);
+
+      // Find common empresa
+      const commonEmpresa = userEmpresas?.find(ue => 
+        memberEmpresas?.some(me => me.empresa_id === ue.empresa_id)
+      );
+
+      console.log('Empresa em comum:', commonEmpresa);
+
+      if (commonEmpresa) {
+        // Create new conversation
+        const convId = await createConversation([memberId], commonEmpresa.empresa_id);
+        console.log('Nova conversa criada:', convId);
+        if (convId) {
+          setSelectedConversationId(convId);
+        }
       }
     }
   };
