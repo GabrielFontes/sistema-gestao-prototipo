@@ -1,14 +1,14 @@
 import { BrowserRouter } from "react-router-dom";
 import { EmpresaProvider } from "./contexts/EmpresaContext";
 import { AppRoutes } from "./routes/routes";
-import { FloatingButtons } from "./components/FloatingButtons";
+import { ChatButton } from "./components/ChatButton";
 
 function App() {
   return (
     <EmpresaProvider>
       <BrowserRouter>
         <AppRoutes />
-        <FloatingButtons />
+        <ChatButton />
       </BrowserRouter>
     </EmpresaProvider>
   );
