@@ -1,3 +1,372 @@
+import { useState } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { User, Plus, MessageSquare } from "lucide-react";
+
+const ItemTypes = {
+  TASK: 'TASK',
+};
+
+const DraggableTask = ({ task, moveTask, setSelectedTask }) => {
+  const [{ isDragging }, drag] = useDrag({
+    type: ItemTypes.TASK,
+    item: { id: task.id },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const tagStyles = {
+    'Ouro': 'bg-yellow-300 text-white',
+    'Prata': 'bg-gray-300 text-white',
+    'Bronze': 'bg-orange-200 text-white',
+  };
+
+  return (
+    <Card
+      ref={drag}
+      className={`p-3 cursor-grab transition-all duration-150 hover:shadow-sm bg-white ${
+        isDragging ? 'opacity-60 scale-102 rotate-1 shadow-md' : 'opacity-100'
+      }`}
+      onClick={() => setSelectedTask(task)}
+    >
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5">
+          {task.comments.length > 0 && (
+            <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
+          )}
+          <Badge className={`${tagStyles[task.tag]} text-xs`}>{task.tag}</Badge>
+          <h4 className="font-medium text-sm leading-tight">{task.title}</h4>
+        </div>
+        <p className="text-xs text-muted-foreground line-clamp-1">{task.description}</p>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <User className="h-3.5 w-3.5" />
+          <span>{task.responsible}</span>
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Prazo: {task.deadline}
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+const DroppableColumn = ({ column, tasks, moveTask, setSelectedTask }) => {
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.TASK,
+    drop: (item) => moveTask(item.id, column.status),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+
+  const tagOrder = ['Ouro', 'Prata', 'Bronze'];
+
+  const sortedTasks = [...tasks].sort((a, b) => {
+    return tagOrder.indexOf(a.tag) - tagOrder.indexOf(b.tag);
+  });
+
+  return (
+<Card ref={drop} className={`h-fit bg-white transition-colors duration-150 ${isOver ? 'bg-gray-50' : ''}`}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between text-base">
+          <span>{column.title}</span>
+          <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+            {tasks.length}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {sortedTasks.map(task => (
+          <DraggableTask
+            key={task.id}
+            task={task}
+            moveTask={moveTask}
+            setSelectedTask={setSelectedTask}
+          />
+        ))}
+        <Button
+          variant="ghost"
+          className="w-full border border-dashed border-muted-foreground/25 h-10 text-sm hover:border-primary hover:bg-primary/5"
+        >
+          <Plus className="w-3.5 h-3.5 mr-1.5" />
+          Adicionar
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+const TaskEditDialog = ({ task, open, onOpenChange, onTaskUpdated }) => {
+  const [editedTitle, setEditedTitle] = useState(task?.title || '');
+  const [editedDescription, setEditedDescription] = useState(task?.description || '');
+  const [editedStatus, setEditedStatus] = useState(task?.status || 'todo');
+  const [editedMilestone, setEditedMilestone] = useState(task?.milestone || 'Início');
+  const [newComment, setNewComment] = useState('');
+  const [tempComments, setTempComments] = useState(task?.comments || []);
+
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    const newCommentObj = {
+      id: Date.now().toString(),
+      text: newComment,
+      username: 'Usuário Atual',
+      timestamp: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+    };
+    const updatedTask = {
+      ...task,
+      comments: [newCommentObj, ...tempComments]
+    };
+    setTempComments(updatedTask.comments);
+    onTaskUpdated(updatedTask);
+    setNewComment('');
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (!editedTitle.trim()) return;
+    const updatedTask = {
+      ...task,
+      title: editedTitle,
+      description: editedDescription,
+      status: editedStatus,
+      milestone: editedMilestone,
+      comments: tempComments
+    };
+    onTaskUpdated(updatedTask);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
+        <div className="flex h-[80vh]">
+          {/* Left Section: Task Details */}
+          <div className="w-1/2 p-6 flex flex-col gap-5 bg-white overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold">Editar Tarefa</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">Edite os detalhes da tarefa.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSave} className="space-y-5 flex-1">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Título</label>
+                <Input
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="h-10 text-sm border-gray-200 focus:ring-primary focus:border-primary"
+                  placeholder="Título da tarefa"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Descrição</label>
+                <Textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  placeholder="Descrição da tarefa..."
+                  className="h-28 text-sm border-gray-200 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Status</label>
+                <Select value={editedStatus} onValueChange={setEditedStatus}>
+                  <SelectTrigger className="h-10 text-sm border-gray-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todo">A fazer</SelectItem>
+                    <SelectItem value="in_progress">Em andamento</SelectItem>
+                    <SelectItem value="done">Concluído</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Etapa</label>
+                <Select value={editedMilestone} onValueChange={setEditedMilestone}>
+                  <SelectTrigger className="h-10 text-sm border-gray-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Início">Início</SelectItem>
+                    <SelectItem value="Meio">Meio</SelectItem>
+                    <SelectItem value="Finalização">Finalização</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" size="sm" className="h-10 text-sm bg-primary hover:bg-primary/90">
+                  Salvar
+                </Button>
+              </div>
+            </form>
+          </div>
+          {/* Right Section: Comments */}
+          <div className="w-1/2 p-6 bg-gray-50 flex flex-col gap-5 overflow-y-auto">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Novo Comentário</label>
+              <form onSubmit={handleAddComment} className="space-y-3">
+                <Textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Adicionar comentário..."
+                  className="h-28 text-sm border-gray-200 focus:ring-primary focus:border-primary"
+                />
+                <Button type="submit" size="sm" className="h-10 text-sm bg-gray-600 text-white hover:bg-gray-700">
+                  Adicionar Comentário
+                </Button>
+              </form>
+            </div>
+            {tempComments.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-gray-700">Comentários</h4>
+                {tempComments.map(comment => (
+                  <div key={comment.id} className="text-sm text-muted-foreground p-3 bg-white rounded-md shadow-sm">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium text-gray-700">{comment.username}</span>
+                      <span className="text-xs text-gray-500">{comment.timestamp}</span>
+                    </div>
+                    <p>{comment.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Tarefas = () => {
+  const [tasks, setTasks] = useState([
+    {
+      id: '1',
+      title: 'Criar wireframe',
+      description: 'Desenhar o layout inicial do site',
+      responsible: 'João Silva',
+      tag: 'Ouro',
+      status: 'todo',
+      deadline: '15/10/2025',
+      milestone: 'Início',
+      comments: [{ id: 'c1', text: 'Wireframe inicial em progresso', username: 'Usuário Atual', timestamp: '09/10/2025 15:44' }]
+    },
+    {
+      id: '2',
+      title: 'Reunião com cliente',
+      description: 'Discutir requisitos do projeto',
+      responsible: 'Maria Oliveira',
+      tag: 'Prata',
+      status: 'in_progress',
+      deadline: '12/10/2025',
+      milestone: 'Início',
+      comments: []
+    },
+    {
+      id: '3',
+      title: 'Configurar API',
+      description: 'Integrar com serviços externos',
+      responsible: 'Carlos Souza',
+      tag: 'Ouro',
+      status: 'in_progress',
+      deadline: '20/10/2025',
+      milestone: 'Meio',
+      comments: [{ id: 'c2', text: 'API configurada parcialmente', username: 'Usuário Atual', timestamp: '09/10/2025 15:50' }]
+    },
+    {
+      id: '4',
+      title: 'Testar protótipo',
+      description: 'Validar com equipe',
+      responsible: 'Ana Costa',
+      tag: 'Prata',
+      status: 'done',
+      deadline: '10/10/2025',
+      milestone: 'Finalização',
+      comments: []
+    },
+    {
+      id: '5',
+      title: 'Corrigir bug de login',
+      description: 'Resolver problema de autenticação',
+      responsible: 'João Silva',
+      tag: 'Bronze',
+      status: 'todo',
+      deadline: '18/10/2025',
+      milestone: 'Finalização',
+      comments: [{ id: 'c3', text: 'Bug identificado', username: 'Usuário Atual', timestamp: '09/10/2025 15:55' }]
+    },
+    {
+      id: '6',
+      title: 'Documentar API',
+      description: 'Escrever documentação técnica',
+      responsible: 'Maria Oliveira',
+      tag: 'Bronze',
+      status: 'in_progress',
+      deadline: '22/10/2025',
+      milestone: 'Meio',
+      comments: []
+    }
+  ]);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  const columns = [
+    { id: 'todo', title: 'A fazer', status: 'todo' },
+    { id: 'in_progress', title: 'Em andamento', status: 'in_progress' },
+    { id: 'done', title: 'Concluídas', status: 'done' }
+  ];
+
+  const moveTask = (taskId, newStatus) => {
+    setTasks(tasks.map(task =>
+      task.id === taskId ? { ...task, status: newStatus } : task
+    ));
+  };
+
+  const updateTask = (updatedTask) => {
+    setTasks(tasks.map(task =>
+      task.id === updatedTask.id ? updatedTask : task
+    ));
+  };
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Tarefas</h1>
+          </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {columns.map(column => (
+            <DroppableColumn
+              key={column.id}
+              column={column}
+              tasks={tasks.filter(task => task.status === column.status)}
+              moveTask={moveTask}
+              setSelectedTask={setSelectedTask}
+            />
+          ))}
+        </div>
+      </div>
+      {selectedTask && (
+        <TaskEditDialog
+          task={selectedTask}
+          open={!!selectedTask}
+          onOpenChange={() => setSelectedTask(null)}
+          onTaskUpdated={updateTask}
+        />
+      )}
+    </DndProvider>
+  );
+};
+
+export default Tarefas;
+
+
+{/*
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -247,7 +616,8 @@ export default function Tarefas() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-[300px_1fr]">
-        {/* Sidebar with milestones */}
+
+        // Sidebar with milestones
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Milestones</CardTitle>
@@ -278,7 +648,7 @@ export default function Tarefas() {
           </CardContent>
         </Card>
 
-        {/* Main content - tasks */}
+        // Main content - tasks
         <div className="space-y-4">
           {selectedMilestoneId ? (
             <>
@@ -490,4 +860,7 @@ export default function Tarefas() {
       </AlertDialog>
     </div>
   );
+}
+
+*/
 }
