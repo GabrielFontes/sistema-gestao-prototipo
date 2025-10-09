@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export function FloatingButtons() {
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="fixed bottom-6 right-6 flex flex-col-reverse gap-3 z-40">
+      <div className="fixed bottom-24 right-6 flex flex-col-reverse gap-3 z-40">
         <Tooltip>
           <TooltipTrigger asChild>
             <div>
