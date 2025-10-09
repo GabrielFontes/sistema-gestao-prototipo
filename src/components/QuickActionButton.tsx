@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { Plus, CheckSquare, FolderKanban, Play, StickyNote } from "lucide-react";
+import { Plus, FolderKanban, Play, StickyNote } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { TaskDialog } from "./TaskDialog";
 import { ProjectDialog } from "./ProjectDialog";
 import { ProcessDialog } from "./ProcessDialog";
 import { NoteDialog } from "./NoteDialog";
 
 const quickActions = [
-  { title: "Tarefas", icon: CheckSquare, type: "task" as const },
   { title: "Projetos", icon: FolderKanban, type: "project" as const },
   { title: "Processos", icon: Play, type: "process" as const },
   { title: "Nota", icon: StickyNote, type: "note" as const },
@@ -20,7 +18,6 @@ const quickActions = [
 
 export function QuickActionButton() {
   const [openPopover, setOpenPopover] = useState(false);
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [processDialogOpen, setProcessDialogOpen] = useState(false);
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
@@ -29,9 +26,6 @@ export function QuickActionButton() {
     setOpenPopover(false);
     
     switch (type) {
-      case "task":
-        setTaskDialogOpen(true);
-        break;
       case "project":
         setProjectDialogOpen(true);
         break;
@@ -71,7 +65,6 @@ export function QuickActionButton() {
         </PopoverContent>
       </Popover>
 
-      <TaskDialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen} />
       <ProjectDialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen} />
       <ProcessDialog open={processDialogOpen} onOpenChange={setProcessDialogOpen} />
       <NoteDialog open={noteDialogOpen} onOpenChange={setNoteDialogOpen} />

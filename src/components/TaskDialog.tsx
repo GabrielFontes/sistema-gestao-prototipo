@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -72,12 +73,12 @@ export function TaskDialog({ open, onOpenChange, milestoneId, onTaskCreated }: T
 
       if (error) throw error;
 
-      toast({ title: "Tarefa criada!", description: `${data.nome} foi criada.` });
+      toast.success(`Tarefa "${data.nome}" criada com sucesso!`);
       form.reset();
       onOpenChange(false);
       onTaskCreated?.();
     } catch (error: any) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      toast.error("Erro ao criar tarefa: " + error.message);
     } finally {
       setIsLoading(false);
     }
