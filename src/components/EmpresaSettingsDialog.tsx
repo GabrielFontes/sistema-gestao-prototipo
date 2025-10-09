@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Building2, Link2, Users, Trash2, UserX } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { LogoUploader } from '@/components/LogoUploader';
 
 interface EmpresaSettingsDialogProps {
   trigger?: React.ReactNode;
@@ -69,6 +70,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
   const [primaryColor, setPrimaryColor] = useState('#3b82f6');
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && currentEmpresa) {
@@ -121,7 +123,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
     try {
       const { data, error } = await supabase
         .from('empresas')
-        .select('name, subtitle, primary_color, dre_link, movimentacoes_link, fluxos_link, organograma_link, corpo_link, notas_link, projetos_link, operacao_link, sprint_link')
+        .select('name, subtitle, primary_color, logo, dre_link, movimentacoes_link, fluxos_link, organograma_link, corpo_link, notas_link, projetos_link, operacao_link, sprint_link')
         .eq('id', currentEmpresa.id)
         .single();
 
@@ -130,6 +132,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
       if (data) {
         setEmpresaName(data.name || '');
         setEmpresaSubtitle(data.subtitle || '');
+        setLogoUrl(data.logo || null);
         setPrimaryColor(hslToHex(data.primary_color || '0 0% 50%'));
         setLinks({
           dre: data.dre_link || '',
@@ -170,6 +173,7 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
           name: empresaName,
           subtitle: empresaSubtitle,
           primary_color: hslColor,
+          logo: logoUrl,
         })
         .eq('id', currentEmpresa.id);
 
@@ -323,6 +327,11 @@ export function EmpresaSettingsDialog({ trigger }: EmpresaSettingsDialogProps) {
             <TabsContent value="geral" className="mt-0">
               <form onSubmit={handleSubmitGeral} className="space-y-6">
                 <div className="space-y-4">
+                  <LogoUploader
+                    currentLogo={logoUrl}
+                    onUploadComplete={(url) => setLogoUrl(url)}
+                    onRemove={() => setLogoUrl(null)}
+                  />
                   <div className="space-y-2">
                     <Label htmlFor="empresaName">Nome da Empresa</Label>
                     <Input

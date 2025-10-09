@@ -237,8 +237,19 @@ export function useChat(empresaId: string | null = null) {
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          setMessages((prev) => [...prev, newMessage]);
-          loadConversations(); // Reload to update last message
+          // Only add message if it belongs to currently loaded messages' conversation
+          setMessages((prev) => {
+            if (prev.length === 0) return prev;
+            const currentConversationId = prev[0]?.conversation_id;
+            if (newMessage.conversation_id === currentConversationId) {
+              return [...prev, newMessage];
+            }
+            return prev;
+          });
+          // Always reload conversations to update last message
+          setTimeout(() => {
+            loadConversations();
+          }, 100);
         }
       )
       .subscribe();

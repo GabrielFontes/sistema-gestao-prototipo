@@ -33,6 +33,7 @@ import { useEmpresa } from "@/contexts/EmpresaContext";
 import { useAuth } from "@/hooks/useAuth";
 import { EmpresaSelector } from "./EmpresaSelector";
 import { useAlmaStats } from "@/hooks/useAlmaStats";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import {
   Tooltip,
   TooltipContent,
@@ -290,16 +291,19 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
 
         {/* Footer - Fixo no final */}
         <div className="p-3 border-t border-border space-y-2 flex-shrink-0">
-          <button
-            onClick={toggleCollapsed}
-            className="w-full flex items-center justify-center p-2 hover:bg-accent rounded-lg"
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-            )}
-          </button>
+          <div className="flex items-center justify-between">
+            {!collapsed && <NotificationCenter />}
+            <button
+              onClick={toggleCollapsed}
+              className="flex items-center justify-center p-2 hover:bg-accent rounded-lg"
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </TooltipProvider>
