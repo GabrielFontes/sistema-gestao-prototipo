@@ -33,16 +33,40 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
   }, [open, currentEmpresa]);
 
   const loadEmpresaMembers = async () => {
-    if (!currentEmpresa) return;
-
     try {
-      const { data, error } = await supabase.rpc('get_empresa_members_with_details', {
-        p_empresa_id: currentEmpresa.id
-      });
+      // Get all user's empresas
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (error) throw error;
+      const { data: memberData, error: memberError } = await supabase
+        .from('empresa_members')
+        .select('empresa_id')
+        .eq('user_id', user.id);
 
-      setEmpresaMembers(data || []);
+      if (memberError) throw memberError;
+      if (!memberData || memberData.length === 0) return;
+
+      const empresaIds = memberData.map(m => m.empresa_id);
+
+      // Get all members from all user's empresas
+      const allMembers: EmpresaMember[] = [];
+      
+      for (const empresaId of empresaIds) {
+        const { data, error } = await supabase.rpc('get_empresa_members_with_details', {
+          p_empresa_id: empresaId
+        });
+
+        if (!error && data) {
+          allMembers.push(...data);
+        }
+      }
+
+      // Remove duplicates by user_id
+      const uniqueMembers = Array.from(
+        new Map(allMembers.map(m => [m.user_id, m])).values()
+      );
+
+      setEmpresaMembers(uniqueMembers);
     } catch (error) {
       console.error('Erro ao carregar membros:', error);
     }
@@ -93,12 +117,12 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
 
   if (!open) return null;
 
-  const panelWidth = isMaximized ? 'w-[600px]' : 'w-[380px]';
-  const panelHeight = isMaximized ? 'h-[80vh]' : 'h-[600px]';
+  const panelWidth = isMaximized ? 'w-[500px]' : 'w-[320px]';
+  const panelHeight = isMaximized ? 'h-[70vh]' : 'h-[450px]';
 
   return (
     <div 
-      className={`fixed bottom-[120px] right-6 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-50 transition-all duration-300`}
+      className={`fixed bottom-20 right-6 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-50 transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">

@@ -43,11 +43,11 @@ export function useChat() {
   }, []);
 
   useEffect(() => {
-    if (currentEmpresa && currentUserId) {
+    if (currentUserId) {
       loadConversations();
       subscribeToMessages();
     }
-  }, [currentEmpresa, currentUserId]);
+  }, [currentUserId]);
 
   const loadCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -57,12 +57,12 @@ export function useChat() {
   };
 
   const loadConversations = async () => {
-    if (!currentEmpresa || !currentUserId) return;
+    if (!currentUserId) return;
 
     try {
       setLoading(true);
 
-      // Get all conversations for the current user in this empresa
+      // Get all conversations for the current user (all empresas)
       const { data: convData, error: convError } = await supabase
         .from('conversation_members')
         .select(`
@@ -74,7 +74,6 @@ export function useChat() {
             updated_at
           )
         `)
-        .eq('conversations.empresa_id', currentEmpresa.id)
         .eq('user_id', currentUserId);
 
       if (convError) throw convError;
