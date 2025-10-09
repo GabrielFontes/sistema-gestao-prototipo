@@ -6,7 +6,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export function FloatingButtons() {
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="fixed bottom-6 right-6 flex flex-col-reverse gap-3 z-50">
+      <div className="floating-buttons-container fixed bottom-6 right-6 flex flex-col-reverse gap-3 z-50 pointer-events-none">
+        <style>{`
+          .floating-buttons-container > * {
+            pointer-events: auto;
+          }
+        `}</style>
         <Tooltip>
           <TooltipTrigger asChild>
             <div>

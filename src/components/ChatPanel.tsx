@@ -150,7 +150,7 @@ export function ChatPanel({ open, onOpenChange }: ChatPanelProps) {
 
   return (
     <div 
-      className={`fixed bottom-20 right-6 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-50 transition-all duration-300`}
+      className={`fixed bottom-6 right-24 ${panelWidth} ${panelHeight} bg-background border border-border rounded-lg shadow-2xl flex flex-col z-40 transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
