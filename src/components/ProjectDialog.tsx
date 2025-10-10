@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 
+// Cria uma "constante" projectSchema contendo as estruturas: nome, descricao, previsaoEncerramento, milestone1... e define 
 const projectSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   descricao: z.string().optional(),
@@ -41,6 +42,8 @@ const projectSchema = z.object({
   category: z.enum(['pre_venda', 'venda', 'entrega', 'suporte']).optional(),
 });
 
+
+// Garante que 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
 interface ProjectDialogProps {
@@ -48,6 +51,7 @@ interface ProjectDialogProps {
   onOpenChange: (open: boolean) => void;
   onProjectCreated?: () => void;
 }
+//
 
 export function ProjectDialog({ open, onOpenChange, onProjectCreated }: ProjectDialogProps) {
   const { empresaId } = useParams();

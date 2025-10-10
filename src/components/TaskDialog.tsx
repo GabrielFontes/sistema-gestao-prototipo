@@ -28,13 +28,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 
 const taskSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
   iniciativa: z.string().optional(),
-  deadline: z.string().min(1, "Prazo é obrigatório"),
+  deadline: z
+    .string()
+    .min(1, "Prazo é obrigatório")
+    .refine((val) => !isNaN(Date.parse(val)), { message: "Data inválida" }),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
@@ -42,7 +44,7 @@ type TaskFormValues = z.infer<typeof taskSchema>;
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  milestoneId: string | null;
+  milestoneId?: string | null; // Made optional
   onTaskCreated?: () => void;
 }
 
@@ -59,10 +61,13 @@ export function TaskDialog({ open, onOpenChange, milestoneId, onTaskCreated }: T
   });
 
   const onSubmit = async (data: TaskFormValues) => {
-    if (!milestoneId) return;
-    
     setIsLoading(true);
     try {
+      if (!milestoneId) {
+        toast.error("Nenhum marco selecionado. Selecione um marco para criar a tarefa.");
+        return;
+      }
+
       const { error } = await supabase.from('tasks').insert({
         milestone_id: milestoneId,
         name: data.nome,
@@ -163,10 +168,13 @@ export function TaskDialog({ open, onOpenChange, milestoneId, onTaskCreated }: T
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                disabled={isLoading}
               >
                 Cancelar
               </Button>
-              <Button type="submit">Criar Tarefa</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Criando..." : "Criar Tarefa"}
+              </Button>
             </div>
           </form>
         </Form>
