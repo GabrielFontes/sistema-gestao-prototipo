@@ -64,7 +64,7 @@ const DraggableProject = ({ project, moveProject, setSelectedProject }) => {
 const DroppableColumn = ({ column, projects, moveProject, setSelectedProject }) => {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.PROJECT,
-    drop: (item) => moveProject(item.id, column.status),
+    drop: (item: { id: string }) => moveProject(item.id, column.status),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -144,7 +144,7 @@ const DraggableTask = ({ task, moveTask, setSelectedTask }) => {
 const DroppableTaskColumn = ({ column, tasks, moveTask, setSelectedTask }) => {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
-    drop: (item) => moveTask(item.id, column.status),
+    drop: (item: { id: string }) => moveTask(item.id, column.status),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),

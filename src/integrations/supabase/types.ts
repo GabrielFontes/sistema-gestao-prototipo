@@ -611,6 +611,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_user_id_by_email: {
+        Args: { p_email: string }
+        Returns: string
+      }
       has_any_role: {
         Args: {
           _empresa_id: string

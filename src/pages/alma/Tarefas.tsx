@@ -61,7 +61,7 @@ const DraggableTask = ({ task, moveTask, setSelectedTask }) => {
 const DroppableColumn = ({ column, tasks, moveTask, setSelectedTask }) => {
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.TASK,
-    drop: (item) => moveTask(item.id, column.status),
+    drop: (item: { id: string }) => moveTask(item.id, column.status),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),

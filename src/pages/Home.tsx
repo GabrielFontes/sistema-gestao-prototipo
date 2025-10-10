@@ -1,17 +1,20 @@
 // /src/pages/Home.tsx
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEmpresa } from '@/contexts/EmpresaContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Settings } from 'lucide-react';
+import { Settings, Users } from 'lucide-react';
 import { CreateEmpresaDialog } from '@/components/CreateEmpresaDialog';
 import { EmpresaSettingsDialog } from '@/components/EmpresaSettingsDialog';
+import { UserManagementDialog } from '@/components/UserManagementDialog';
 
 function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { empresas, isLoading: empresasLoading, setEmpresa } = useEmpresa();
   const navigate = useNavigate();
+  const [showUserManagement, setShowUserManagement] = useState(false);
 
   console.log('Usuário logado:', user); // Adicione este log
   console.log('Empresas:', empresas); // Adicione este log
@@ -40,12 +43,21 @@ function Home() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Minhas Empresas</h1>
           <div className="flex items-center space-x-4">
+            <Button variant="outline" onClick={() => setShowUserManagement(true)}>
+              <Users className="mr-2 h-4 w-4" />
+              Gerenciar Usuários
+            </Button>
             <CreateEmpresaDialog />
             <Button variant="outline" onClick={signOut}>
               Sair
             </Button>
           </div>
         </div>
+        
+        <UserManagementDialog 
+          open={showUserManagement} 
+          onOpenChange={setShowUserManagement} 
+        />
 
         {empresas.length === 0 ? (
           <div className="text-center py-12">
