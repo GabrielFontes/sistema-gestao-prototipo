@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
-import { AwardWithNumber } from "@/components/icons/AwardWithNumber";
-import { MedalWithNumber } from "@/components/icons/MedalWithNumber";
 import {
   Brain,
   Activity,
@@ -62,7 +60,7 @@ const menuItems = [
     icon: Activity,
     mainUrl: "corpo",
     children: [
-      { title: "Organograma", url: "organograma", icon: FolderTree },
+      { title: "Cargos", url: "cargos", icon: FolderTree },
       { title: "Fluxos", url: "fluxos", icon: Repeat2 },
       { title: "Indicadores", url: "indicadores", icon: TrendingUp },
     ],
@@ -76,25 +74,21 @@ const menuItems = [
       {
         title: "🥇Processos",
         url: "processos",
-//        icon: () => <AwardWithNumber number={1} color="gold" />,
         icon: AlignStartHorizontal,
       },
       {
         title: "🥈Projetos",
         url: "projetos",
-//        icon: () => <AwardWithNumber number={2} color="silver" />,
         icon: AlignStartHorizontal,
       },
       {
         title: "🥉Tarefas",
         url: "tarefas",
-//        icon: () => <AwardWithNumber number={3} color="#cd7f32" />,
         icon: AlignStartHorizontal,
       },
     ],
   },
 ];
-
 
 export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
   const location = useLocation();
@@ -215,18 +209,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 >
                   <item.icon className="h-5 w-5 text-primary transition-all duration-300" />
                   <span className="font-medium">{item.title}</span>
-                  {!collapsed && item.title === "Corpo" && (
-                    <div
-                      className="flex items-center justify-center w-4 h-4 ml-auto rounded-full text-[10px] font-semibold text-white border border-gray-300"
-                      style={{
-                        backgroundColor: currentEmpresa?.primaryColor
-                          ? `hsl(${currentEmpresa.primaryColor})`
-                          : "#000",
-                      }}
-                    >
-                      {almaStats.activeProcesses}
-                    </div>
-                  )}
                 </NavLink>
               )}
 
@@ -235,20 +217,23 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                 <div className="ml-7 mt-1 space-y-1">
                   {item.children.map((child) => {
                     const getStatCount = () => {
-                      if (item.title !== "Alma") return null;
-
-                      switch (child.url) {
-                        case "tarefas":
-                          return almaStats.sprintTasks;
-                        case "processos":
-                          return almaStats.activeProcesses;
-                        case "projetos":
-                          return almaStats.activeProjects;
-                        case "notas":
-                          return null;
-                        default:
-                          return null;
+                      if (item.title === "Alma") {
+                        switch (child.url) {
+                          case "tarefas":
+                            return almaStats.sprintTasks;
+                          case "processos":
+                            return almaStats.activeProcesses;
+                          case "projetos":
+                            return almaStats.activeProjects;
+                          case "notas":
+                            return null;
+                          default:
+                            return null;
+                        }
+                      } else if (item.title === "Corpo" && child.url === "cargos") {
+                        return almaStats.activeCargos || 0; // Placeholder; update useAlmaStats if needed
                       }
+                      return null;
                     };
 
                     const statCount = getStatCount();
@@ -268,7 +253,7 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                       >
                         <child.icon className="h-4 w-4" />
                         <span className="flex-1">{child.title}</span>
-                        {item.title === "Alma" && statCount !== null && (
+                        {statCount !== null && (
                           <div
                             className="flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-semibold text-white border border-gray-300"
                             style={{

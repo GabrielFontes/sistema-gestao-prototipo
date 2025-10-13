@@ -69,13 +69,6 @@ const ProcessColumn = ({ column, processes, setSelectedProcess }) => {
             setSelectedProcess={setSelectedProcess}
           />
         ))}
-        <Button
-          variant="ghost"
-          className="w-full border border-dashed border-muted-foreground/25 h-10 text-sm hover:border-primary hover:bg-primary/5"
-        >
-          <Plus className="w-3.5 h-3.5 mr-1.5" />
-          Adicionar
-        </Button>
       </CardContent>
     </Card>
   );
