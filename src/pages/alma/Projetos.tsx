@@ -1,504 +1,266 @@
 import { useState } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Plus } from "lucide-react";
+import { useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Plus, List, Grid3x3, Search, Filter } from 'lucide-react';
+import { useProjects } from '@/hooks/useProjects';
+import { ProjectDialog } from '@/components/ProjectDialog';
+import { ProjectEditDialog } from '@/components/ProjectEditDialog';
+import { KanbanBoard } from '@/components/KanbanBoard';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { isAfter, isBefore, isToday, isTomorrow, isThisWeek, isThisMonth, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 
-const ItemTypes = {
-  PROJECT: 'PROJECT',
-  TASK: 'TASK'
-};
+export default function Projetos() {
+  const { empresaId } = useParams();
+  const { projects, createProject, updateProject, deleteProject } = useProjects(empresaId || null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingProject, setEditingProject] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban');
+  
+  // Filters
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [setorFilter, setSetorFilter] = useState<string>('all');
+  const [dueDateFilter, setDueDateFilter] = useState<string>('all');
+  const [creationDateFilter, setCreationDateFilter] = useState<string>('all');
+  const [ownerFilter, setOwnerFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-const DraggableProject = ({ project, moveProject, setSelectedProject }) => {
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.PROJECT,
-    item: { id: project.id },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  const tagStyles = {
-    'Pré-venda': 'bg-blue-300 text-white',
-    'Venda': 'bg-green-300 text-white',
-    'Entrega': 'bg-yellow-300 text-white',
-    'Suporte': 'bg-purple-300 text-white',
-  };
-
-  return (
-    <Card
-      ref={drag}
-      className={`p-3 cursor-grab transition-all duration-150 hover:shadow-sm bg-white ${
-        isDragging ? 'opacity-60 scale-102 rotate-1 shadow-md' : 'opacity-100'
-      }`}
-      onClick={() => setSelectedProject(project)}
-    >
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5">
-          <Badge className={`${tagStyles[project.tag]} text-xs`}>{project.tag}</Badge>
-          <h4 className="font-medium text-sm leading-tight">{project.name}</h4>
-        </div>
-        <p className="text-xs text-muted-foreground line-clamp-1">{project.description}</p>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <User className="h-3.5 w-3.5" />
-          <span>{project.responsible}</span>
-        </div>
-        <div>
-          <Progress value={project.progress} className="h-1.5" />
-          <div className="text-xs text-muted-foreground mt-0.5">
-            {project.progress}% concluído
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-};
-
-const DroppableColumn = ({ column, projects, moveProject, setSelectedProject }) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: ItemTypes.PROJECT,
-    drop: (item: { id: string }) => moveProject(item.id, column.status),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
-
-  const tagOrder = ['Pré-venda', 'Venda', 'Entrega', 'Suporte'];
-
-  const sortedProjects = [...projects].sort((a, b) => {
-    return tagOrder.indexOf(a.tag) - tagOrder.indexOf(b.tag);
-  });
-
-  return (
-    <Card ref={drop} className={`h-fit bg-white transition-colors duration-150 ${isOver ? 'bg-gray-50' : ''}`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
-          <span>{column.title}</span>
-          <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-            {projects.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {sortedProjects.map(project => (
-          <DraggableProject
-            key={project.id}
-            project={project}
-            moveProject={moveProject}
-            setSelectedProject={setSelectedProject}
-          />
-        ))}
-      </CardContent>
-    </Card>
-  );
-};
-
-const DraggableTask = ({ task, moveTask, setSelectedTask }) => {
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.TASK,
-    item: { id: task.id },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  const milestoneStyles = {
-    'Marco 1': 'bg-indigo-300 text-white',
-    'Marco 2': 'bg-teal-300 text-white',
-    'Marco 3': 'bg-orange-300 text-white',
-  };
-
-  return (
-    <Card
-      ref={drag}
-      className={`p-2.5 cursor-grab transition-all duration-150 hover:shadow-sm bg-white ${
-        isDragging ? 'opacity-60 scale-102 rotate-1 shadow-md' : 'opacity-100'
-      }`}
-      onClick={() => setSelectedTask(task)}
-    >
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5">
-          <Badge className={`${milestoneStyles[task.milestone]} text-xs`}>{task.milestone}</Badge>
-          <span className="text-xs font-medium">{task.title}</span>
-        </div>
-        <p className="text-xs text-muted-foreground line-clamp-1">{task.description}</p>
-      </div>
-    </Card>
-  );
-};
-
-const DroppableTaskColumn = ({ column, tasks, moveTask, setSelectedTask }) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: ItemTypes.TASK,
-    drop: (item: { id: string }) => moveTask(item.id, column.status),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
-
-  const milestoneOrder = ['Marco 1', 'Marco 2', 'Marco 3'];
-
-  const sortedTasks = [...tasks].sort((a, b) => {
-    return milestoneOrder.indexOf(a.milestone) - milestoneOrder.indexOf(b.milestone);
-  });
-
-  return (
-    <Card ref={drop} className={`h-fit bg-gray-50 transition-colors duration-150 ${isOver ? 'bg-gray-100' : ''}`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
-          <span>{column.title}</span>
-          <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-            {tasks.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {sortedTasks.map(task => (
-          <DraggableTask key={task.id} task={task} moveTask={moveTask} setSelectedTask={setSelectedTask} />
-        ))}
-      </CardContent>
-    </Card>
-  );
-};
-
-const TaskEditDialog = ({ task, open, onOpenChange, onTaskUpdated }) => {
-  const [editedTitle, setEditedTitle] = useState(task?.title || '');
-  const [editedDescription, setEditedDescription] = useState(task?.description || '');
-  const [editedStatus, setEditedStatus] = useState(task?.status || 'todo');
-  const [editedMilestone, setEditedMilestone] = useState(task?.milestone || 'Marco 1');
-  const [newComment, setNewComment] = useState('');
-  const [tempComments, setTempComments] = useState(task?.comments || []);
-
-  const handleAddComment = (e) => {
-    e.preventDefault();
-    if (!newComment.trim()) return;
-    const newCommentObj = {
-      id: Date.now().toString(),
-      text: newComment,
-      username: 'Usuário Atual',
-      timestamp: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
-    };
-    const updatedTask = {
-      ...task,
-      comments: [newCommentObj, ...tempComments]
-    };
-    setTempComments(updatedTask.comments);
-    onTaskUpdated(updatedTask);
-    setNewComment('');
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (!editedTitle.trim()) return;
-    const updatedTask = {
-      ...task,
-      title: editedTitle,
-      description: editedDescription,
-      status: editedStatus,
-      milestone: editedMilestone,
-      comments: tempComments
-    };
-    onTaskUpdated(updatedTask);
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0">
-        <div className="flex h-[80vh]">
-          {/* Left Section: Task Details */}
-          <div className="w-1/2 p-6 flex flex-col gap-5 bg-white overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold">Editar Tarefa</DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground">Edite os detalhes da tarefa.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSave} className="space-y-5 flex-1">
-              <div>
-                <label className="text-sm font-medium text-gray-700">Título</label>
-                <Input
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                  className="h-10 text-sm border-gray-200 focus:ring-primary focus:border-primary"
-                  placeholder="Título da tarefa"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">Descrição</label>
-                <Textarea
-                  value={editedDescription}
-                  onChange={(e) => setEditedDescription(e.target.value)}
-                  placeholder="Descrição da tarefa..."
-                  className="h-28 text-sm border-gray-200 focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">Status</label>
-                <Select value={editedStatus} onValueChange={setEditedStatus}>
-                  <SelectTrigger className="h-10 text-sm border-gray-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todo">A fazer</SelectItem>
-                    <SelectItem value="in_progress">Em andamento</SelectItem>
-                    <SelectItem value="done">Concluídos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">Marco</label>
-                <Select value={editedMilestone} onValueChange={setEditedMilestone}>
-                  <SelectTrigger className="h-10 text-sm border-gray-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Marco 1">Marco 1</SelectItem>
-                    <SelectItem value="Marco 2">Marco 2</SelectItem>
-                    <SelectItem value="Marco 3">Marco 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end">
-                <Button type="submit" size="sm" className="h-10 text-sm bg-primary hover:bg-primary/90">
-                  Salvar
-                </Button>
-              </div>
-            </form>
-          </div>
-          {/* Right Section: Comments */}
-          <div className="w-1/2 p-6 bg-gray-50 flex flex-col gap-5 overflow-y-auto">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Novo Comentário</label>
-              <form onSubmit={handleAddComment} className="space-y-3">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Adicionar comentário..."
-                  className="h-28 text-sm border-gray-200 focus:ring-primary focus:border-primary"
-                />
-                <Button type="submit" size="sm" className="h-10 text-sm bg-gray-600 text-white hover:bg-gray-700">
-                  Adicionar Comentário
-                </Button>
-              </form>
-            </div>
-            {tempComments.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium text-gray-700">Comentários</h4>
-                {tempComments.map(comment => (
-                  <div key={comment.id} className="text-sm text-muted-foreground p-3 bg-white rounded-md shadow-sm">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-gray-700">{comment.username}</span>
-                      <span className="text-xs text-gray-500">{comment.timestamp}</span>
-                    </div>
-                    <p>{comment.text}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const ProjectKanban = ({ project, open, onOpenChange }) => {
-  const [tasks, setTasks] = useState(project.tasks);
-  const [newTask, setNewTask] = useState('');
-  const [newMilestone, setNewMilestone] = useState('Marco 1');
-  const [selectedTask, setSelectedTask] = useState(null);
-
-  const columns = [
-    { id: 'todo', title: 'A fazer', status: 'todo' },
-    { id: 'in_progress', title: 'Em andamento', status: 'in_progress' },
-    { id: 'done', title: 'Concluídos', status: 'done' }
+  const categories = [
+    { id: 'all', label: 'Todos', value: null },
+    { id: 'pre_venda', label: 'Pré-venda', value: 'pre_venda' },
+    { id: 'venda', label: 'Venda', value: 'venda' },
+    { id: 'entrega', label: 'Entrega', value: 'entrega' },
+    { id: 'suporte', label: 'Suporte', value: 'suporte' },
   ];
 
-  const addTask = (e) => {
-    e.preventDefault();
-    if (!newTask.trim()) return;
-    const newTaskObj = {
-      id: Date.now().toString(),
-      title: newTask,
-      description: '',
-      status: 'todo',
-      milestone: newMilestone,
-      comments: []
-    };
-    setTasks([...tasks, newTaskObj]);
-    setNewTask('');
-    setNewMilestone('Marco 1');
-  };
+  const statuses = [
+    { id: 'pending', title: 'Pendente', status: 'pending' },
+    { id: 'in_progress', title: 'Em Progresso', status: 'in_progress' },
+    { id: 'completed', title: 'Concluído', status: 'completed' },
+  ];
 
-  const moveTask = (taskId, newStatus) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId ? { ...task, status: newStatus } : task
-    ));
-  };
+  // Get unique setores and owners
+  const uniqueSetores = Array.from(new Set(projects.map(p => p.setor).filter(Boolean)));
+  const uniqueOwners = Array.from(new Set(projects.map(p => p.owner).filter(Boolean)));
 
-  const updateTask = (updatedTask) => {
-    setTasks(tasks.map(task =>
-      task.id === updatedTask.id ? updatedTask : task
-    ));
-  };
-
-  return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-5xl max-h-[90vh] p-0 overflow-y-auto">
-          <DialogHeader className="p-6">
-            <DialogTitle className="text-xl font-semibold">{project.name}</DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">{project.description}</DialogDescription>
-          </DialogHeader>
-          <div className="p-6 space-y-5">
-            <form onSubmit={addTask} className="flex gap-3 items-center">
-              <Input
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Nova tarefa..."
-                className="w-48 h-10 text-sm border-gray-200"
-              />
-              <Select value={newMilestone} onValueChange={setNewMilestone}>
-                <SelectTrigger className="w-32 h-10 text-sm border-gray-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Marco 1">Marco 1</SelectItem>
-                  <SelectItem value="Marco 2">Marco 2</SelectItem>
-                  <SelectItem value="Marco 3">Marco 3</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button type="submit" size="sm" className="h-10 text-sm bg-primary hover:bg-primary/90">
-                Adicionar
-              </Button>
-            </form>
-            <div className="grid gap-4 md:grid-cols-3">
-              {columns.map(column => (
-                <DroppableTaskColumn
-                  key={column.id}
-                  column={column}
-                  tasks={tasks.filter(task => task.status === column.status)}
-                  moveTask={moveTask}
-                  setSelectedTask={setSelectedTask}
-                />
-              ))}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      {selectedTask && (
-        <TaskEditDialog
-          task={selectedTask}
-          open={!!selectedTask}
-          onOpenChange={() => setSelectedTask(null)}
-          onTaskUpdated={updateTask}
-        />
-      )}
-    </>
-  );
-};
-
-const KanbanBoard = () => {
-  const [projects, setProjects] = useState([
-    {
-      id: '1',
-      name: 'Projeto Website',
-      description: 'Desenvolvimento de site institucional',
-      responsible: 'João Silva',
-      tag: 'Pré-venda',
-      progress: 20,
-      status: 'todo',
-      tasks: [
-        { id: '1', title: 'Criar wireframe', description: 'Desenhar o layout inicial', status: 'todo', milestone: 'Marco 1', comments: [] },
-        { id: '2', title: 'Reunião com cliente', description: 'Discutir requisitos', status: 'in_progress', milestone: 'Marco 1', comments: [{ id: 'c1', text: 'Agendada para 10/10', username: 'Usuário Atual', timestamp: '09/10/2025 14:54' }] },
-        { id: '3', title: 'Definir paleta de cores', description: 'Escolher cores do design', status: 'todo', milestone: 'Marco 2', comments: [] },
-        { id: '4', title: 'Testar protótipo', description: 'Validar com equipe', status: 'done', milestone: 'Marco 3', comments: [] }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Sistema ERP',
-      description: 'Implementação de sistema de gestão',
-      responsible: 'Maria Oliveira',
-      tag: 'Venda',
-      progress: 50,
-      status: 'in_progress',
-      tasks: [
-        { id: '5', title: 'Configurar API', description: 'Integrar com serviços externos', status: 'in_progress', milestone: 'Marco 2', comments: [] }
-      ]
-    },
-    {
-      id: '3',
-      name: 'Entrega App Mobile',
-      description: 'Finalização do app mobile',
-      responsible: 'Carlos Souza',
-      tag: 'Entrega',
-      progress: 80,
-      status: 'in_progress',
-      tasks: [
-        { id: '6', title: 'Testes unitários', description: 'Verificar funcionalidades', status: 'done', milestone: 'Marco 3', comments: [] }
-      ]
-    },
-    {
-      id: '4',
-      name: 'Suporte Sistema',
-      description: 'Manutenção do sistema legado',
-      responsible: 'Ana Costa',
-      tag: 'Suporte',
-      progress: 10,
-      status: 'todo',
-      tasks: [
-        { id: '7', title: 'Corrigir bug', description: 'Resolver problema de login', status: 'todo', milestone: 'Marco 1', comments: [] }
-      ]
+  const filterByDueDate = (project: any) => {
+    if (dueDateFilter === 'all') return true;
+    if (dueDateFilter === 'no_date') return !project.due_date;
+    if (!project.due_date) return false;
+    
+    const dueDate = new Date(project.due_date);
+    const today = new Date();
+    
+    if (dueDateFilter === 'overdue') return isBefore(dueDate, today) && !isToday(dueDate);
+    if (dueDateFilter === 'today') return isToday(dueDate);
+    if (dueDateFilter === 'tomorrow') return isTomorrow(dueDate);
+    if (dueDateFilter === 'this_week') return isThisWeek(dueDate, { weekStartsOn: 0 });
+    if (dueDateFilter === 'next_week') {
+      const nextWeekStart = addWeeks(startOfWeek(today, { weekStartsOn: 0 }), 1);
+      const nextWeekEnd = endOfWeek(nextWeekStart, { weekStartsOn: 0 });
+      return isAfter(dueDate, nextWeekStart) && isBefore(dueDate, nextWeekEnd);
     }
-  ]);
-  const [selectedProject, setSelectedProject] = useState(null);
+    if (dueDateFilter === 'this_month') return isThisMonth(dueDate);
+    
+    return true;
+  };
 
-  const columns = [
-    { id: 'todo', title: 'A fazer', status: 'todo' },
-    { id: 'in_progress', title: 'Em andamento', status: 'in_progress' },
-    { id: 'done', title: 'Concluídos', status: 'done' }
-  ];
+  const filterByCreationDate = (project: any) => {
+    if (creationDateFilter === 'all') return true;
+    
+    const createdDate = new Date(project.created_at);
+    
+    if (creationDateFilter === 'today') return isToday(createdDate);
+    if (creationDateFilter === 'this_week') return isThisWeek(createdDate, { weekStartsOn: 0 });
+    if (creationDateFilter === 'this_month') return isThisMonth(createdDate);
+    
+    return true;
+  };
 
-  const moveProject = (projectId, newStatus) => {
-    setProjects(projects.map(project =>
-      project.id === projectId ? { ...project, status: newStatus } : project
-    ));
+  const filteredProjects = projects.filter(project => {
+    const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter;
+    const matchesSetor = setorFilter === 'all' || 
+                        (setorFilter === 'no_setor' ? !project.setor : project.setor === setorFilter);
+    const matchesOwner = ownerFilter === 'all' || 
+                        (ownerFilter === 'no_owner' ? !project.owner : project.owner === ownerFilter);
+    const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (project.description?.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesDueDate = filterByDueDate(project);
+    const matchesCreationDate = filterByCreationDate(project);
+    
+    return matchesCategory && matchesSetor && matchesOwner && matchesSearch && matchesDueDate && matchesCreationDate;
+  });
+
+  const handleMove = async (projectId: string, newStatus: string) => {
+    await updateProject(projectId, { status: newStatus as any });
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="space-y-6">
-                <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Projetos</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">🥉 Projetos</h1>
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'kanban' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('kanban')}
+          >
+            <Grid3x3 className="h-4 w-4" />
+          </Button>
+          <Button onClick={() => setShowCreateDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Projeto
+          </Button>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {columns.map(column => (
-            <DroppableColumn
-              key={column.id}
-              column={column}
-              projects={projects.filter(project => project.status === column.status)}
-              moveProject={moveProject}
-              setSelectedProject={setSelectedProject}
+      </div>
+
+      {/* Category Tabs */}
+      <Tabs value={categoryFilter} onValueChange={setCategoryFilter}>
+        <TabsList>
+          {categories.map(cat => (
+            <TabsTrigger key={cat.id} value={cat.id}>
+              {cat.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      {/* Filters and Search */}
+      <div className="flex flex-wrap gap-4">
+        <div className="flex-1 min-w-[200px]">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar projetos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
             />
+          </div>
+        </div>
+
+        <Select value={setorFilter} onValueChange={setSetorFilter}>
+          <SelectTrigger className="w-[180px]">
+            <Filter className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="Setor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos setores</SelectItem>
+            <SelectItem value="no_setor">Sem setor</SelectItem>
+            {uniqueSetores.map(setor => (
+              <SelectItem key={setor} value={setor as string}>{setor}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={dueDateFilter} onValueChange={setDueDateFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Data de entrega" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as datas</SelectItem>
+            <SelectItem value="no_date">Sem data</SelectItem>
+            <SelectItem value="overdue">Atrasadas</SelectItem>
+            <SelectItem value="today">Hoje</SelectItem>
+            <SelectItem value="tomorrow">Amanhã</SelectItem>
+            <SelectItem value="this_week">Essa semana</SelectItem>
+            <SelectItem value="next_week">Próxima semana</SelectItem>
+            <SelectItem value="this_month">Esse mês</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={creationDateFilter} onValueChange={setCreationDateFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Data de criação" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="today">Criados hoje</SelectItem>
+            <SelectItem value="this_week">Criados essa semana</SelectItem>
+            <SelectItem value="this_month">Criados esse mês</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={ownerFilter} onValueChange={setOwnerFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Responsável" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="no_owner">Sem responsável</SelectItem>
+            {uniqueOwners.map(owner => (
+              <SelectItem key={owner} value={owner as string}>{owner}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {viewMode === 'kanban' ? (
+        <KanbanBoard
+          columns={statuses}
+          items={filteredProjects}
+          onItemClick={setEditingProject}
+          onStatusChange={handleMove}
+        />
+      ) : (
+        <div className="grid gap-4">
+          {filteredProjects.map(project => (
+            <Card
+              key={project.id}
+              className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setEditingProject(project)}
+            >
+              <h3 className="font-semibold">{project.name}</h3>
+              {project.description && (
+                <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
+              )}
+              <div className="flex gap-2 mt-2">
+                {project.category && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    {categories.find(c => c.value === project.category)?.label}
+                  </span>
+                )}
+                {project.setor && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-secondary">
+                    {project.setor}
+                  </span>
+                )}
+                {project.owner && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-accent">
+                    {project.owner}
+                  </span>
+                )}
+              </div>
+            </Card>
           ))}
         </div>
-      </div>
-      {selectedProject && (
-        <ProjectKanban
-          project={selectedProject}
-          open={!!selectedProject}
-          onOpenChange={() => setSelectedProject(null)}
-        />
       )}
-    </DndProvider>
-  );
-};
 
-export default KanbanBoard;
+      <ProjectDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onProjectCreated={() => {
+          // Projects will be automatically reloaded by the hook
+        }}
+      />
+
+      <ProjectEditDialog
+        open={!!editingProject}
+        onOpenChange={(open) => !open && setEditingProject(null)}
+        project={editingProject}
+        onProjectUpdated={() => {
+          setEditingProject(null);
+        }}
+      />
+    </div>
+  );
+}

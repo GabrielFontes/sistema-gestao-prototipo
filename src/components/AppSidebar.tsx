@@ -18,6 +18,7 @@ import {
   TrendingUp,
   StickyNote,
   Target,
+  Goal,
   ListFilter,
   CheckCircle,
   ChevronLeft,

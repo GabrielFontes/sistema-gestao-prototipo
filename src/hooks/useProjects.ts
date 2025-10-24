@@ -7,8 +7,11 @@ export interface Project {
   empresa_id: string;
   name: string;
   description: string | null;
-  status: 'active' | 'completed' | 'archived';
+  status: 'pending' | 'in_progress' | 'completed' | 'archived';
+  category: 'pre_venda' | 'venda' | 'entrega' | 'suporte' | null;
+  setor: string | null;
   owner: string | null;
+  due_date: string | null;
   target_value: number | null;
   current_value: number | null;
   unit: string | null;
@@ -47,7 +50,14 @@ export function useProjects(empresaId: string | null) {
     }
   };
 
-  const createProject = async (data: { name: string; description?: string }) => {
+  const createProject = async (data: { 
+    name: string; 
+    description?: string;
+    category?: string;
+    setor?: string;
+    owner?: string;
+    due_date?: string;
+  }) => {
     if (!empresaId) return null;
 
     try {
@@ -57,7 +67,11 @@ export function useProjects(empresaId: string | null) {
           empresa_id: empresaId,
           name: data.name,
           description: data.description || null,
-          status: 'active',
+          category: data.category || null,
+          setor: data.setor || null,
+          owner: data.owner || null,
+          due_date: data.due_date || null,
+          status: 'pending',
         })
         .select()
         .single();
