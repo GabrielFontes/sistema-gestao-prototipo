@@ -10,6 +10,8 @@ export interface Process {
   status: 'pending' | 'in_progress' | 'completed';
   category: 'pre_venda' | 'venda' | 'entrega' | 'suporte';
   owner: string | null;
+  setor: string | null;
+  due_date: string | null;
   created_at: string;
   updated_at: string;
 }
