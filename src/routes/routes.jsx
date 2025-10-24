@@ -13,6 +13,7 @@ import Projetos from '../pages/alma/Projetos';
 import Notas from '../pages/alma/Notas';
 import Processos from '../pages/alma/Processos';
 import Tarefas from '../pages/alma/Tarefas';
+import Rotinas from '../pages/alma/Rotinas';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import NewEmpresa from '../pages/NewEmpresa';
@@ -42,6 +43,7 @@ export function AppRoutes() {
         <Route path="projetos" element={<Projetos />} />
         <Route path="notas" element={<Notas />} />
         <Route path="tarefas" element={<Tarefas />} />
+        <Route path="rotinas" element={<Rotinas />} />
       </Route>
       
       <Route path="*" element={<NotFound />} />

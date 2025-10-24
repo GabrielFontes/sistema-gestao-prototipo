@@ -72,17 +72,22 @@ const menuItems = [
     children: [
       { title: "Notas", url: "notas", icon: StickyNote },
       {
-        title: "🥇Processos",
+        title: "🥇Rotinas",
+        url: "rotinas",
+        icon: Goal,
+      },
+      {
+        title: "🥈Processos",
         url: "processos",
         icon: AlignStartHorizontal,
       },
       {
-        title: "🥈Projetos",
+        title: "🥉Projetos",
         url: "projetos",
         icon: AlignStartHorizontal,
       },
       {
-        title: "🥉Tarefas",
+        title: "Tarefas",
         url: "tarefas",
         icon: AlignStartHorizontal,
       },
@@ -230,8 +235,6 @@ export function AppSidebar({ collapsed, setCollapsed }: AppSidebarProps) {
                           default:
                             return null;
                         }
-                      } else if (item.title === "Corpo" && child.url === "cargos") {
-                        return almaStats.activeCargos || 0; // Placeholder; update useAlmaStats if needed
                       }
                       return null;
                     };

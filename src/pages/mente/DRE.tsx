@@ -1,4 +1,3 @@
-import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function DRE() {

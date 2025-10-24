@@ -20,7 +20,7 @@ export type Database = {
           created_at: string
           empresa_id: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_data: Json | null
           old_data: Json | null
           record_id: string | null
@@ -33,7 +33,7 @@ export type Database = {
           created_at?: string
           empresa_id?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_data?: Json | null
           old_data?: Json | null
           record_id?: string | null
@@ -46,7 +46,7 @@ export type Database = {
           created_at?: string
           empresa_id?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_data?: Json | null
           old_data?: Json | null
           record_id?: string | null
@@ -424,10 +424,12 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          due_date: string | null
           empresa_id: string
           id: string
           name: string
           owner: string | null
+          setor: string | null
           status: string
           updated_at: string
         }
@@ -435,10 +437,12 @@ export type Database = {
           category: string
           created_at?: string
           description?: string | null
+          due_date?: string | null
           empresa_id: string
           id?: string
           name: string
           owner?: string | null
+          setor?: string | null
           status?: string
           updated_at?: string
         }
@@ -446,10 +450,12 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          due_date?: string | null
           empresa_id?: string
           id?: string
           name?: string
           owner?: string | null
+          setor?: string | null
           status?: string
           updated_at?: string
         }
@@ -469,10 +475,12 @@ export type Database = {
           created_at: string
           current_value: number | null
           description: string | null
+          due_date: string | null
           empresa_id: string
           id: string
           name: string
           owner: string | null
+          setor: string | null
           status: string
           target_value: number | null
           unit: string | null
@@ -483,10 +491,12 @@ export type Database = {
           created_at?: string
           current_value?: number | null
           description?: string | null
+          due_date?: string | null
           empresa_id: string
           id?: string
           name: string
           owner?: string | null
+          setor?: string | null
           status?: string
           target_value?: number | null
           unit?: string | null
@@ -497,10 +507,12 @@ export type Database = {
           created_at?: string
           current_value?: number | null
           description?: string | null
+          due_date?: string | null
           empresa_id?: string
           id?: string
           name?: string
           owner?: string | null
+          setor?: string | null
           status?: string
           target_value?: number | null
           unit?: string | null
@@ -509,6 +521,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "projects_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routines: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          empresa_id: string
+          id: string
+          name: string
+          owner: string | null
+          setor: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          empresa_id: string
+          id?: string
+          name: string
+          owner?: string | null
+          setor?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          empresa_id?: string
+          id?: string
+          name?: string
+          owner?: string | null
+          setor?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routines_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -560,41 +622,6 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string
-          empresa_id: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          empresa_id: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          empresa_id?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_empresa_id_fkey"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
@@ -611,10 +638,7 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_user_id_by_email: {
-        Args: { p_email: string }
-        Returns: string
-      }
+      get_user_id_by_email: { Args: { p_email: string }; Returns: string }
       has_any_role: {
         Args: {
           _empresa_id: string
