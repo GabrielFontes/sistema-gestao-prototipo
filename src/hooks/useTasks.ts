@@ -10,6 +10,7 @@ export interface Task {
   status: 'pending' | 'in_progress' | 'completed';
   assigned_to: string | null;
   due_date: string | null;
+  category: string | null;
   created_at: string;
   updated_at: string;
 }

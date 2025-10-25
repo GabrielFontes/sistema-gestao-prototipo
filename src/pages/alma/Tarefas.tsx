@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Plus, List, Grid3x3, Search, Filter } from 'lucide-react';
 import { TaskDialog } from '@/components/TaskDialog';
 import { TaskEditDialog } from '@/components/TaskEditDialog';
@@ -319,6 +320,37 @@ export default function Tarefas() {
           items={filteredTasks}
           onItemClick={setEditingTask}
           onStatusChange={handleMove}
+          renderItem={(task) => (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <Badge className="bg-yellow-400 text-yellow-900 hover:bg-yellow-400 font-medium px-2 py-0.5 text-xs uppercase">
+                  {task.category || 'Projeto'}
+                </Badge>
+                <h4 className="font-semibold text-sm flex-1 leading-tight">{task.name}</h4>
+              </div>
+              {task.description && (
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  {task.description}
+                </p>
+              )}
+              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>{task.assigned_to || 'Sem responsável'}</span>
+                </div>
+                {task.due_date && (
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{new Date(task.due_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(task.due_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         />
       ) : (
         <div className="grid gap-4">
